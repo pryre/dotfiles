@@ -1,0 +1,9 @@
+[submodule "nano/.nano"]
+	path = nano/.nano
+	url = http://github.com/scopatz/nanorc.git
+[submodule "themes/.local/share/icons/la-capitaine-icon-theme"]
+	path = themes/.icons/la-capitaine-icon-theme
+	url = https://github.com/keeferrourke/la-capitaine-icon-theme
+[submodule "themes/.local/share/icons/capitaine-cursors-git"]
+	path = themes/.icons/capitaine-cursors-git
+	url = https://github.com/keeferrourke/capitaine-cursors

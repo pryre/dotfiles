@@ -1,0 +1,57 @@
+#!/bin/bash
+
+#ROOT_UID=0     		#$UID for root privileges.
+#EXIT_NOTROOT=87   	#Non-root exit error.
+#EXIT_USER=10		#User ended exit.
+#EXIT_PING=88		#Ping test faied exit error.
+
+#if [ "$UID" -ne "$ROOT_UID" ]
+#then
+#  echo "Must be ran as root!"
+#  exit $EXIT_NOTROOT
+#fi
+
+#Wicd Script=======================
+sudo wicd-cli -y -x							#Disconnect from current networks.
+
+sudo ~/Scripts/changeMAC.sh
+
+echo "Scanning for wireless networks..."
+echo
+sudo wicd-cli -y -S							#Scan for available networks.
+sudo wicd-cli -y -l							#Display available networks.
+echo
+
+network_name=Queensland_Rail_Free_WiFi		#Connect to the first matching network
+network_list=$(wicd-cli -y -l | grep $network_name)
+network_id=${network_list:0:1}
+echo "Attempting connection to network #$network_id: $network_name"
+sudo wicd-cli -c -y --network $network_id	#Connect to network.
+echo
+
+#Access Portal=====================
+
+DISPLAY=:0.0 /bin/notify-send "Openning access portal"
+
+python2 ~/Scripts/auto_train_login.py
+
+case $? in
+	0)
+		DISPLAY=:0.0 /bin/notify-send "Internet access achieved"
+		;;
+	1)
+		DISPLAY=:0.0 /bin/notify-send "Error connecting to Internet"
+		;;
+	2)
+		DISPLAY=:0.0 /bin/notify-send "Internet access was already granted..."
+		;;
+	*)
+		DISPLAY=:0.0 /bin/notify-send "Openning access portal"
+		;;
+esac
+
+
+#DISPLAY=:0.0 firefox http://www.queenslandrail.com.au/wi-fi/
+#DISPLAY=:0.0 firefox http://10.1.83.1:4990/www/login.chi
+
+exit 0										#End script.
