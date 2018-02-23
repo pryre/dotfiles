@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 if [ "$#" -eq 2 ]
 then
@@ -8,5 +8,4 @@ else
 	echo "Or: combinePDF.sh /output/File.pdf /input/files"
 	echo "Second option will match all files with the * wildcard"
 fi
-
 
