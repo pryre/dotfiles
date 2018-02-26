@@ -6,15 +6,14 @@ PROFILE=$2
 if [ -z "$PROFILE" ];
 then
 	#Select the first profile to use
-	PROFILE=$(netctl list | grep "$1" | head -n1)
-	
+	PROFILE=$(netctl list | grep "$1" | head -n1 | tr -d '*')
+
 	#Strip the star if it exists
-	PROFILE_STAR=$(echo "$PROFILE" | cut -d' ' -f2)
-	if [ -n "$PROFILE_STAR" ];
-	then
-		PROFILE=$PROFILE_STAR
-	fi
-	
+	#PROFILE_STAR=$(echo "$PROFILE" | cut -d' ' -f2)
+	#if [ -n "$PROFILE_STAR" ];
+	#then
+	#	PROFILE=$PROFILE_STAR
+	#fi
 fi
 
 case "$DEVICE" in
@@ -32,13 +31,13 @@ case "$DEVICE" in
 			#Connection up and running
 			echo "<img>/home/pryre/.icons/la-capitaine-icon-theme/devices/scalable/network-wired-symbolic.svg</img>"
 		fi
-		
+
 		echo "<click>netctl stop $PROFILE</click>"
 	;;
 	#Case: the device is a wireless device
 	"wl"*)
-		#ROFILE=$(netctl-auto list | grep "*")
-		echo -e "<tool>Wireless status for $1\nProfile: $PROFILE</tool>"
+		PROFILE_ACT=$(netctl-auto list | grep "*" | tr -d '*')
+		echo -e "<tool>Wireless status for $1\nProfile: $PROFILE_ACT</tool>"
 
 		CONN=$(echo "$DEVICE" | grep 'RUNNING')
 		if [ -z "$CONN" ];
