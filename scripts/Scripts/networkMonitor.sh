@@ -7,7 +7,7 @@ PROFILE=$2
 if [ -z "$PROFILE" ];
 then
 	PROFILE_ACT=$(netctl-auto list | grep "*" | tr -d '*')
-	if [ -z "$PROFILE" ];
+	if [ -z "$PROFILE_ACT" ];
 	then
 		PROFILE_ACT="[disconnected]"
 	fi
