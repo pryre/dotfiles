@@ -13,7 +13,7 @@ then
 			PROFILE_ACT=$(ifplugstatus | grep $DEVICE | cut -d ' ' -f2)
 		;;
 		"wl"*) #Case: the device is a wireless device
-			PROFILE_ACT=$(netctl-auto list | grep "*" | tr -d '*')
+			PROFILE_ACT=$(netctl-auto list | grep "*" | tr -d '* ')
 			if [ -z "$PROFILE_ACT" ];
 			then
 				PROFILE_ACT="[disconnected]"
