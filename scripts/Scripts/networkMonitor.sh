@@ -1,18 +1,34 @@
 #!/bin/sh
 
 DEVICE=$1
-CONN_STATUS=$(ip addr | grep "$DEVICE" | grep 'UP')
+CONN_STATUS=$(ip addr | grep "$DEVICE" | grep 'state UP')
 
 PROFILE=$2
 if [ -z "$PROFILE" ];
 then
-	PROFILE_ACT=$(netctl-auto list | grep "*" | tr -d '*')
-	if [ -z "$PROFILE_ACT" ];
-	then
-		PROFILE_ACT="[disconnected]"
-	fi
+	PROFILE_ACT=""
 
-	PROFILE="[auto] $PROFILE_ACT"
+	case "$DEVICE" in
+		"eno"* | "eth"* | "usb"*) #Case: the device is a hardwire device
+			PROFILE_ACT=$(ifplugstatus | grep $DEVICE | cut -d ' ' -f2)
+		;;
+		"wl"*) #Case: the device is a wireless device
+			PROFILE_ACT=$(netctl-auto list | grep "*" | tr -d '*')
+			if [ -z "$PROFILE_ACT" ];
+			then
+				PROFILE_ACT="[disconnected]"
+			fi
+		;;
+		*) #Case: the device type could not be found
+		;;
+	esac
+
+	if [ -z "$PROFILE_ACT" ];
+	then #Profile status could not be determined
+		PROFILE="[unknown]"
+	else #Profile is automiatically managed, insert text
+		PROFILE="[auto] $PROFILE_ACT"
+	fi
 
 	if [ -z "$CONN_STATUS" ];
 	then #Connection is not running
