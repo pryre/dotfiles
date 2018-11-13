@@ -66,7 +66,15 @@ case "$DEVICE" in
 
 		if [ -z "$CONN_STATUS" ];
 		then #Connection is not running
-			IMG_PATH="<img>/home/pryre/.icons/la-capitaine-icon-theme/devices/scalable/network-wireless-connected-25.svg</img>"
+			RF_STATUS=$(rfkill --noheadings | grep wlan | grep " blocked")
+			
+			if [ -z "$RF_STATUS" ];
+			then #Connection is unblocked
+				IMG_PATH="<img>/home/pryre/.icons/la-capitaine-icon-theme/devices/scalable/network-wireless-connected-25.svg</img>"
+			else
+				#Connection is blocked
+				IMG_PATH="<img>/home/pryre/.icons/la-capitaine-icon-theme/devices/scalable/network-wireless-disconnected.svg</img>"			
+			fi
 		else #Connection up and running
 			IMG_PATH="<img>/home/pryre/.icons/la-capitaine-icon-theme/devices/scalable/network-wireless-connected-100.svg</img>"
 		fi
