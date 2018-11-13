@@ -11,12 +11,26 @@ then
 	case "$DEVICE" in
 		"eno"* | "eth"* | "usb"*) #Case: the device is a hardwire device
 			PROFILE_ACT=$(ifplugstatus | grep $DEVICE | cut -d ' ' -f2)
+			
+			if [ -z "$CONN_STATUS" ];
+			then #Connection is not running
+				ON_CLICK="<click>systemctl start netctl-ifplugd@$1</click>"
+			else #Connection up and running
+				ON_CLICK="<click>systemctl stop netctl-ifplugd@$1</click>"
+			fi
 		;;
 		"wl"*) #Case: the device is a wireless device
 			PROFILE_ACT=$(netctl-auto list | grep "*" | tr -d '* ')
 			if [ -z "$PROFILE_ACT" ];
 			then
 				PROFILE_ACT="[disconnected]"
+			fi	
+
+			if [ -z "$CONN_STATUS" ];
+			then #Connection is not running
+				ON_CLICK="<click>systemctl start netctl-auto@$1</click>"
+			else #Connection up and running
+				ON_CLICK="<click>systemctl stop netctl-auto@$1</click>"
 			fi
 		;;
 		*) #Case: the device type could not be found
@@ -28,13 +42,6 @@ then
 		PROFILE="[unknown]"
 	else #Profile is automiatically managed, insert text
 		PROFILE="[auto] $PROFILE_ACT"
-	fi
-
-	if [ -z "$CONN_STATUS" ];
-	then #Connection is not running
-		ON_CLICK="<click>systemctl start netctl-auto@$1</click>"
-	else #Connection up and running
-		ON_CLICK="<click>systemctl stop netctl-auto@$1</click>"
 	fi
 else
 	if [ -z "$CONN_STATUS" ];
