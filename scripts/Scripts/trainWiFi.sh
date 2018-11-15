@@ -12,13 +12,13 @@
 #fi
 
 #Wicd Script=======================
-sudo systemctl stop netctl-auto@wlp4s0.service
+sudo systemctl stop netctl-auto@wlan0.service
 
 echo "Randomizing MAC..."
 sudo ~/Scripts/changeMAC.sh
 
 echo "Enabling network..."
-sudo systemctl start netctl-auto@wlp4s0.service
+sudo systemctl start netctl-auto@wlan0.service
 
 while [ -z "$(netctl-auto list | grep '*')" ]
 do
