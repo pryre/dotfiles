@@ -1,3 +1,5 @@
+#!/bin/sh
+
 for topic in $(rostopic list -b $1)
 do
   topicname=$(echo $topic | tr "/" "_");

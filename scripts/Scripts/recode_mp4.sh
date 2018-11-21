@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # This script will open all video files passed to it, and recode them as .mp4 with "good" settings
 

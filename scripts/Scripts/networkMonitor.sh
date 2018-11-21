@@ -11,7 +11,7 @@ then
 	case "$DEVICE" in
 		"eno"* | "eth"* | "usb"*) #Case: the device is a hardwire device
 			PROFILE_ACT=$(ifplugstatus | grep $DEVICE | cut -d ' ' -f2)
-			
+
 			if [ -z "$CONN_STATUS" ];
 			then #Connection is not running
 				ON_CLICK="<click>systemctl start netctl-ifplugd@$1</click>"
@@ -24,7 +24,7 @@ then
 			if [ -z "$PROFILE_ACT" ];
 			then
 				PROFILE_ACT="[disconnected]"
-			fi	
+			fi
 
 			if [ -z "$CONN_STATUS" ];
 			then #Connection is not running
@@ -74,13 +74,13 @@ case "$DEVICE" in
 		if [ -z "$CONN_STATUS" ];
 		then #Connection is not running
 			RF_STATUS=$(rfkill --noheadings | grep wlan | grep " blocked")
-			
+
 			if [ -z "$RF_STATUS" ];
 			then #Connection is unblocked
 				IMG_PATH="<img>/home/pryre/.icons/la-capitaine-icon-theme/devices/scalable/network-wireless-connected-25.svg</img>"
 			else
 				#Connection is blocked
-				IMG_PATH="<img>/home/pryre/.icons/la-capitaine-icon-theme/devices/scalable/network-wireless-disconnected.svg</img>"			
+				IMG_PATH="<img>/home/pryre/.icons/la-capitaine-icon-theme/devices/scalable/network-wireless-disconnected.svg</img>"
 			fi
 		else #Connection up and running
 			IMG_PATH="<img>/home/pryre/.icons/la-capitaine-icon-theme/devices/scalable/network-wireless-connected-100.svg</img>"
@@ -90,8 +90,9 @@ case "$DEVICE" in
 	;;
 esac
 
-TOOLTIP="<tool>$TOOLTIP_PRE for $1\nProfile: $PROFILE</tool>"
-
-echo -e "$TOOLTIP"
+#TOOLTIP="<tool>$TOOLTIP_PRE for $1\nProfile: $PROFILE</tool>"
+#echo -e "$TOOLTIP"
+echo "<tool>$TOOLTIP_PRE for $1"
+echo "Profile: $PROFILE</tool>"
 echo "$IMG_PATH"
 echo "$ON_CLICK"

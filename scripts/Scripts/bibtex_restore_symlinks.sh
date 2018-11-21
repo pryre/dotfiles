@@ -1,5 +1,4 @@
-#!/bin/bash
-
+#!/bin/sh
 
 while read bib; do
 	BIB_NAME=$(echo $bib | cut -d' ' -f1)
