@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ -e ~/Music ]
+if [ -e ~/Media ]
 then
 	deadbeef --play-pause
 else
