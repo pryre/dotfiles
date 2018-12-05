@@ -1,14 +1,14 @@
 #!/bin/bash
 check_git_status() {
-	echo "$(tput bold)$(basename $(pwd))$(tput sgr0)"
 	if [ -z "$(git status --porcelain)" ]
 	then
-		echo "clean"
+		#echo "clean"
+		true
 	else
+		echo "$(tput bold)$(basename $(pwd))$(tput sgr0)"
 		git status
+		echo "---"
 	fi
-
-	echo "---"
 }
 
 export -f check_git_status
