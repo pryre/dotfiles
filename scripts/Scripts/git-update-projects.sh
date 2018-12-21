@@ -20,6 +20,6 @@ fi
 CURRENT_DIR=$PWD
 cd $PARENT_DIR
 
-find . -maxdepth 1 -type d \( ! -name . \) -exec bash -c "cd '{}' && check_git_update" \;
+find -L . -maxdepth 1 -type d \( ! -name . \) -exec bash -c "cd '{}' && check_git_update" \;
 
 cd $CURRENT_DIR
