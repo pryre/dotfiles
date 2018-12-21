@@ -1,11 +1,19 @@
 #!/bin/bash
 
 check_git_update() {
-	echo "$(tput bold)$(basename $(pwd))$(tput sgr0)"
+	START_DIR="$(pwd)"
+	cd $1
 
-	git pull
+	REPO_STATUS="$(git fetch 2>&1)"
 
-	echo "---"
+	if [ "$REPO_STATUS" ]
+	then
+		TITLE="$(tput bold)$(basename $(pwd))$(tput sgr0)"
+		MERGE_STATUS="$(git merge 2>&1)"
+		printf "$TITLE\n$REPO_STATUS\n$MERGE_STATUS\n---\n"
+	fi
+
+	cd "$START_DIR"
 }
 
 export -f check_git_update
@@ -20,6 +28,6 @@ fi
 CURRENT_DIR=$PWD
 cd $PARENT_DIR
 
-find -L . -maxdepth 1 -type d \( ! -name . \) -exec bash -c "cd '{}' && check_git_update" \;
+find -L . -maxdepth 1 -type d \( ! -name . \) | xargs -n 1 -P 16 -I {} bash -c 'check_git_update "$@"' _ {}
 
 cd $CURRENT_DIR
