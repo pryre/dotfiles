@@ -1,6 +1,6 @@
 #!/bin/bash
 check_git_status() {
-	if [ -z "$(git status --porcelain)" ]
+	if [ -z $(git log origin/master..master) ] && [ -z "$(git status --porcelain)" ]
 	then
 		#echo "clean"
 		true
