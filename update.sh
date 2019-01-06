@@ -1,11 +1,21 @@
 #!/bin/sh
 
+DO_STOW=
+
+if [ $# -ge 1 ]
+then
+	if [ "$1" = '-f' ]
+	then
+		DO_STOW=1
+	fi
+fi
+
 echo "Updating dotfiles..."
 git fetch
 
 if [ $? -eq 0 ]
 then
-	if [ "$(git branch -v | grep -E '\[behind [0-9]*\]')" ]
+	if [ $DO_STOW ] || [ "$(git branch -v | grep -E '\[behind [0-9]*\]')" ]
 	then
 		echo ""
     	OLD_DIRS=$(ls -d */ | tr -d '/')
@@ -27,6 +37,8 @@ then
 	else
 		echo "Dotfiles are up to date!"
 	fi
+
+	echo ""
 
 	if [ "$(git status --porcelain --ignore-submodules)" ]
 	then
