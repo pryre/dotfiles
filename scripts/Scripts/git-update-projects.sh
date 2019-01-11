@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 check_git_update() {
@@ -8,8 +9,9 @@ check_git_update() {
 
 	if [ "$REPO_STATUS" ]
 	then
+		MERGE_STATUS="$(git merge --ff-only 2>&1)"
+
 		TITLE="$(tput bold)$(basename $(pwd))$(tput sgr0)"
-		MERGE_STATUS="$(git merge 2>&1)"
 		printf "$TITLE\n$REPO_STATUS\n$MERGE_STATUS\n---\n"
 	fi
 
