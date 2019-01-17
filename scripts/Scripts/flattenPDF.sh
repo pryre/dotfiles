@@ -1,6 +1,6 @@
 #!/bin/sh
 
-filename="${$1%.*}"
+FILENAME="$(basename -s .pdf $1)"
 
 gs -dSAFER -dBATCH -dNOPAUSE -dNOCACHE -sDEVICE=pdfwrite \
     -sColorConversionStrategy=/LeaveColorUnchanged  \
@@ -9,4 +9,4 @@ gs -dSAFER -dBATCH -dNOPAUSE -dNOCACHE -sDEVICE=pdfwrite \
     -dDownsampleMonoImages=true \
     -dDownsampleGrayImages=true \
     -dDownsampleColorImages=true \
-    -sOutputFile=filename_flat.pdf $1
+    -sOutputFile="$FILENAME"_flat.pdf "$1"
