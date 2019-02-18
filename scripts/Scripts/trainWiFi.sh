@@ -15,7 +15,7 @@
 sudo systemctl stop netctl-auto@wlan0.service
 
 echo "Randomizing MAC..."
-sudo ~/Scripts/changeMAC.sh
+sudo ~/Scripts/changeMAC.sh wlan0
 
 echo "Enabling network..."
 sudo systemctl start netctl-auto@wlan0.service
@@ -25,30 +25,30 @@ do
 	sleep 0.5
 done
 
-echo "Network connected!"
-echo "Waiting for internet access..."
-sleep 6
+#echo "Network connected!"
+#echo "Waiting for internet access..."
+#sleep 6
 
 #Access Portal=====================
 
-DISPLAY=:0.0 /bin/notify-send "Openning access portal"
+#DISPLAY=:0.0 /bin/notify-send "Openning access portal"
 
-python2 ~/Scripts/auto_train_login.py
+#python2 ~/Scripts/auto_train_login.py
 
-case $? in
-	0)
-		DISPLAY=:0.0 /bin/notify-send "Internet access achieved"
-		;;
-	1)
-		DISPLAY=:0.0 /bin/notify-send "Error connecting to Internet"
-		;;
-	2)
-		DISPLAY=:0.0 /bin/notify-send "Internet access was already granted..."
-		;;
-	*)
-		DISPLAY=:0.0 /bin/notify-send "Openning access portal"
-		;;
-esac
+#case $? in
+#	0)
+#		DISPLAY=:0.0 /bin/notify-send "Internet access achieved"
+#		;;
+#	1)
+#		DISPLAY=:0.0 /bin/notify-send "Error connecting to Internet"
+#		;;
+#	2)
+#		DISPLAY=:0.0 /bin/notify-send "Internet access was already granted..."
+#		;;
+#	*)
+#		DISPLAY=:0.0 /bin/notify-send "Openning access portal"
+#		;;
+#esac
 
 
 #DISPLAY=:0.0 firefox http://www.queenslandrail.com.au/wi-fi/
