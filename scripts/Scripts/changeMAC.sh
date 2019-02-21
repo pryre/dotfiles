@@ -20,11 +20,12 @@ ADDR1=$(echo $ADDR | cut -d':' -f1)
 ADDR2=$(echo $ADDR | cut -d':' -f2)
 ADDR3=$(echo $ADDR | cut -d':' -f3)
 #Generate random ID
-HEXCHARS="0123456789abcdef"
-ADDR4=${HEXCHARS:$(( $RANDOM % 16 )):2}
-ADDR5=${HEXCHARS:$(( $RANDOM % 16 )):2}
-ADDR6=${HEXCHARS:$(( $RANDOM % 16 )):2}
-NEWADDR=$ADDR1:$ADDR2:$ADDR3:$ADDR4:$ADDR5:$ADDR6
+#HEXCHARS="0123456789abcdef"
+#ADDR4=${HEXCHARS:$(( $RANDOM % 16 )):2}
+#ADDR5=${HEXCHARS:$(( $RANDOM % 16 )):2}
+#ADDR6=${HEXCHARS:$(( $RANDOM % 16 )):2}
+HEXCHARS="hexdump -n 1 -e \"%02X\" /dev/urandom"
+NEWADDR="$ADDR1:$ADDR2:$ADDR3:$($HEXCHARS):$($HEXCHARS):$($HEXCHARS)"
 
 echo "Changing $DEV MAC from $ADDR to $NEWADDR"
 ip link set wlan0 down

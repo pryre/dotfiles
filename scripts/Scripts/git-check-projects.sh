@@ -1,5 +1,9 @@
-#!/bin/bash
+#!/bin/sh
+
 check_git_status() {
+	START_DIR="$(pwd)"
+	cd $1
+
 	if [ -z $(git log origin/master..master) ] && [ -z "$(git status --porcelain)" ]
 	then
 		#echo "clean"
@@ -9,13 +13,13 @@ check_git_status() {
 		git status
 		echo "---"
 	fi
-}
 
-export -f check_git_status
+	cd $START_DIR
+}
 
 PARENT_DIR="."
 
-if [ ! -z $1 ]
+if [ $1 ]
 then
 	PARENT_DIR=$1
 fi
@@ -23,7 +27,11 @@ fi
 CURRENT_DIR=$PWD
 cd $PARENT_DIR
 
-find . -maxdepth 1 -type d \( ! -name . \) -exec bash -c "cd '{}' && check_git_status" \; #cd '{}' && pwd && git status && echo ''" \;
+CHILD_DIRS=$(find . -maxdepth 1 -type d \( ! -name . \))
 
+for CHILD_DIR in $CHILD_DIRS
+do
+	check_git_status $CHILD_DIR
+done
 
 cd $CURRENT_DIR
