@@ -14,7 +14,7 @@ then
 
 			if [ -z "$CONN_STATUS" ];
 			then #Connection is not running
-				ON_CLICK="<click>systemctl start netctl-ifplugd@$1</click>"
+				ON_CLICK="<click>systemctl restart netctl-ifplugd@$1</click>"
 			else #Connection up and running
 				ON_CLICK="<click>systemctl stop netctl-ifplugd@$1</click>"
 			fi
@@ -28,7 +28,7 @@ then
 
 			if [ -z "$CONN_STATUS" ];
 			then #Connection is not running
-				ON_CLICK="<click>systemctl start netctl-auto@$1</click>"
+				ON_CLICK="<click>systemctl restart netctl-auto@$1</click>"
 			else #Connection up and running
 				ON_CLICK="<click>systemctl stop netctl-auto@$1</click>"
 			fi
@@ -46,7 +46,7 @@ then
 else
 	if [ -z "$CONN_STATUS" ];
 	then #Connection is not running
-		ON_CLICK="<click>netctl start $PROFILE</click>"
+		ON_CLICK="<click>netctl restart $PROFILE</click>"
 	else #Connection up and running
 		ON_CLICK="<click>netctl stop $PROFILE</click>"
 	fi
