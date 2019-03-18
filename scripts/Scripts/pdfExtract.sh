@@ -14,7 +14,7 @@ case "$#" in
 			PG_NUM=$(gs -q -dNODISPLAY -c \
 				"($1) (r) file runpdfbegin pdfpagecount = quit")
 
-		for i in $(seq $PG_NUM); do
+		for i in $(seq -w $PG_NUM); do
 			extract_pages $1 $i $i
 		done
 	;;
