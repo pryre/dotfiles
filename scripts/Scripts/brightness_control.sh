@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 if [ $# -eq 2 ]
 then
@@ -18,9 +18,6 @@ then
 	then
 		NB=0
 	fi
-
-	echo "$B"
-	echo "$NB"
 
 	echo "$NB" > /sys/class/backlight/${DEVICE}/brightness
 else
