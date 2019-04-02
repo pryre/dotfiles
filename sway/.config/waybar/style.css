@@ -4,15 +4,17 @@
     font-family: Roboto, Helvetica, Arial, sans-serif;
     font-size: 14px;
     min-height: 0;
+    color: white;
 }
 
 window#waybar {
-    background: rgba(0, 0, 0, 0.5);
     border-bottom: 3px solid transparent;
-    /*
-    border-bottom: 3px solid rgba(100, 114, 125, 0.5);
-    */
-    color: white;
+    background: transparent;
+}
+
+window > box {
+	margin: 10px;
+    background: rgba(0, 0, 0, 0.5);
 }
 
 #workspaces button, #mode, #clock, #battery, #pulseaudio, #network, #memory, #backlight {
