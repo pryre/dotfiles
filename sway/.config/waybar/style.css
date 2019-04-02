@@ -17,7 +17,7 @@ window > box {
     background: rgba(0, 0, 0, 0.5);
 }
 
-#workspaces button, #mode, #clock, #battery, #pulseaudio, #network, #memory, #backlight, #custom-launcher {
+#workspaces button, #mode, #clock, #battery, #pulseaudio, #network, #memory, #custom-backlight, #custom-launcher, #custom-exit {
     padding: 0 10px;
 }
 

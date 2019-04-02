@@ -8,7 +8,7 @@
     "modules-left": ["custom/launcher","sway/workspaces"],
     //"modules-center": ["sway/window"],
     //"modules-right": ["idle_inhibitor", "pulseaudio", "network", "cpu", "memory", "temperature", "backlight", "battery", "battery#bat2", "clock", "tray"],
-    "modules-right": ["tray", "network", "pulseaudio", "custom/backlight", "battery", "clock"],
+    "modules-right": ["tray", "network", "pulseaudio", "custom/backlight", "battery", "clock", "custom/exit"],
     // Modules configuration
     // "sway/workspaces": {
     //     "disable-scroll": true,
@@ -111,6 +111,10 @@
     "custom/launcher": {
         "format": "",
         "on-click": "xfce4-appfinder"
+    },
+    "custom/exit": {
+        "format": "",
+        "on-click": "systemctl poweroff"
     }
     //"custom/media": {
     //    "format": "{icon} {}",

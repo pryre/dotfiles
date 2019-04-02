@@ -18,8 +18,8 @@ set $term alacritty
 # Your preferred application launcher
 # Note: it's recommended that you pass the final command to sway
 #set $menu dmenu_path | dmenu | xargs swaymsg exec
-#set $menu dmenu_path | bemenu -i -w | xargs swaymsg exec
-set $menu xfce4-appfinder
+set $menu dmenu_path | bemenu -i -w | xargs swaymsg exec
+set $guimenu xfce4-appfinder
 set $lock swaylock --color 303030
 
 ### Output configuration
@@ -70,7 +70,6 @@ output HDMI-A-1 mode 1920x1080@60.000000Hz position 0,0
 # Basics:
 #
     # start a terminal
-    bindsym $mod+Return exec $term
     bindsym $mod+t exec $term
 
 	# start a file manage
@@ -81,7 +80,8 @@ output HDMI-A-1 mode 1920x1080@60.000000Hz position 0,0
     bindsym Alt+F4 kill
 
     # start your launcher
-    bindsym $mod+r exec $menu
+    bindsym $mod+Return exec $menu
+    bindsym $mod+r exec $guimenu
 
     # screen locker
     bindsym $mod+l exec $lock
