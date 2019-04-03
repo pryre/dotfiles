@@ -114,7 +114,7 @@
     },
     "custom/exit": {
         "format": "",
-        "on-click": "systemctl poweroff"
+        "on-click": "$HOME/Scripts/exit_user_session.py"
     }
     //"custom/media": {
     //    "format": "{icon} {}",
