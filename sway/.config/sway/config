@@ -13,12 +13,14 @@ set $mod Mod4
 #set $down j
 #set $up k
 #set $right l
-# Your preferred terminal emulator
-set $term alacritty
+
 # Your preferred application launcher
 # Note: it's recommended that you pass the final command to sway
-#set $menu dmenu_path | dmenu | xargs swaymsg exec
+
 set $menu dmenu_path | bemenu -i -w | xargs swaymsg exec
+set $term alacritty
+set $browser firefox
+set $filemanager pcmanfm-qt
 set $guimenu xfce4-appfinder
 set $lock swaylock --color 303030
 set $logout $HOME/Scripts/exit_user_session.py
@@ -70,11 +72,10 @@ output HDMI-A-1 mode 1920x1080@60.000000Hz position 0,0
 #
 # Basics:
 #
-    # start a terminal
+	# start apps
     bindsym $mod+t exec $term
-
-	# start a file manage
-	bindsym $mod+e exec pcmanfm-qt
+	bindsym $mod+e exec $filemanager
+	bindsym $mod+w exec $browser
 
     # kill focused window
     bindsym $mod+q kill

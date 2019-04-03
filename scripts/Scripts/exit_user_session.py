@@ -17,7 +17,7 @@ class ExitUserSession(QDialog, QWidget):
 
 	def init_ui(self):
 		self.setWindowTitle('Exit Session')
-		self.setGeometry(300, 300, 290, 150)
+		self.setGeometry(300, 300, 120, 150)
 
 		self.button_logout = QPushButton('Logout', self)
 		self.button_logout.move(20, 20)
