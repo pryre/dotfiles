@@ -17,7 +17,16 @@ window > box {
     background: rgba(0, 0, 0, 0.5);
 }
 
-#workspaces button, #mode, #clock, #battery, #pulseaudio, #network, #memory, #custom-backlight, #custom-launcher, #custom-exit {
+#workspaces button,
+#mode,
+#clock,
+#battery,
+#pulseaudio,
+#network,
+#memory,
+#custom-backlight,
+#custom-launcher,
+#custom-exit {
     padding: 0 10px;
 }
 
@@ -38,19 +47,15 @@ window > box {
 #clock {
 }
 
-#battery.discharging {
-    color: #90EE90;
-}
-
-#battery.charging {
-    color: white;
-}
-
 @keyframes blink {
     to {
 		background-color: #ffffff;
         color: black;
     }
+}
+
+#battery.charging {
+    color: #90EE90;
 }
 
 #battery.warning:not(.charging) {
@@ -70,4 +75,8 @@ window > box {
     animation-timing-function: linear;
     animation-iteration-count: infinite;
     animation-direction: alternate;
+}
+
+#pulseaudio.muted {
+	color: gray;
 }
