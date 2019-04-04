@@ -22,7 +22,7 @@ set $term alacritty
 set $browser firefox
 set $filemanager pcmanfm-qt
 set $guimenu xfce4-appfinder
-set $lock swaylock --color 303030
+set $lock swaylock
 set $logout $HOME/Scripts/exit_user_session.py
 
 ### Output configuration
