@@ -4,6 +4,7 @@
 #
 # Read `man 5 sway` for a complete reference.
 
+
 ### Variables
 #
 # Logo key. Use Mod1 for Alt.
@@ -25,21 +26,11 @@ set $guimenu xfce4-appfinder
 set $lock swaylock
 set $logout $HOME/Scripts/exit_user_session.py
 
-#
-## Output configuration
-#
-# Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-#output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
-output * bg $HOME/.background fill
-#
-# Example configuration:
-#
-#   output HDMI-A-1 resolution 1920x1080 position 1920,0
-#
-# You can get the names of your outputs by running: swaymsg -t get_outputs
 
-output DP-1 mode 1920x1080@74.924004Hz position 1920,0
-output HDMI-A-1 mode 1920x1080@60.000000Hz position 0,0
+### Host-Specific Configuration
+#
+include $HOME/.config/sway/config.`hostname`
+
 
 ### Idle configuration
 #
@@ -55,19 +46,6 @@ output HDMI-A-1 mode 1920x1080@60.000000Hz position 0,0
 # your displays after another 300 seconds, and turn your screens back on when
 # resumed. It will also lock your screen before your computer goes to sleep.
 
-### Input configuration
-#
-# Example configuration:
-#
-#   input "2:14:SynPS/2_Synaptics_TouchPad" {
-#       dwt enabled
-#       tap enabled
-#       natural_scroll enabled
-#       middle_emulation enabled
-#   }
-#
-# You can get the names of your inputs by running: swaymsg -t get_inputs
-# Read `man 5 sway-input` for more information about this section.
 
 ### Key bindings
 #
@@ -103,8 +81,7 @@ output HDMI-A-1 mode 1920x1080@60.000000Hz position 0,0
     #bindsym $mod+Escape exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
 	bindsym $mod+Escape exec $logout
 
-#
-# Moving around:
+### Moving around:
 #
     # Move your focus around
     #bindsym $mod+$left focus left
@@ -128,8 +105,8 @@ output HDMI-A-1 mode 1920x1080@60.000000Hz position 0,0
     bindsym $mod+Control+Up move up
     bindsym $mod+Control+Right move right
 
-#
-# Workspaces:
+
+### Workspaces:
 #
     # switch to workspace
     bindsym $mod+1 workspace 1
@@ -155,8 +132,9 @@ output HDMI-A-1 mode 1920x1080@60.000000Hz position 0,0
     bindsym $mod+Shift+0 move container to workspace 10
     # Note: workspaces can have any name you want, not just numbers.
     # We just use 1-10 as the default.
-#
-# Layout stuff:
+
+
+### Layout stuff:
 #
     # You can "split" the current object of your focus with
     # $mod+b or $mod+v, for horizontal and vertical splits
@@ -180,8 +158,9 @@ output HDMI-A-1 mode 1920x1080@60.000000Hz position 0,0
 
     # move focus to the parent container
     bindsym $mod+a focus parent
-#
-# Scratchpad:
+
+
+### Scratchpad:
 #
     # Sway has a "scratchpad", which is a bag of holding for windows.
     # You can send windows there and get them back later.
@@ -192,8 +171,9 @@ output HDMI-A-1 mode 1920x1080@60.000000Hz position 0,0
     # Show the next scratchpad window or hide the focused scratchpad window.
     # If there are multiple scratchpad windows, this command cycles through them.
     bindsym $mod+minus scratchpad show
-#
-# Resizing containers:
+
+
+### Resizing containers:
 #
 mode "resize" {
     # left will shrink the containers width
@@ -217,8 +197,8 @@ mode "resize" {
 }
 bindsym $mod+Shift+r mode "resize"
 
-#
-# Status Bar:
+
+### Status Bar:
 #
 # Read `man 5 sway-bar` for more information about this section.
 bar {
@@ -239,8 +219,8 @@ bar {
 	gaps 10
 }
 
-#
-# Layout and Placement
+
+### Graphics & Trim
 #
 	gaps inner 10
 	gaps outer 0
@@ -249,8 +229,10 @@ bar {
 
 	for_window [class="Xfce4-appfinder"] fullscreen enable
 
-#
-# Keyboard Extras
+	output "*" background $HOME/.background fill
+
+
+### Keyboard Extras
 #
 # Pulse Audio controls
 	bindsym XF86AudioRaiseVolume exec pactl set-sink-volume $(pacmd list-sinks |awk '/* index:/{print $3}') +5%
@@ -258,21 +240,20 @@ bar {
 	bindsym XF86AudioMute exec pactl set-sink-mute $(pacmd list-sinks |awk '/* index:/{print $3}') toggle
 
 # Sreen brightness controls
-	bindsym XF86MonBrightnessDown exec /home/pryre/Scripts/brightness_control amdgpu_bl0 -30
-	bindsym XF86MonBrightnessUp exec ~/Scripts/brightness_control amdgpu_bl0 30
+	bindsym XF86MonBrightnessDown exec $HOME/Scripts/brightness_control amdgpu_bl0 -30
+	bindsym XF86MonBrightnessUp exec $HOME/Scripts/brightness_control amdgpu_bl0 30
 
 # Touchpad toggles
-	#bindsym XF86TouchpadToggle exec ~/.config/sway/scripts/toggletouchpad.sh # toggle touchpad
+	#bindsym XF86TouchpadToggle exec $HOME/.config/sway/scripts/toggletouchpad.sh # toggle touchpad
 
 # Media player controls
-	#bindsym XF86AudioPlay exec playerctl play
+	bindsym XF86AudioPlay exec $HOME/Scripts/deadbeef-play-pause.sh
 	#bindsym XF86AudioPause exec playerctl pause
 	#bindsym XF86AudioNext exec playerctl next
 	#bindsym XF86AudioPrev exec playerctl previous
 
 
-#
-## GTK Theming Hack
+### GTK Theming Hack
 #
 # Make sure gnome respsects theme choices (should be able to removed if wlroots gets functions)
 	exec gsettings set org.gnome.desktop.interface cursor-theme 'Capitaine Cursors'

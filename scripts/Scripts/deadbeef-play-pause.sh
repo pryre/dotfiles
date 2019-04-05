@@ -2,6 +2,13 @@
 
 if [ -e ~/Media ]
 then
+	ARG='--play-pause'
+
+	if [ $# -eq 1 ]
+	then
+		ARG="--$1"
+	fi
+
 	deadbeef --play-pause
 else
 	ERROR_TIME=2000
