@@ -25,7 +25,8 @@ set $guimenu xfce4-appfinder
 set $lock swaylock
 set $logout $HOME/Scripts/exit_user_session.py
 
-### Output configuration
+#
+## Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
 #output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
@@ -239,12 +240,14 @@ bar {
 }
 
 #
-# Window Layout
+# Layout and Placement
 #
-gaps inner 10
-gaps outer 0
+	gaps inner 10
+	gaps outer 0
 
-for_window [class="Xfce4-appfinder"] fullscreen enable
+	titlebar_padding 5 2
+
+	for_window [class="Xfce4-appfinder"] fullscreen enable
 
 #
 # Keyboard Extras
@@ -266,6 +269,15 @@ for_window [class="Xfce4-appfinder"] fullscreen enable
 	#bindsym XF86AudioPause exec playerctl pause
 	#bindsym XF86AudioNext exec playerctl next
 	#bindsym XF86AudioPrev exec playerctl previous
+
+
+#
+## GTK Theming Hack
+#
+# Make sure gnome respsects theme choices (should be able to removed if wlroots gets functions)
+	exec gsettings set org.gnome.desktop.interface cursor-theme 'Capitaine Cursors'
+	exec gsettings set org.gnome.desktop.interface icon-theme 'La Capitaine'
+	exec gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita:dark'
 
 #
 # Additional config

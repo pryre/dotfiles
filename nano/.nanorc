@@ -1,5 +1,4 @@
 set nowrap
-set mouse
 set tabsize 4
 
 include "~/.nano/apacheconf.nanorc"
