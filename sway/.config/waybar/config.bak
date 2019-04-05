@@ -2,7 +2,7 @@
     "layer": "bottom", // Waybar below floating layer
     "position": "left", // Waybar position (top|bottom|left|right)
     // "height": 30, // Waybar height
-     "width": 55, // Waybar width (need to give a bit extra for clock)
+    // "width": 1280, // Waybar width
     // Choose the order of the modules
     //"modules-left": ["sway/workspaces", "sway/mode"],
     "modules-left": ["custom/launcher","sway/workspaces"],
@@ -65,8 +65,7 @@
 	//	"on-scroll-down": "$HOME/Scripts/brightness_control.sh amdgpu_bl0 -5"
     //},
     "custom/backlight": {
-        "tooltip-format": "{}% ",
-        "format": "",
+        "format": "{}% ",
         "max-length": 40,
         "interval": "once",
         "exec": "$HOME/Scripts/brightness_control.sh amdgpu_bl0 get_percent",
@@ -82,46 +81,39 @@
             "warning": 30,
             "critical": 15
         },
-        "tooltip-format": "{capacity}% {icon}",
-        "format": "{icon}",
+        "format": "{capacity}% {icon}",
         // "format-good": "", // An empty format will hide the module
         // "format-full": "",
         "format-icons": ["", "", "", "", ""]
     },
     "network": {
         // "interface": "wlp2s0", // (Optional) To force the use of this interface
-        "tooltip-format-wifi": "{essid} ({signalStrength}%) ",
-        "format-wifi": "",
-        "tooltip-format-ethernet": "{ifname}: {ipaddr}/{cidr} ",
-        "format-ethernet": "",
-        "format-disconnected": "⚠"
+        "format-wifi": "{essid} ({signalStrength}%) ",
+        "format-ethernet": "{ifname}: {ipaddr}/{cidr} ",
+        "format-disconnected": "Disconnected ⚠"
     },
     "pulseaudio": {
         "scroll-step": 5,
-        "format": "{icon}",
-        //"tooltip-format": "{volume}% {icon}",
+        "format": "{volume}% {icon}",
         "format-bluetooth": "{volume}% {icon}",
-        "format-muted": "{icon}",
-        //"tooltip-format-muted": "{volume}% {icon}",
+        "format-muted": "{volume}% ",
         "format-icons": {
-            "headphones": "",
+            "headphones": "",
             "handsfree": "",
             "headset": "",
             "phone": "",
             "portable": "",
             "car": "",
-            "default": ["", ""]
+            "default": ["", ""]
         },
         "on-click": "pavucontrol"
     },
     "custom/launcher": {
-        "format": "",
-        "tooltip-format": "Application Launcher",
+        "format": "",
         "on-click": "xfce4-appfinder"
     },
     "custom/exit": {
         "format": "",
-        "tooltip-format": "Logout and Power Options",
         "on-click": "$HOME/Scripts/exit_user_session.py"
     }
     //"custom/media": {
