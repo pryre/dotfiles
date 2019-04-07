@@ -101,7 +101,7 @@
         "format": "{icon}",
         //"tooltip-format": "{volume}% {icon}",
         "format-bluetooth": "{volume}% {icon}",
-        "format-muted": "{icon}",
+        "format-muted": "",
         //"tooltip-format-muted": "{volume}% {icon}",
         "format-icons": {
             "headphones": "",
@@ -110,7 +110,7 @@
             "phone": "",
             "portable": "",
             "car": "",
-            "default": ["", ""]
+            "default": ""
         },
         "on-click": "pavucontrol"
     },

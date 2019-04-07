@@ -8,7 +8,7 @@
 }
 
 window#waybar {
-    border-bottom: 3px solid transparent;
+    border-right: 3px solid transparent;
     background: transparent;
 }
 
@@ -36,17 +36,19 @@ window > box {
 #workspaces button {
     background: transparent;
     color: white;
-    border-bottom: 3px solid transparent;
+    border-right: 3px solid transparent;
 }
 
 #workspaces button.focused {
-    border-bottom: 3px solid white;
+    border-right: 3px solid white;
 }
+
 /*
 #mode {
     border-bottom: 3px solid white;
 }
 */
+
 #clock {
 }
 
