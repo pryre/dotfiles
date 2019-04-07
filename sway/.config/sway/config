@@ -253,14 +253,6 @@ bar {
 	#bindsym XF86AudioPrev exec playerctl previous
 
 
-### GTK Theming Hack
-#
-# Make sure gnome respsects theme choices (should be able to removed if wlroots gets functions)
-	exec gsettings set org.gnome.desktop.interface cursor-theme 'Capitaine Cursors'
-	exec gsettings set org.gnome.desktop.interface icon-theme 'La Capitaine'
-	exec gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita:dark'
-
-#
-# Additional config
+### Additional config
 #
 include /etc/sway/config.d/*
