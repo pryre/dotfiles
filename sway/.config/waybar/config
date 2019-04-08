@@ -82,7 +82,7 @@
             "warning": 30,
             "critical": 15
         },
-        "tooltip-format": "{capacity}% {icon}",
+        //"format": "{icon} {capacity}%",
         "format": "{icon}",
         // "format-good": "", // An empty format will hide the module
         // "format-full": "",
