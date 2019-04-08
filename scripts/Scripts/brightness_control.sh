@@ -1,62 +1,79 @@
 #!/bin/sh
 
+BL_SYS_DIR=/sys/class/backlight
+
 show_help() {
-	echo "Usage: brightness_control DEVICE COMMAND"
+	echo "Usage: brightness_control COMMAND <args>"
 	echo "Commands:"
 	echo "    step [+/-] STEP"
 	echo "    get_percent"
+	echo "    show_rules"
+}
+
+do_show_rules() {
 	echo "Make sure to set udev rules to allow users of video group to control backlight:"
 	echo "    /etc/udev/rules.d/90-backlight.rules"
 	echo '    SUBSYSTEM=="backlight", ACTION=="add", RUN+="/bin/chgrp video /sys/class/backlight/%k/brightness", RUN+="/bin/chmod g+w /sys/class/backlight/%k/brightness"'
 }
 
 do_get_percent() {
-	DEVICE=$1
+	BRIGHNESS=""
 
-	B="$(cat /sys/class/backlight/${DEVICE}/brightness)"
-	MB="$(cat /sys/class/backlight/${DEVICE}/max_brightness)"
+	for DEVICE in $(find ${BL_SYS_DIR} -not -path ${BL_SYS_DIR})
+	do
+		B="$(cat ${DEVICE}/brightness)"
+		MB="$(cat ${DEVICE}/max_brightness)"
 
-	echo "$(((100*B)/MB))"
+		BRIGHTNESS="${BRIGHTNESS} $(((100*B)/MB))"
+	done
+
+	echo "${BRIGHTNESS}"
 }
 
 do_step() {
-	DEVICE=$1
-	STEP=$2
+	STEP=$1
 
-	B="$(cat /sys/class/backlight/${DEVICE}/brightness)"
-	MB="$(cat /sys/class/backlight/${DEVICE}/max_brightness)"
-	NB=$((B+STEP))
+	for DEVICE in $(find ${BL_SYS_DIR} -not -path ${BL_SYS_DIR})
+	do
+		B="$(cat ${DEVICE}/brightness)"
+		MB="$(cat ${DEVICE}/max_brightness)"
+		NB=$((B+STEP))
 
-	if [ $NB -ge $MB ]
-	then
-		NB=$MB
-	fi
+		if [ $NB -ge $MB ]
+		then
+			NB=$MB
+		fi
 
-	if [ $NB -le 0 ]
-	then
-		NB=0
-	fi
+		if [ $NB -le 0 ]
+		then
+			NB=0
+		fi
 
-	echo "$NB" > /sys/class/backlight/${DEVICE}/brightness
+		echo "$NB" > ${DEVICE}/brightness
+	done
 }
 
-if [ $# -ge 1 ]
+if [ $# -ge 0 ]
 then
-	if [ $1 == '--help' ]
-	then
-		show_help
-		exit 1
-	fi
+	#if [ $1 == '--help' ]
+	#then
+	#	show_help
+	#	exit 1
+	#fi
 
-	DEVICE=$1
+	#DEVICE=$1
 
-	case $2 in
+	case $1 in
 		"step")
-			do_step $DEVICE $3
+			do_step $2
 			break
 			;;
 		"get_percent")
-			do_get_percent $DEVICE
+			do_get_percent
+			break
+			;;
+		"show_rules")
+			do_show_rules
 			break
 			;;
 		*)
