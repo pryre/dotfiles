@@ -8,7 +8,7 @@
     "modules-left": ["custom/launcher","sway/workspaces"],
     //"modules-center": ["sway/window"],
     //"modules-right": ["idle_inhibitor", "pulseaudio", "network", "cpu", "memory", "temperature", "backlight", "battery", "battery#bat2", "clock", "tray"],
-    "modules-right": ["tray", "network", "pulseaudio", "custom/backlight", "battery", "clock", "custom/exit"],
+    "modules-right": ["tray", "network#ether", "network#wifi", "pulseaudio", "custom/backlight", "battery", "clock", "custom/exit"],
     // Modules configuration
     // "sway/workspaces": {
     //     "disable-scroll": true,
@@ -36,7 +36,7 @@
     //    }
     //},
     "tray": {
-        "icon-size": 12,
+        "icon-size": 20,
         "spacing": 10
     },
     "clock": {
@@ -88,13 +88,21 @@
         // "format-full": "",
         "format-icons": ["", "", "", "", ""]
     },
-    "network": {
-        // "interface": "wlp2s0", // (Optional) To force the use of this interface
+    "network#ether": {
+        "interface": "eth0", // (Optional) To force the use of this interface
         "tooltip-format-wifi": "{essid} ({signalStrength}%) ",
         "format-wifi": "",
         "tooltip-format-ethernet": "{ifname}: {ipaddr}/{cidr} ",
         "format-ethernet": "",
-        "format-disconnected": "⚠"
+        "format-disconnected": ""
+    },
+    "network#wifi": {
+        "interface": "wlan0", // (Optional) To force the use of this interface
+        "tooltip-format-wifi": "{essid} ({signalStrength}%) ",
+        "format-wifi": "",
+        "tooltip-format-ethernet": "{ifname}: {ipaddr}/{cidr} ",
+        "format-ethernet": "",
+        "format-disconnected": ""
     },
     "pulseaudio": {
         "scroll-step": 5,
@@ -117,7 +125,7 @@
     "custom/launcher": {
         "format": "",
         "tooltip-format": "Application Launcher",
-        "on-click": "swaymsg exec xfce4-appfinder"
+        "on-click": "notify-send 'test' -t 1000"
     },
     "custom/exit": {
         "format": "",

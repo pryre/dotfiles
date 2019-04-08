@@ -82,6 +82,10 @@ window > box {
     animation-direction: alternate;
 }
 
+#network.disconnected {
+	color: gray;
+}
+
 #pulseaudio.muted {
 	color: gray;
 }
