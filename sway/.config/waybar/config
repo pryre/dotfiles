@@ -125,7 +125,7 @@
     "custom/launcher": {
         "format": "",
         "tooltip-format": "Application Launcher",
-        "on-click": "notify-send 'test' -t 1000"
+        "on-click": "swaymsg exec 'dmenu_path | ~/Scripts/qute_launcher.py'"
     },
     "custom/exit": {
         "format": "",
