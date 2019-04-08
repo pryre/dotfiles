@@ -117,7 +117,7 @@
     "custom/launcher": {
         "format": "",
         "tooltip-format": "Application Launcher",
-        "on-click": "xfce4-appfinder"
+        "on-click": "swaymsg exec xfce4-appfinder"
     },
     "custom/exit": {
         "format": "",
