@@ -22,7 +22,7 @@ set $menu dmenu_path | bemenu -i -w | xargs swaymsg exec
 set $term alacritty
 set $browser firefox
 set $filemanager pcmanfm-qt
-set $guimenu swaymsg exec '~/Scripts/list_desktop_applications.sh | ~/Scripts/qute_launcher.py'
+set $guimenu ~/Scripts/qute_launcher.py -c
 set $lock swaylock
 set $logout $HOME/Scripts/exit_user_session.py
 
@@ -62,6 +62,7 @@ include $HOME/.config/sway/config.`hostname`
 
     # start your launcher
     bindsym $mod+Return exec $menu
+	exec $HOME/Scripts/list_desktop_applications.sh | $HOME/Scripts/qute_launcher.py -d
     bindsym $mod+r exec $guimenu
 
     # screen locker

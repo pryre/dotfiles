@@ -125,12 +125,12 @@
     "custom/launcher": {
         "format": "",
         "tooltip-format": "Application Launcher",
-        "on-click": "swaymsg exec '~/Scripts/list_desktop_applications.sh | ~/Scripts/qute_launcher.py'"
+        "on-click": "swaymsg exec '$HOME/Scripts/qute_launcher.py -c'"
     },
     "custom/exit": {
         "format": "",
         "tooltip-format": "Logout and Power Options",
-        "on-click": "$HOME/Scripts/exit_user_session.py"
+        "on-click": "swaymsg exec '$HOME/Scripts/exit_user_session.py'"
     }
     //"custom/media": {
     //    "format": "{icon} {}",

@@ -4,13 +4,14 @@ import sys
 import os
 import math
 import configparser
+import signal
 
 from PyQt5 import QtCore
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QWidget, QToolButton, QLineEdit,
 							 QInputDialog, QApplication, QDialog,
 							 QVBoxLayout, QGroupBox, QGridLayout,
 							 QScrollArea)
-from PyQt5.QtGui import QIcon
 
 class AppWidget():
 	def __init__(self, app_path, use_symbolic):
@@ -24,25 +25,7 @@ class AppWidget():
 		self.config = configparser.RawConfigParser()
 		self.load_config(self.app_path)
 
-		#print("loading: " + app_path)
-		#f = open(app_path, 'r')
-
-		#for l in f:
-		#	if "Name" in l:
-		#		print(l)
-		#		self.app_name = self.get_param_arg(l)
-		#	elif "Exec" in line:
-		#		self.app_exec = self.get_param_arg(l)
-		#	elif "Icon" in line:
-		#		self.app_icon = self.get_param_arg(l)
-
-		#f.close()
-
-		#print(self.app_name)
-		#print(self.app_exec)
-		#print(self.app_icon)
 	def load_config(self, app_path):
-		#print("Loading: " +self.app_path)
 		self.config.read(self.app_path)
 
 		if 'Desktop Entry' in self.config:
@@ -89,7 +72,6 @@ class AppWidget():
 	def runExec(self):
 		os.system("swaymsg exec \'" + self.appExec() + "\'")
 
-#class ExitUserSession(QDialog, QWidget):
 class ExitUserSession(QWidget):
 	def __init__(self, app_names):
 		super().__init__()
@@ -98,6 +80,7 @@ class ExitUserSession(QWidget):
 		self.button_spacing = 10
 		self.use_symbolic = True
 		self.use_names = True
+		self.stay_alive = False
 
 		self.app_names = app_names
 		self.app_list = self.gen_app_widgets(app_names)
@@ -198,8 +181,31 @@ class ExitUserSession(QWidget):
 	#	sleep(1)
 	#	self.show()
 
+	def bring_forward(self):
+		self.app_search.clear()
+		self.show()
+		self.app_search.setFocus()
+
+	def set_is_daemon(self, is_d):
+		if not is_d:
+			self.setAttribute(QtCore.Qt.WA_QuitOnClose)
+
+		self.stay_alive = is_d
+
+	def sigusr_handler(self, signum, stack):
+		print("Received user signal")
+		self.bring_forward()
+
 	def do_cancel(self):
-		self.close()
+		if self.stay_alive:
+			self.hide()
+		else:
+			self.close()
+
+def sigint_handler(signum,stack):
+	"""handler for the SIGINT signal."""
+	sys.stderr.write('\r')
+	QApplication.quit()
 
 if __name__ == '__main__':
 	app_names = []
@@ -211,10 +217,61 @@ if __name__ == '__main__':
 	app = QApplication(sys.argv)
 
 	window = ExitUserSession(sorted(app_names))
+
+	#Run in windowed mode
 	if '-w' not in sys.argv:
 		window.setWindowFlags(QtCore.Qt.Popup)
-	window.setAttribute(QtCore.Qt.WA_QuitOnClose)
-	window.show()
-	window.app_search.setFocus()
 
-	sys.exit(app.exec_())
+	#Run in forground (dont deamonize)
+	pidf = os.environ.get('XDG_RUNTIME_DIR')
+	if not pidf:
+	    pidf = "/tmp"
+	pidf += "/qute-launcher.pid"
+
+	do_quit = False
+	do_cleanup = False
+
+	if '-d' in sys.argv:
+		# Make sure there isn't a daemon running already
+		if not os.path.isfile(pidf):
+			f = open(pidf, 'w')
+			f.write(str(os.getpid()))
+			f.close()
+
+			do_cleanup = True
+			window.set_is_daemon(True)
+		else:
+			print("qute_launcher daemon already running!")
+			do_quit = True
+	elif "-c" in sys.argv:
+		if os.path.isfile(pidf):
+			f = open(pidf, 'r')
+			pid = int(f.readline())
+			f.close()
+
+			os.kill(pid, signal.SIGUSR1)
+
+			do_quit = True
+		else:
+			print("qute_launcher daemon not running!")
+			do_quit = True
+	else:
+		window.set_is_daemon(False)
+		window.bring_forward()
+
+	# Either continue processing or quit with bad exit code
+	ec = 1
+	if not do_quit:
+		signal.signal(signal.SIGINT, sigint_handler)
+		signal.signal(signal.SIGUSR1, window.sigusr_handler)
+
+		timer = QtCore.QTimer()
+		timer.timeout.connect(lambda: None)
+		timer.start(100)
+
+		ec = app.exec_()
+
+		if do_cleanup:
+			os.remove(pidf)
+
+	sys.exit(ec)
