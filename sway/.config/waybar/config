@@ -125,7 +125,7 @@
     "custom/launcher": {
         "format": "",
         "tooltip-format": "Application Launcher",
-        "on-click": "swaymsg exec 'dmenu_path | ~/Scripts/qute_launcher.py'"
+        "on-click": "swaymsg exec '~/Scripts/list_desktop_applications.sh | ~/Scripts/qute_launcher.py'"
     },
     "custom/exit": {
         "format": "",

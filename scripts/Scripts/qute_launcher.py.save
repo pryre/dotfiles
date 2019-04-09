@@ -6,7 +6,7 @@ import math
 import configparser
 
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import (QWidget, QToolButton, QLineEdit,
+from PyQt5.QtWidgets import (QWidget, QPushButton, QLineEdit,
 							 QInputDialog, QApplication, QDialog,
 							 QVBoxLayout, QGroupBox, QGridLayout,
 							 QScrollArea)
@@ -51,20 +51,16 @@ class AppWidget():
 			if 'Exec' in self.config['Desktop Entry']:
 				self.app_exec = self.config['Desktop Entry']['Exec'].split('%')[0]
 			if 'Icon' in self.config['Desktop Entry']:
-				icon = self.config['Desktop Entry']['Icon']
-
-				if self.use_symbolic and not ('/' in icon):
+				icon = "content-loading"
+				if self.use_symbolic:
 					icon += "-symbolic"
-
-				self.app_icon = QIcon.fromTheme(icon)
+				self.app_icon = QIcon.fromTheme(self.config['Desktop Entry']['Icon'])
 
 		if self.app_name and self.app_exec:
 			if not self.app_icon:
 				icon = "content-loading"
-
 				if self.use_symbolic:
 					icon += "-symbolic"
-
 				self.app_icon = QIcon.fromTheme(icon)
 
 			self.valid = True
@@ -87,17 +83,14 @@ class AppWidget():
 		return self.app_icon
 
 	def runExec(self):
-		os.system("swaymsg exec \'" + self.appExec() + "\'")
+		os.system("swaymsg exec " + self.appExec())
 
-#class ExitUserSession(QDialog, QWidget):
-class ExitUserSession(QWidget):
+class ExitUserSession(QDialog, QWidget):
+	icon_size = 90
+	icon_spacing = 10
+
 	def __init__(self, app_names):
 		super().__init__()
-
-		self.button_size = 90
-		self.button_spacing = 10
-		self.use_symbolic = True
-		self.use_names = True
 
 		self.app_names = app_names
 		self.app_list = self.gen_app_widgets(app_names)
@@ -110,7 +103,7 @@ class ExitUserSession(QWidget):
 		apps = []
 
 		for n in app_names:
-			a = AppWidget(n,self.use_symbolic)
+			a = AppWidget(n)
 			apps.append(a)
 
 		return apps
@@ -129,7 +122,7 @@ class ExitUserSession(QWidget):
 		self.app_search.setFixedWidth(w)
 		self.app_search.move(px/2 - w/2, py/6 - self.app_search.sizeHint().height()/2)
 		self.app_search.textChanged.connect(self.update_filter)
-		self.app_search.returnPressed.connect(lambda: self.do_run(0))
+		self.app_search.returnPressed.connect(lambda arg, text=0: self.do_run(text))
 
 		self.scrollarea = QScrollArea(self)
 		self.scrollarea.setFixedSize(w,h)
@@ -143,7 +136,7 @@ class ExitUserSession(QWidget):
 
 		if ft:
 			#shortlist = [x for x in self.app_list if all(a in x.app_name for a in ft)]
-			self.shortlist = [x for x in self.app_list if (ft in x.appName()) or (ft in x.appExec())]
+			self.shortlist = [x for x in self.app_list if ft in x.app_name]
 		else:
 			self.shortlist=self.app_list
 
@@ -151,27 +144,19 @@ class ExitUserSession(QWidget):
 
 	def update_list_layout(self, app_list):
 		app_grid = QGridLayout()
-		app_grid.setSpacing(self.button_spacing)
+		app_grid.setSpacing(self.icon_spacing)
 		usable_space = self.scrollarea.geometry().width() \
 					 - self.scrollarea.verticalScrollBar().sizeHint().width() \
-					 - self.button_spacing
+					 - self.icon_spacing
 
-		cols = int(usable_space / (self.button_spacing + self.button_size))
-
-		icon_size = int(self.button_size * 2 / 3)
+		cols = int(usable_space / (self.icon_spacing + self.icon_size))
 
 		for ind, app in enumerate(app_list):
 			row = int(ind / cols)
-			w = QToolButton()
-			w.clicked.connect(lambda text=ind: self.do_run(text))
-			w.setFixedSize(self.button_size, self.button_size)
-			if self.use_names:
-				w.setText(app.appName())
-			w.setToolTip(app.appName())
+			w = QPushButton(app.appName())
+			w.clicked.connect(lambda arg, text=ind: self.do_run(text))
+			w.setFixedSize(self.icon_size, self.icon_size)
 			w.setIcon(app.appIcon())
-			w.setIconSize(QtCore.QSize(icon_size, icon_size))
-			w.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-			w.setStyleSheet('QToolButton{border: 0px solid;}') #Remove boarder
 			app_grid.addWidget(w, row, ind % cols)
 
 		app_list_widget = QWidget()
@@ -186,7 +171,7 @@ class ExitUserSession(QWidget):
 
 
 	def do_run(self,ind):
-		if len(self.shortlist) and (ind < len(self.shortlist)):
+		if len(self.shortlist):
 			self.shortlist[ind].runExec()
 			self.do_cancel()
 
@@ -211,10 +196,8 @@ if __name__ == '__main__':
 	app = QApplication(sys.argv)
 
 	window = ExitUserSession(sorted(app_names))
-	if '-w' not in sys.argv:
-		window.setWindowFlags(QtCore.Qt.Popup)
+	window.setWindowFlags(QtCore.Qt.Popup)
 	window.setAttribute(QtCore.Qt.WA_QuitOnClose)
 	window.show()
-	window.app_search.setFocus()
 
 	sys.exit(app.exec_())
