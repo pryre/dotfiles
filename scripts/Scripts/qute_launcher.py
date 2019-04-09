@@ -130,6 +130,8 @@ class ExitUserSession(QWidget):
 		else:
 			self.shortlist=self.app_list
 
+		self.shortlist.sort(key=lambda x: x.app_name)
+
 		self.update_list_layout(self.shortlist)
 
 	def update_list_layout(self, app_list):
@@ -146,7 +148,7 @@ class ExitUserSession(QWidget):
 		for ind, app in enumerate(app_list):
 			row = int(ind / cols)
 			w = QToolButton()
-			w.clicked.connect(lambda text=ind: self.do_run(text))
+			w.clicked.connect(lambda arg, text=ind: self.do_run(text))
 			w.setFixedSize(self.button_size, self.button_size)
 			if self.use_names:
 				w.setText(app.appName())
@@ -207,6 +209,16 @@ def sigint_handler(signum,stack):
 	sys.stderr.write('\r')
 	QApplication.quit()
 
+def send_parent_sig(pidf,signum):
+    if os.path.isfile(pidf):
+        f = open(pidf, 'r')
+        pid = int(f.readline())
+        f.close()
+
+        os.kill(pid, signum)
+    else:
+        print("qute_launcher daemon not running!")
+
 if __name__ == '__main__':
 	app_names = []
 
@@ -244,17 +256,11 @@ if __name__ == '__main__':
 			print("qute_launcher daemon already running!")
 			do_quit = True
 	elif "-c" in sys.argv:
-		if os.path.isfile(pidf):
-			f = open(pidf, 'r')
-			pid = int(f.readline())
-			f.close()
-
-			os.kill(pid, signal.SIGUSR1)
-
-			do_quit = True
-		else:
-			print("qute_launcher daemon not running!")
-			do_quit = True
+		send_parent_sig(pidf, signal.SIGUSR1)
+		do_quit = True
+	elif "-k" in sys.argv:
+		send_parent_sig(pidf, signal.SIGINT)
+		do_quit = True
 	else:
 		window.set_is_daemon(False)
 		window.bring_forward()
