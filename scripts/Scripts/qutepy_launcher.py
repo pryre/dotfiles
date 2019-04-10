@@ -13,6 +13,16 @@ from PyQt5.QtWidgets import (QWidget, QToolButton, QLineEdit,
 							 QVBoxLayout, QGroupBox, QGridLayout,
 							 QScrollArea)
 
+class AppArgs():
+	hold_window = False
+	use_fullscreen = False
+	use_popup = False
+	use_symbolic = False
+	use_transparency = False
+	use_names = False
+	button_size = 90
+	button_spacing = 10
+
 class AppWidget():
 	def __init__(self, app_path, use_symbolic):
 		self.is_valid = False
@@ -28,6 +38,8 @@ class AppWidget():
 	def load_config(self, app_path):
 		self.config.read(self.app_path)
 
+		icon = ""
+
 		if 'Desktop Entry' in self.config:
 			if 'Name' in self.config['Desktop Entry']:
 				self.app_name = self.config['Desktop Entry']['Name']
@@ -36,19 +48,12 @@ class AppWidget():
 			if 'Icon' in self.config['Desktop Entry']:
 				icon = self.config['Desktop Entry']['Icon']
 
-				if self.use_symbolic and not ('/' in icon):
+				if icon and self.use_symbolic and not ( ('/' in icon) or ('.' in icon)):
 					icon += "-symbolic"
-
-				self.app_icon = QIcon.fromTheme(icon)
 
 		if self.app_name and self.app_exec:
-			if not self.app_icon:
-				icon = "content-loading"
-
-				if self.use_symbolic:
-					icon += "-symbolic"
-
-				self.app_icon = QIcon.fromTheme(icon)
+			fallback_icon = "content-loading-symbolic"
+			self.app_icon = QIcon.fromTheme(icon, QIcon.fromTheme(fallback_icon))
 
 			self.valid = True
 		else:
@@ -73,16 +78,14 @@ class AppWidget():
 		os.system("swaymsg exec \'" + self.appExec() + "\'")
 
 class ExitUserSession(QWidget):
-	def __init__(self, app_names):
+	def __init__(self, app_names, app_args):
 		super().__init__()
 
-		self.button_size = 90
-		self.button_spacing = 10
-		self.use_symbolic = True
-		self.use_names = True
+		self.app_args = app_args
 		self.stay_alive = False
 
 		self.app_names = app_names
+		QIcon.setFallbackSearchPaths(["/usr/share/pixmaps"])
 		self.app_list = self.gen_app_widgets(app_names)
 
 		self.init_ui()
@@ -93,32 +96,82 @@ class ExitUserSession(QWidget):
 		apps = []
 
 		for n in app_names:
-			a = AppWidget(n,self.use_symbolic)
+			a = AppWidget(n,self.app_args.use_symbolic)
 			apps.append(a)
 
 		return apps
 
 	def init_ui(self):
 		self.setWindowTitle( 'Qute Launhcer' )
-		self.setGeometry( app.desktop().availableGeometry() )
 
-		frame_size = self.geometry()
-		w = frame_size.width()*2/3
-		h = frame_size.height()*2/3
-		px = frame_size.width()
-		py = frame_size.height()
+		frame_scaling = 1.0
+		frame_offset_x = 0
+		frame_offset_y = 0
+		frame_size_x = 800
+		frame_size_y = 600
+		frame_margin = 2
+
+		if self.app_args.use_fullscreen:
+			print("Fullscreen mode")
+			self.setGeometry( QApplication.desktop().availableGeometry() )
+			frame_offset_x = (self.geometry().width() / 2) - (frame_size_x / 2)
+			frame_offset_y = (self.geometry().height() / 2) - (frame_size_y / 2)
+		else:
+			self.setGeometry( QtCore.QRect(0,0,frame_size_x,frame_size_y) )
+			qtRectangle = self.frameGeometry()
+			centerPoint = QApplication.desktop().availableGeometry().center()
+			qtRectangle.moveCenter(centerPoint)
+			self.move(qtRectangle.topLeft())
+
+		if self.app_args.use_popup:
+			print("Popup mode")
+			self.setWindowFlags(QtCore.Qt.Dialog | QtCore.Qt.FramelessWindowHint)
+
+		if self.app_args.use_transparency:
+			#self.setOpacity(0)
+			self.setAttribute(QtCore.Qt.WA_NoSystemBackground)
+			#self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+			self.setAttribute(QtCore.Qt.WA_TranslucentBackground);
+
+			#self.setStyleSheet("background-color: transparent;")
+			#self.setStyleSheet("backgorund: transparent")
+
+		# Install an event filter to hide on loss of focus
+		if not self.app_args.hold_window:
+			self.installEventFilter(self)
+
+		#frame_size = self.geometry()
+		#w = frame_size.width()*frame_scaling
+		#h = frame_size.height()*frame_scaling
+		#px = frame_size.width()
+		#py = frame_size.height()
 
 		self.app_search = QLineEdit(self)
-		self.app_search.setFixedWidth(w)
-		self.app_search.move(px/2 - w/2, py/6 - self.app_search.sizeHint().height()/2)
+		self.app_search.setFixedWidth(frame_size_x)
+		self.app_search.move(frame_offset_x + frame_margin, frame_offset_y + frame_margin)
 		self.app_search.textChanged.connect(self.update_filter)
 		self.app_search.returnPressed.connect(lambda: self.do_run(0))
 
+		#Give some extra spacing for 2 search bars and 2 lots of top and bottom margins
+		scroll_search_spacing = 2*self.app_search.sizeHint().height() + 4*frame_margin
+		scroll_w = frame_size_x
+		scroll_h = frame_size_y - scroll_search_spacing
+
 		self.scrollarea = QScrollArea(self)
-		self.scrollarea.setFixedSize(w,h)
-		self.scrollarea.move(px/2 - w/2, py/2 - h/3)
+		self.scrollarea.setFixedSize(scroll_w,scroll_h)
+		self.scrollarea.move(frame_offset_x + frame_margin, frame_offset_y + frame_margin + scroll_search_spacing)
 		self.scrollarea.setWidgetResizable(False)
 		self.scrollarea.setAlignment(QtCore.Qt.AlignHCenter)
+
+	def eventFilter(self, obj, event):
+		if event.type() == QtCore.QEvent.WindowDeactivate:
+			self.do_cancel()
+
+			#Event was handled
+			return True
+
+		#Event was not handled here
+		return False
 
 	def update_filter(self):
 		self.shortlist = []
@@ -130,27 +183,27 @@ class ExitUserSession(QWidget):
 		else:
 			self.shortlist=self.app_list
 
-		self.shortlist.sort(key=lambda x: x.app_name)
+		self.shortlist.sort(key=lambda x: x.app_name.lower())
 
 		self.update_list_layout(self.shortlist)
 
 	def update_list_layout(self, app_list):
 		app_grid = QGridLayout()
-		app_grid.setSpacing(self.button_spacing)
+		app_grid.setSpacing(self.app_args.button_spacing)
 		usable_space = self.scrollarea.geometry().width() \
 					 - self.scrollarea.verticalScrollBar().sizeHint().width() \
-					 - self.button_spacing
+					 - self.app_args.button_spacing
 
-		cols = int(usable_space / (self.button_spacing + self.button_size))
+		cols = int(usable_space / (self.app_args.button_spacing + self.app_args.button_size))
 
-		icon_size = int(self.button_size * 2 / 3)
+		icon_size = int(self.app_args.button_size * 2 / 3)
 
 		for ind, app in enumerate(app_list):
 			row = int(ind / cols)
 			w = QToolButton()
 			w.clicked.connect(lambda arg, text=ind: self.do_run(text))
-			w.setFixedSize(self.button_size, self.button_size)
-			if self.use_names:
+			w.setFixedSize(self.app_args.button_size, self.app_args.button_size)
+			if self.app_args.use_names:
 				w.setText(app.appName())
 			w.setToolTip(app.appName())
 			w.setIcon(app.appIcon())
@@ -168,7 +221,6 @@ class ExitUserSession(QWidget):
 			self.do_cancel()
 		#elif event.key() == QtCore.Qt.Key_Enter:
 		#	self.do_run()
-
 
 	def do_run(self,ind):
 		if len(self.shortlist) and (ind < len(self.shortlist)):
@@ -220,20 +272,6 @@ def send_parent_sig(pidf,signum):
         print("qute_launcher daemon not running!")
 
 if __name__ == '__main__':
-	app_names = []
-
-	if not sys.stdin.isatty():
-		for line in sys.stdin:
-			app_names.append(line.strip('\n'))
-
-	app = QApplication(sys.argv)
-
-	window = ExitUserSession(sorted(app_names))
-
-	#Run in windowed mode
-	if '-w' not in sys.argv:
-		window.setWindowFlags(QtCore.Qt.Popup)
-
 	#Run in forground (dont deamonize)
 	pidf = os.environ.get('XDG_RUNTIME_DIR')
 	if not pidf:
@@ -243,30 +281,64 @@ if __name__ == '__main__':
 	do_quit = False
 	do_cleanup = False
 
-	if '-d' in sys.argv:
-		# Make sure there isn't a daemon running already
-		if not os.path.isfile(pidf):
-			f = open(pidf, 'w')
-			f.write(str(os.getpid()))
-			f.close()
-
-			do_cleanup = True
-			window.set_is_daemon(True)
-		else:
-			print("qute_launcher daemon already running!")
-			do_quit = True
+	#Handle quick-exiting options
+	if "-k" in sys.argv:
+		send_parent_sig(pidf, signal.SIGINT)
+		do_quit = True
 	elif "-c" in sys.argv:
 		send_parent_sig(pidf, signal.SIGUSR1)
 		do_quit = True
-	elif "-k" in sys.argv:
-		send_parent_sig(pidf, signal.SIGINT)
-		do_quit = True
-	else:
-		window.set_is_daemon(False)
-		window.bring_forward()
+
+	if not do_quit:
+		app_names = []
+
+		if not sys.stdin.isatty():
+			for line in sys.stdin:
+				app_names.append(line.strip('\n'))
+
+		app = QApplication(sys.argv)
+
+		#Figure out windowing
+		app_args = AppArgs()
+
+		if '-p' in sys.argv:
+			app_args.use_popup = True
+
+			if '-f' in sys.argv:
+				app_args.use_fullscreen = True
+
+		if '-s' in sys.argv:
+			app_args.use_symbolic = True
+
+		if '-t' in sys.argv:
+			app_args.use_transparency = True
+
+		if '-h' in sys.argv:
+			app_args.hold_window = True
+
+		if '-n' in sys.argv:
+			app_args.use_names = True
+
+		window = ExitUserSession(sorted(app_names), app_args)
+
+		if '-d' in sys.argv:
+			# Make sure there isn't a daemon running already
+			if not os.path.isfile(pidf):
+				f = open(pidf, 'w')
+				f.write(str(os.getpid()))
+				f.close()
+
+				do_cleanup = True
+				window.set_is_daemon(True)
+			else:
+				print("qute_launcher daemon already running!")
+				do_quit = True
+		else:
+			window.set_is_daemon(False)
+			window.bring_forward()
 
 	# Either continue processing or quit with bad exit code
-	ec = 1
+	ec = 0
 	if not do_quit:
 		signal.signal(signal.SIGINT, sigint_handler)
 		signal.signal(signal.SIGUSR1, window.sigusr_handler)

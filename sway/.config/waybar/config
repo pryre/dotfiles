@@ -125,7 +125,7 @@
     "custom/launcher": {
         "format": "",
         "tooltip-format": "Application Launcher",
-        "on-click": "swaymsg exec '$HOME/Scripts/qute_launcher.py -c'"
+        "on-click": "swaymsg exec '$HOME/Scripts/qutepy_launcher.py -c'"
     },
     "custom/exit": {
         "format": "",
