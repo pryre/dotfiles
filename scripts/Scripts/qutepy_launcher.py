@@ -121,7 +121,12 @@ class ExitUserSession(QWidget):
 		#self.frame_offset_x = 0
 		#self.frame_offset_y = 0
 
-		if (self.app_args.frame_size_x == 0) or (self.app_args.frame_size_y == 0):
+		# If a size has not bee defined, allow it to stretch (later)
+		# Otherwise we define a fallback size
+		size_lock = False
+		if (self.app_args.frame_size_x != 0) and (self.app_args.frame_size_y != 0):
+			size_lock = True
+		else:
 			self.app_args.frame_size_x = 800
 			self.app_args.frame_size_y = 600
 
@@ -152,8 +157,8 @@ class ExitUserSession(QWidget):
 		window_layout.addWidget(self.frame_widget)
 		self.setLayout(window_layout)
 
-		# Set frame widget to stay at same size if fullscreen is given
-		if self.app_args.use_fullscreen:
+		# Set frame widget to stay at same size specified
+		if size_lock:
 			self.frame_widget.setFixedSize(self.app_args.frame_size_x, self.app_args.frame_size_y)
 
 		self.app_search = QLineEdit(self)
