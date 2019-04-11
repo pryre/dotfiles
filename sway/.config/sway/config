@@ -62,7 +62,7 @@ include $HOME/.config/sway/config.`hostname`
 
     # start your launcher
     bindsym $mod+Return exec $menu
-	exec $HOME/Scripts/list_desktop_applications.sh | $HOME/Scripts/qutepy_launcher.py -d -f -p
+	exec $HOME/Scripts/list_desktop_applications.sh | $HOME/Scripts/qutepy_launcher.py -d -f -n
     bindsym $mod+r exec $guimenu
 
     # screen locker

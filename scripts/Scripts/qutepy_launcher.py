@@ -10,8 +10,8 @@ from PyQt5 import QtCore
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QWidget, QToolButton, QLineEdit,
 							 QInputDialog, QApplication, QDialog,
-							 QVBoxLayout, QGroupBox, QGridLayout,
-							 QScrollArea)
+							 QVBoxLayout, QGridLayout, QSizePolicy,
+							 QScrollArea, QBoxLayout)
 
 class AppArgs():
 	hold_window = False
@@ -22,6 +22,8 @@ class AppArgs():
 	use_names = False
 	button_size = 90
 	button_spacing = 10
+	frame_size_x = 0
+	frame_size_y = 0
 
 class AppWidget():
 	def __init__(self, app_path, use_symbolic):
@@ -77,6 +79,16 @@ class AppWidget():
 	def runExec(self):
 		os.system("swaymsg exec \'" + self.appExec() + "\'")
 
+class FrameWidget(QWidget):
+	resized = QtCore.pyqtSignal()
+
+	def __init__(self):
+		super().__init__()
+
+	def resizeEvent(self, event):
+		self.resized.emit()
+		return QWidget.resizeEvent(self,event)
+
 class ExitUserSession(QWidget):
 	def __init__(self, app_names, app_args):
 		super().__init__()
@@ -87,10 +99,11 @@ class ExitUserSession(QWidget):
 		self.app_names = app_names
 		QIcon.setFallbackSearchPaths(["/usr/share/pixmaps"])
 		self.app_list = self.gen_app_widgets(app_names)
+		self.shortlist = self.app_list
 
 		self.init_ui()
 
-		self.update_filter()
+		#self.update_filter()
 
 	def gen_app_widgets(self, app_names):
 		apps = []
@@ -102,79 +115,75 @@ class ExitUserSession(QWidget):
 		return apps
 
 	def init_ui(self):
-		self.setWindowTitle( 'Qute Launhcer' )
+		self.setWindowTitle( 'Qute Launcher' )
 
-		frame_scaling = 1.0
-		frame_offset_x = 0
-		frame_offset_y = 0
-		frame_size_x = 800
-		frame_size_y = 600
-		frame_margin = 2
+		self.frame_margin = 2
+		#self.frame_offset_x = 0
+		#self.frame_offset_y = 0
 
-		if self.app_args.use_fullscreen:
-			print("Fullscreen mode")
-			self.setGeometry( QApplication.desktop().availableGeometry() )
-			frame_offset_x = (self.geometry().width() / 2) - (frame_size_x / 2)
-			frame_offset_y = (self.geometry().height() / 2) - (frame_size_y / 2)
-		else:
-			self.setGeometry( QtCore.QRect(0,0,frame_size_x,frame_size_y) )
-			qtRectangle = self.frameGeometry()
-			centerPoint = QApplication.desktop().availableGeometry().center()
-			qtRectangle.moveCenter(centerPoint)
-			self.move(qtRectangle.topLeft())
+		if (self.app_args.frame_size_x == 0) or (self.app_args.frame_size_y == 0):
+			self.app_args.frame_size_x = 800
+			self.app_args.frame_size_y = 600
 
-		if self.app_args.use_popup:
-			print("Popup mode")
-			self.setWindowFlags(QtCore.Qt.Dialog | QtCore.Qt.FramelessWindowHint)
+		if not self.app_args.use_fullscreen:
+			self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+
+			if self.app_args.use_popup:
+				print("Popup mode")
+				self.setWindowFlags(self.windowFlags() | QtCore.Qt.Dialog)
+
+				self.setGeometry( QtCore.QRect(0,0,self.frame_size_x,self.frame_size_y) )
+				qtRectangle = self.frameGeometry()
+				centerPoint = QApplication.desktop().availableGeometry().center()
+				qtRectangle.moveCenter(centerPoint)
+				self.move(qtRectangle.topLeft())
 
 		if self.app_args.use_transparency:
-			#self.setOpacity(0)
 			self.setAttribute(QtCore.Qt.WA_NoSystemBackground)
-			#self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
 			self.setAttribute(QtCore.Qt.WA_TranslucentBackground);
-
-			#self.setStyleSheet("background-color: transparent;")
-			#self.setStyleSheet("backgorund: transparent")
 
 		# Install an event filter to hide on loss of focus
 		if not self.app_args.hold_window:
 			self.installEventFilter(self)
 
-		#frame_size = self.geometry()
-		#w = frame_size.width()*frame_scaling
-		#h = frame_size.height()*frame_scaling
-		#px = frame_size.width()
-		#py = frame_size.height()
+		self.frame_widget = FrameWidget()
+		window_layout = QVBoxLayout()
+		window_layout.setAlignment(QtCore.Qt.AlignHCenter)
+		window_layout.addWidget(self.frame_widget)
+		self.setLayout(window_layout)
+
+		# Set frame widget to stay at same size if fullscreen is given
+		if self.app_args.use_fullscreen:
+			self.frame_widget.setFixedSize(self.app_args.frame_size_x, self.app_args.frame_size_y)
 
 		self.app_search = QLineEdit(self)
-		self.app_search.setFixedWidth(frame_size_x)
-		self.app_search.move(frame_offset_x + frame_margin, frame_offset_y + frame_margin)
 		self.app_search.textChanged.connect(self.update_filter)
 		self.app_search.returnPressed.connect(lambda: self.do_run(0))
 
-		#Give some extra spacing for 2 search bars and 2 lots of top and bottom margins
-		scroll_search_spacing = 2*self.app_search.sizeHint().height() + 4*frame_margin
-		scroll_w = frame_size_x
-		scroll_h = frame_size_y - scroll_search_spacing
-
 		self.scrollarea = QScrollArea(self)
-		self.scrollarea.setFixedSize(scroll_w,scroll_h)
-		self.scrollarea.move(frame_offset_x + frame_margin, frame_offset_y + frame_margin + scroll_search_spacing)
-		self.scrollarea.setWidgetResizable(False)
 		self.scrollarea.setAlignment(QtCore.Qt.AlignHCenter)
+		self.scrollarea.setWidgetResizable(False)
+
+		frame_layout = QVBoxLayout()
+		frame_layout.addWidget(self.app_search)
+		frame_layout.addWidget(self.scrollarea)
+		self.frame_widget.setLayout(frame_layout)
+		self.frame_widget.resized.connect(lambda text=self.shortlist: self.update_list_layout(text))
 
 	def eventFilter(self, obj, event):
+		# See if we lose focus
 		if event.type() == QtCore.QEvent.WindowDeactivate:
 			self.do_cancel()
-
-			#Event was handled
 			return True
+		#See if we have been resized
+		#elif event.type() == QtCore.QEvent.GraphicsSceneResize:
+		#	self.do_rearrange()
+		#	return True
 
 		#Event was not handled here
 		return False
 
 	def update_filter(self):
-		self.shortlist = []
 		ft = self.app_search.text()
 
 		if ft:
@@ -193,8 +202,9 @@ class ExitUserSession(QWidget):
 		usable_space = self.scrollarea.geometry().width() \
 					 - self.scrollarea.verticalScrollBar().sizeHint().width() \
 					 - self.app_args.button_spacing
-
 		cols = int(usable_space / (self.app_args.button_spacing + self.app_args.button_size))
+		if cols < 1:
+			cols = 1
 
 		icon_size = int(self.app_args.button_size * 2 / 3)
 
@@ -227,18 +237,18 @@ class ExitUserSession(QWidget):
 			self.shortlist[ind].runExec()
 			self.do_cancel()
 
-	#def do_refresh(self):
-	#	pass
-
-	#def do_hide(self):
-	#	self.hide()
-	#	sleep(1)
-	#	self.show()
-
 	def bring_forward(self):
-		self.app_search.clear()
 		self.show()
+
+		# For some reason window does not redraw properly
+		# unless show() is called first
+		if self.app_args.use_fullscreen:
+			self.showFullScreen()
+
+		self.app_search.clear()
 		self.app_search.setFocus()
+
+		self.update_filter()
 
 	def set_is_daemon(self, is_d):
 		if not is_d:
@@ -301,11 +311,10 @@ if __name__ == '__main__':
 		#Figure out windowing
 		app_args = AppArgs()
 
-		if '-p' in sys.argv:
+		if '-f' in sys.argv:
+			app_args.use_fullscreen = True
+		elif '-p' in sys.argv:
 			app_args.use_popup = True
-
-			if '-f' in sys.argv:
-				app_args.use_fullscreen = True
 
 		if '-s' in sys.argv:
 			app_args.use_symbolic = True
