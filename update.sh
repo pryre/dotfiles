@@ -33,6 +33,7 @@ then
 		echo "$NEW_DIRS"
 		stow $NEW_DIRS
 
+		git submodules update
 		gtk-update-icon-cache ~/.icons/la-capitaine-icon-theme
 	else
 		echo "Dotfiles are up to date!"
