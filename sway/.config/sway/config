@@ -24,7 +24,7 @@ set $browser firefox
 set $filemanager pcmanfm-qt
 set $guimenu ~/Scripts/qutepy_launcher.py -c
 set $lock swaylock
-set $logout $HOME/Scripts/exit_user_session.py
+set $logout $HOME/Scripts/exit_user_session.py -platform xcb
 
 
 ### Host-Specific Configuration

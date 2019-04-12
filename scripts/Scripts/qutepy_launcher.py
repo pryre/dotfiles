@@ -137,7 +137,7 @@ class ExitUserSession(QWidget):
 				print("Popup mode")
 				self.setWindowFlags(self.windowFlags() | QtCore.Qt.Dialog)
 
-				self.setGeometry( QtCore.QRect(0,0,self.frame_size_x,self.frame_size_y) )
+				self.setGeometry( QtCore.QRect(0,0,self.app_args.frame_size_x,self.app_args.frame_size_y) )
 				qtRectangle = self.frameGeometry()
 				centerPoint = QApplication.desktop().availableGeometry().center()
 				qtRectangle.moveCenter(centerPoint)
@@ -271,37 +271,55 @@ class ExitUserSession(QWidget):
 		else:
 			self.close()
 
+def check_daemon(pidf):
+	if os.path.isfile(pidf):
+		print("qutepy_launcher daemon running")
+		return True
+	else:
+		print("qutepy_launcher daemon not running!")
+		return False
+
 def sigint_handler(signum,stack):
 	"""handler for the SIGINT signal."""
 	sys.stderr.write('\r')
 	QApplication.quit()
 
 def send_parent_sig(pidf,signum):
-    if os.path.isfile(pidf):
+    if check_daemon(pidf):
         f = open(pidf, 'r')
         pid = int(f.readline())
         f.close()
 
         os.kill(pid, signum)
-    else:
-        print("qute_launcher daemon not running!")
 
 if __name__ == '__main__':
 	#Run in forground (dont deamonize)
 	pidf = os.environ.get('XDG_RUNTIME_DIR')
 	if not pidf:
 	    pidf = "/tmp"
-	pidf += "/qute-launcher.pid"
+	pidf += "/qutepy-launcher.pid"
 
 	do_quit = False
 	do_cleanup = False
 
 	#Handle quick-exiting options
 	if "-k" in sys.argv:
-		send_parent_sig(pidf, signal.SIGINT)
+		# If there is an invalid PID this will throw
+		# best to continue on and clean up
+		try:
+			send_parent_sig(pidf, signal.SIGINT)
+		except ProcessLookupError:
+			print("Unable to contact daemon (invalid process)")
+			print("Performing cleanup")
+			do_cleanup = True
+
 		do_quit = True
 	elif "-c" in sys.argv:
-		send_parent_sig(pidf, signal.SIGUSR1)
+		try:
+			send_parent_sig(pidf, signal.SIGUSR1)
+		except ProcessLookupError:
+			print("Unable to contact daemon (invalid process)")
+
 		do_quit = True
 
 	if not do_quit:
@@ -363,7 +381,7 @@ if __name__ == '__main__':
 
 		ec = app.exec_()
 
-		if do_cleanup:
-			os.remove(pidf)
+	if do_cleanup:
+		os.remove(pidf)
 
 	sys.exit(ec)

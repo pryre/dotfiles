@@ -1,3 +1,21 @@
+###Backends
+#
+#This may cause crashes
+
+#GTK
+#GDK_BACKEND=wayland
+#CLUTTER_BACKEND=wayland
+
+#SDL
+#SDL_VIDEODRIVER=wayland
+
+#Java
+#_JAVA_AWT_WM_NONREPARENTING=1
+
+
+
+### Theming
+#
 export QT_QPA_PLATFORMTHEME="qt5ct"
 
 #GTK_THEME is more of a debug override, can't set cursors, etc.

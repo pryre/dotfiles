@@ -2,22 +2,30 @@
 
 import sys
 import subprocess
+import signal
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import (QWidget, QPushButton, QLineEdit,
-							 QInputDialog, QApplication, QDialog)
+							 QInputDialog, QApplication, QDialog,
+							 QVBoxLayout)
 
-class MyPopup(QDialog):
-	def __init__(self):
-		super().__init__()
-		self.init_ui()
 
-class ExitUserSession(QDialog, QWidget):
+class ExitUserSessionPopup(QWidget):
 	def __init__(self):
 		super().__init__()
 		self.init_ui()
 
 	def init_ui(self):
-		self.setWindowTitle('Exit Session')
-		self.setGeometry(300, 300, 120, 230)
+		self.setWindowTitle('Exit User Session')
+		self.setWindowFlags(self.windowFlags() |
+							QtCore.Qt.Dialog |
+							QtCore.Qt.WindowStaysOnTopHint |
+							QtCore.Qt.FramelessWindowHint)
+
+		self.setGeometry(0, 0, 160, 210)
+		qtRectangle = self.frameGeometry()
+		centerPoint = QApplication.desktop().availableGeometry().center()
+		qtRectangle.moveCenter(centerPoint)
+		self.move(qtRectangle.topLeft())
 
 		self.button_logout = QPushButton('Logout', self)
 		self.button_logout.move(20, 20)
@@ -39,6 +47,18 @@ class ExitUserSession(QDialog, QWidget):
 		self.button_cancel.move(20, 180)
 		self.button_cancel.clicked.connect(self.do_cancel)
 
+		layout = QVBoxLayout()
+		layout.addWidget(self.button_logout)
+		layout.addWidget(self.button_suspend)
+		layout.addWidget(self.button_reboot)
+		layout.addWidget(self.button_shutdown)
+		layout.addWidget(self.button_cancel)
+		self.setLayout(layout)
+
+	def keyPressEvent(self, event):
+		if event.key() == QtCore.Qt.Key_Escape:
+			self.do_cancel()
+
 	def do_logout(self):
 		subprocess.run(["swaymsg", "exit"])
 
@@ -54,10 +74,21 @@ class ExitUserSession(QDialog, QWidget):
 	def do_cancel(self):
 		self.close()
 
+def sigint_handler(signum,stack):
+	"""handler for the SIGINT signal."""
+	sys.stderr.write('\r')
+	QApplication.quit()
+
 if __name__ == '__main__':
 	app = QApplication(sys.argv)
 
-	window = ExitUserSession()
+	window = ExitUserSessionPopup()
 	window.show()
+
+	signal.signal(signal.SIGINT, sigint_handler)
+
+	timer = QtCore.QTimer()
+	timer.timeout.connect(lambda: None)
+	timer.start(100)
 
 	sys.exit(app.exec_())
