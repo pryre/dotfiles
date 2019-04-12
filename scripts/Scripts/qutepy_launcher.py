@@ -24,11 +24,13 @@ class AppArgs():
 	button_spacing = 10
 	frame_size_x = 0
 	frame_size_y = 0
+	list_layout = "grid"
 
 class AppWidget():
 	def __init__(self, app_path, use_symbolic):
 		self.is_valid = False
 		self.app_name = ""
+		self.app_comment = ""
 		self.app_exec = ""
 		self.app_icon = ""
 		self.app_path = app_path
@@ -45,6 +47,8 @@ class AppWidget():
 		if 'Desktop Entry' in self.config:
 			if 'Name' in self.config['Desktop Entry']:
 				self.app_name = self.config['Desktop Entry']['Name']
+			if 'Comment' in self.config['Desktop Entry']:
+				self.app_comment = self.config['Desktop Entry']['Comment']
 			if 'Exec' in self.config['Desktop Entry']:
 				self.app_exec = self.config['Desktop Entry']['Exec'].split('%')[0]
 			if 'Icon' in self.config['Desktop Entry']:
@@ -69,6 +73,9 @@ class AppWidget():
 
 	def appName(self):
 		return self.app_name
+
+	def appComment(self):
+		return self.app_comment
 
 	def appExec(self):
 		return self.app_exec
@@ -202,34 +209,60 @@ class ExitUserSession(QWidget):
 		self.update_list_layout(self.shortlist)
 
 	def update_list_layout(self, app_list):
-		app_grid = QGridLayout()
-		app_grid.setSpacing(self.app_args.button_spacing)
+		app_layout = None
+
 		usable_space = self.scrollarea.geometry().width() \
-					 - self.scrollarea.verticalScrollBar().sizeHint().width() \
-					 - self.app_args.button_spacing
-		cols = int(usable_space / (self.app_args.button_spacing + self.app_args.button_size))
-		if cols < 1:
-			cols = 1
+					 - self.scrollarea.verticalScrollBar().sizeHint().width()
 
-		icon_size = int(self.app_args.button_size * 2 / 3)
+		if self.app_args.list_layout == "list":
+			app_layout = QVBoxLayout()
+			app_layout.setSpacing(self.app_args.button_spacing)
+			app_layout.setAlignment(QtCore.Qt.AlignLeft)
+			usable_space -= 2*self.app_args.button_spacing #leave a little bit of extra space for either-side of the buttons
 
-		for ind, app in enumerate(app_list):
-			row = int(ind / cols)
-			w = QToolButton()
-			w.clicked.connect(lambda arg, text=ind: self.do_run(text))
-			w.setFixedSize(self.app_args.button_size, self.app_args.button_size)
-			if self.app_args.use_names:
-				w.setText(app.appName())
-			w.setToolTip(app.appName())
-			w.setIcon(app.appIcon())
-			w.setIconSize(QtCore.QSize(icon_size, icon_size))
-			w.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-			w.setStyleSheet('QToolButton{border: 0px solid;}') #Remove boarder
-			app_grid.addWidget(w, row, ind % cols)
+			for ind, app in enumerate(app_list):
+				w = QToolButton()
+				w.clicked.connect(lambda arg, text=ind: self.do_run(text))
+				w.setFixedSize(usable_space, self.app_args.button_size)
+				w.setText("\t" + app.appName() + "\n\t" + app.appComment())
+				w.setIcon(app.appIcon())
+				w.setIconSize(QtCore.QSize(self.app_args.button_size, self.app_args.button_size))
+				w.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
+				w.setStyleSheet('QToolButton{border: 0px solid;}') #Remove boarder
+				app_layout.addWidget(w)
+		else:
+			#Use grid mode by default
+			app_layout = QGridLayout()
+			app_layout.setSpacing(self.app_args.button_spacing)
+			usable_space -= self.app_args.button_spacing #leave a little bit of extra space for either-side of the buttons
+			cols = int(usable_space / (self.app_args.button_spacing + self.app_args.button_size))
+			if cols < 1:
+				cols = 1
 
-		app_list_widget = QWidget()
-		app_list_widget.setLayout(app_grid)
-		self.scrollarea.setWidget(app_list_widget)
+			# We want the icons to be shrunk down a touch
+			icon_size = int(self.app_args.button_size * 2 / 3)
+
+			for ind, app in enumerate(app_list):
+				row = int(ind / cols)
+				w = QToolButton()
+				w.clicked.connect(lambda arg, text=ind: self.do_run(text))
+				w.setFixedSize(self.app_args.button_size, self.app_args.button_size)
+				if self.app_args.use_names:
+					w.setText(app.appName())
+				w.setToolTip(app.appName())
+				w.setIcon(app.appIcon())
+				w.setIconSize(QtCore.QSize(icon_size, icon_size))
+				w.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+				w.setStyleSheet('QToolButton{border: 0px solid;}') #Remove boarder
+				app_layout.addWidget(w, row, ind % cols)
+
+		if app_layout is not None:
+			app_list_widget = QWidget()
+			app_list_widget.setLayout(app_layout)
+			self.scrollarea.setWidget(app_list_widget)
+		else:
+			print("FATAL: app_layout note set!")
+			QApplication.quit()
 
 	def keyPressEvent(self, event):
 		if event.key() == QtCore.Qt.Key_Escape:
@@ -307,7 +340,9 @@ if __name__ == '__main__':
 		# If there is an invalid PID this will throw
 		# best to continue on and clean up
 		try:
+			print("Attempting to kill daemon")
 			send_parent_sig(pidf, signal.SIGINT)
+			print("Daemon killed")
 		except ProcessLookupError:
 			print("Unable to contact daemon (invalid process)")
 			print("Performing cleanup")
@@ -350,6 +385,9 @@ if __name__ == '__main__':
 
 		if '-n' in sys.argv:
 			app_args.use_names = True
+
+		if '-l' in sys.argv:
+			app_args.list_layout = "list"
 
 		window = ExitUserSession(sorted(app_names), app_args)
 
