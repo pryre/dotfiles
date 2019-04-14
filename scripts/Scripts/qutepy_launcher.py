@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import sys
+import time
 import os
 import math
 import configparser
@@ -13,6 +14,10 @@ from PyQt5.QtWidgets import (QWidget, QToolButton, QLineEdit,
 							 QInputDialog, QApplication, QDialog,
 							 QVBoxLayout, QGridLayout, QSizePolicy,
 							 QScrollArea, QBoxLayout)
+
+def ifprint(do_print, message):
+	if do_print:
+		print(str(time.time()) + ":\t" + str(message))
 
 class AppWidget():
 	def __init__(self, app_path, use_symbolic):
@@ -74,7 +79,7 @@ class AppWidget():
 	def runExec(self):
 		os.system("swaymsg exec \'" + self.appExec() + "\'")
 
-class FrameWidget(QWidget):
+class WindowWidget(QWidget):
 	resized = QtCore.pyqtSignal()
 
 	def __init__(self):
@@ -84,12 +89,13 @@ class FrameWidget(QWidget):
 		self.resized.emit()
 		return QWidget.resizeEvent(self,event)
 
-class ExitUserSession(QWidget):
+class ExitUserSession(WindowWidget):
 	def __init__(self, app_names, app_args):
 		super().__init__()
 
 		self.app_args = app_args
 		self.stay_alive = False
+		self.rendering_done = False
 
 		self.app_names = app_names
 		QIcon.setFallbackSearchPaths(["/usr/share/pixmaps"])
@@ -97,8 +103,6 @@ class ExitUserSession(QWidget):
 		self.shortlist = self.app_list
 
 		self.init_ui()
-
-		#self.update_filter()
 
 	def gen_app_widgets(self, app_names):
 		apps = []
@@ -132,7 +136,7 @@ class ExitUserSession(QWidget):
 			self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
 
 			if self.app_args.use_popup:
-				print("Popup mode")
+				ifprint(self.app_args.verbose, "Popup mode")
 				self.setWindowFlags(self.windowFlags() | QtCore.Qt.Dialog)
 
 				self.setGeometry( QtCore.QRect(0,0,self.app_args.frame_size_x,self.app_args.frame_size_y) )
@@ -149,7 +153,7 @@ class ExitUserSession(QWidget):
 		if not self.app_args.hold_window:
 			self.installEventFilter(self)
 
-		self.frame_widget = FrameWidget()
+		self.frame_widget = QWidget()
 		window_layout = QVBoxLayout()
 		window_layout.setAlignment(QtCore.Qt.AlignHCenter)
 		window_layout.addWidget(self.frame_widget)
@@ -173,7 +177,8 @@ class ExitUserSession(QWidget):
 		frame_layout.addWidget(self.app_search)
 		frame_layout.addWidget(self.scrollarea)
 		self.frame_widget.setLayout(frame_layout)
-		self.frame_widget.resized.connect(lambda text=self.shortlist: self.update_list_layout(text))
+
+		self.resized.connect(lambda text=self.shortlist: self.update_list_layout(text, reason="Resized"))
 
 	def eventFilter(self, obj, event):
 		# See if we lose focus
@@ -201,63 +206,66 @@ class ExitUserSession(QWidget):
 
 		self.update_list_layout(self.shortlist)
 
-	def update_list_layout(self, app_list):
-		print("Updating layout")
+	def update_list_layout(self, app_list, reason="Direct Call"):
+		ifprint(self.app_args.verbose, 'update_list_layout(' + reason + ')')
 
-		app_layout = None
+		if self.rendering_done:
+			ifprint(self.app_args.verbose, "Updating layout")
 
-		usable_space = self.scrollarea.geometry().width() \
-					 - self.scrollarea.verticalScrollBar().sizeHint().width()
+			app_layout = None
 
-		if self.app_args.list_layout == "list":
-			app_layout = QVBoxLayout()
-			app_layout.setSpacing(self.app_args.button_spacing)
-			app_layout.setAlignment(QtCore.Qt.AlignLeft)
-			usable_space -= 2*self.app_args.button_spacing #leave a little bit of extra space for either-side of the buttons
+			usable_space = self.scrollarea.geometry().width() \
+						 - self.scrollarea.verticalScrollBar().sizeHint().width()
 
-			for ind, app in enumerate(app_list):
-				w = QToolButton()
-				w.clicked.connect(lambda arg, text=ind: self.do_run(text))
-				w.setFixedSize(usable_space, self.app_args.button_size)
-				w.setText("\t" + app.appName() + "\n\t" + app.appComment())
-				w.setIcon(app.appIcon())
-				w.setIconSize(QtCore.QSize(self.app_args.button_size, self.app_args.button_size))
-				w.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
-				w.setStyleSheet('QToolButton{border: 0px solid;}') #Remove boarder
-				app_layout.addWidget(w)
-		else:
-			#Use grid mode by default
-			app_layout = QGridLayout()
-			app_layout.setSpacing(self.app_args.button_spacing)
-			usable_space -= self.app_args.button_spacing #leave a little bit of extra space for either-side of the buttons
-			cols = int(usable_space / (self.app_args.button_spacing + self.app_args.button_size))
-			if cols < 1:
-				cols = 1
+			if self.app_args.list_layout == "list":
+				app_layout = QVBoxLayout()
+				app_layout.setSpacing(self.app_args.button_spacing)
+				app_layout.setAlignment(QtCore.Qt.AlignLeft)
+				usable_space -= 2*self.app_args.button_spacing #leave a little bit of extra space for either-side of the buttons
 
-			# We want the icons to be shrunk down a touch
-			icon_size = int(self.app_args.button_size * 2 / 3)
+				for ind, app in enumerate(app_list):
+					w = QToolButton()
+					w.clicked.connect(lambda arg, text=ind: self.do_run(text))
+					w.setFixedSize(usable_space, self.app_args.button_size)
+					w.setText("\t" + app.appName() + "\n\t" + app.appComment())
+					w.setIcon(app.appIcon())
+					w.setIconSize(QtCore.QSize(self.app_args.button_size, self.app_args.button_size))
+					w.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
+					w.setStyleSheet('QToolButton{border: 0px solid;}') #Remove boarder
+					app_layout.addWidget(w)
+			else:
+				#Use grid mode by default
+				app_layout = QGridLayout()
+				app_layout.setSpacing(self.app_args.button_spacing)
+				usable_space -= self.app_args.button_spacing #leave a little bit of extra space for either-side of the buttons
+				cols = int(usable_space / (self.app_args.button_spacing + self.app_args.button_size))
+				if cols < 1:
+					cols = 1
 
-			for ind, app in enumerate(app_list):
-				row = int(ind / cols)
-				w = QToolButton()
-				w.clicked.connect(lambda arg, text=ind: self.do_run(text))
-				w.setFixedSize(self.app_args.button_size, self.app_args.button_size)
-				if self.app_args.use_names:
-					w.setText(app.appName())
-				w.setToolTip(app.appName())
-				w.setIcon(app.appIcon())
-				w.setIconSize(QtCore.QSize(icon_size, icon_size))
-				w.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-				w.setStyleSheet('QToolButton{border: 1px solid; border-color: transparent;} QToolButton:focus{border: 1px solid; border-color: ' + self.app_args.focus_color + ';}') #Remove boarder
-				app_layout.addWidget(w, row, ind % cols)
+				# We want the icons to be shrunk down a touch
+				icon_size = int(self.app_args.button_size * 2 / 3)
 
-		if app_layout is not None:
-			app_list_widget = QWidget()
-			app_list_widget.setLayout(app_layout)
-			self.scrollarea.setWidget(app_list_widget)
-		else:
-			print("FATAL: app_layout note set!")
-			QApplication.quit()
+				for ind, app in enumerate(app_list):
+					row = int(ind / cols)
+					w = QToolButton()
+					w.clicked.connect(lambda arg, text=ind: self.do_run(text))
+					w.setFixedSize(self.app_args.button_size, self.app_args.button_size)
+					if self.app_args.use_names:
+						w.setText(app.appName())
+					w.setToolTip(app.appName())
+					w.setIcon(app.appIcon())
+					w.setIconSize(QtCore.QSize(icon_size, icon_size))
+					w.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+					w.setStyleSheet('QToolButton{border: 1px solid; border-color: transparent;} QToolButton:focus{border: 1px solid; border-color: ' + self.app_args.focus_color + ';}') #Remove boarder
+					app_layout.addWidget(w, row, ind % cols)
+
+			if app_layout is not None:
+				app_list_widget = QWidget()
+				app_list_widget.setLayout(app_layout)
+				self.scrollarea.setWidget(app_list_widget)
+			else:
+				print("FATAL: app_layout note set!")
+				QApplication.quit()
 
 	def keyPressEvent(self, event):
 		if event.key() == QtCore.Qt.Key_Escape:
@@ -271,6 +279,8 @@ class ExitUserSession(QWidget):
 			self.do_cancel()
 
 	def bring_forward(self):
+		ifprint(self.app_args.verbose, 'bring_forward() -> show()')
+
 		self.show()
 
 		# For some reason window does not redraw properly
@@ -278,18 +288,21 @@ class ExitUserSession(QWidget):
 		if self.app_args.use_fullscreen:
 			self.showFullScreen()
 
-		#print("bring_forward() -> app_search")
+		ifprint(self.app_args.verbose, "bring_forward() -> app_search")
 		self.app_search.clear()
 		self.app_search.setFocus()
 
-		#print("bring_forward() -> update_filter()")
+		ifprint(self.app_args.verbose, "bring_forward() -> update_filter()")
+		self.rendering_done = True
 		self.update_filter()
 
 	def sigusr_handler(self, signum, stack):
-		print("Received user signal")
+		ifprint(self.app_args.verbose, "Received user signal")
 		self.bring_forward()
 
 	def do_cancel(self):
+		self.rendering_done = False
+
 		if self.app_args.daemonize:
 			self.hide()
 		else:
@@ -329,6 +342,9 @@ def parse_args():
 						action='store_true', default=False)
 	parser.add_argument('-d', '--daemonize',	dest='daemonize',
 						help='Starts a backgrounded daemon',
+						action='store_true', default=False)
+	parser.add_argument('-v', '--verbose',	dest='verbose',
+						help='Output debug messages',
 						action='store_true', default=False)
 
 	parser.add_argument('-w', '--hold-window',	dest='hold_window',
