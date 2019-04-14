@@ -4,6 +4,7 @@ import sys
 import os
 import math
 import configparser
+import argparse
 import signal
 
 from PyQt5 import QtCore
@@ -12,19 +13,6 @@ from PyQt5.QtWidgets import (QWidget, QToolButton, QLineEdit,
 							 QInputDialog, QApplication, QDialog,
 							 QVBoxLayout, QGridLayout, QSizePolicy,
 							 QScrollArea, QBoxLayout)
-
-class AppArgs():
-	hold_window = False
-	use_fullscreen = False
-	use_popup = False
-	use_symbolic = False
-	use_transparency = False
-	use_names = False
-	button_size = 90
-	button_spacing = 10
-	frame_size_x = 0
-	frame_size_y = 0
-	list_layout = "grid"
 
 class AppWidget():
 	def __init__(self, app_path, use_symbolic):
@@ -124,6 +112,9 @@ class ExitUserSession(QWidget):
 	def init_ui(self):
 		self.setWindowTitle( 'Qute Launcher' )
 
+		if self.app_args.daemonize:
+			self.setAttribute(QtCore.Qt.WA_QuitOnClose)
+
 		self.frame_margin = 2
 		#self.frame_offset_x = 0
 		#self.frame_offset_y = 0
@@ -171,10 +162,12 @@ class ExitUserSession(QWidget):
 		self.app_search = QLineEdit(self)
 		self.app_search.textChanged.connect(self.update_filter)
 		self.app_search.returnPressed.connect(lambda: self.do_run(0))
+		self.app_search.setStyleSheet('QLineEdit:focus{border: 1px solid; border-color: ' + self.app_args.focus_color + ';}') #Remove boarder
 
 		self.scrollarea = QScrollArea(self)
 		self.scrollarea.setAlignment(QtCore.Qt.AlignHCenter)
 		self.scrollarea.setWidgetResizable(False)
+		self.scrollarea.setFocusPolicy(QtCore.Qt.NoFocus)
 
 		frame_layout = QVBoxLayout()
 		frame_layout.addWidget(self.app_search)
@@ -209,6 +202,8 @@ class ExitUserSession(QWidget):
 		self.update_list_layout(self.shortlist)
 
 	def update_list_layout(self, app_list):
+		print("Updating layout")
+
 		app_layout = None
 
 		usable_space = self.scrollarea.geometry().width() \
@@ -253,7 +248,7 @@ class ExitUserSession(QWidget):
 				w.setIcon(app.appIcon())
 				w.setIconSize(QtCore.QSize(icon_size, icon_size))
 				w.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-				w.setStyleSheet('QToolButton{border: 0px solid;}') #Remove boarder
+				w.setStyleSheet('QToolButton{border: 1px solid; border-color: transparent;} QToolButton:focus{border: 1px solid; border-color: ' + self.app_args.focus_color + ';}') #Remove boarder
 				app_layout.addWidget(w, row, ind % cols)
 
 		if app_layout is not None:
@@ -283,23 +278,19 @@ class ExitUserSession(QWidget):
 		if self.app_args.use_fullscreen:
 			self.showFullScreen()
 
+		#print("bring_forward() -> app_search")
 		self.app_search.clear()
 		self.app_search.setFocus()
 
+		#print("bring_forward() -> update_filter()")
 		self.update_filter()
-
-	def set_is_daemon(self, is_d):
-		if not is_d:
-			self.setAttribute(QtCore.Qt.WA_QuitOnClose)
-
-		self.stay_alive = is_d
 
 	def sigusr_handler(self, signum, stack):
 		print("Received user signal")
 		self.bring_forward()
 
 	def do_cancel(self):
-		if self.stay_alive:
+		if self.app_args.daemonize:
 			self.hide()
 		else:
 			self.close()
@@ -317,15 +308,76 @@ def sigint_handler(signum,stack):
 	sys.stderr.write('\r')
 	QApplication.quit()
 
-def send_parent_sig(pidf,signum):
-    if check_daemon(pidf):
-        f = open(pidf, 'r')
-        pid = int(f.readline())
-        f.close()
+def send_daemon_sig(pidf,signum):
+	if check_daemon(pidf):
+		f = open(pidf, 'r')
+		pid = int(f.readline())
+		f.close()
 
-        os.kill(pid, signum)
+		os.kill(pid, signum)
+
+		print("Signal sent to daemon")
+
+def parse_args():
+	parser = argparse.ArgumentParser()
+
+	parser.add_argument('-k', '--kill-daemon',	dest='kill',
+						help='Signals the running daemon to exit',
+						action='store_true', default=False)
+	parser.add_argument('-c', '--call-daemon',	dest='call',
+						help='Signals the running daemon to show the window',
+						action='store_true', default=False)
+	parser.add_argument('-d', '--daemonize',	dest='daemonize',
+						help='Starts a backgrounded daemon',
+						action='store_true', default=False)
+
+	parser.add_argument('-w', '--hold-window',	dest='hold_window',
+						help='Disables automatic window hiding',
+						action='store_true', default=False)
+	parser.add_argument('-f', '--fullscreen',	dest='use_fullscreen',
+						help='Dislpays the window in fullscreen mode',
+						action='store_true', default=False)
+	parser.add_argument('-p', '--popup',		dest='use_popup',
+						help='Displays the window as a popup',
+						action='store_true', default=False)
+	parser.add_argument('-s', '--symbolic-icons', dest='use_symbolic',
+						help='Prefer symbolic icons (if available)',
+						action='store_true', default=False)
+	parser.add_argument('-t', '--transparent',	dest='use_transparency',
+						help='Set the background layer to be transparent',
+						action='store_true', default=False)
+	parser.add_argument('-n', '--show-names',	dest='use_names',
+						help='Display names under icons in grid mode',
+						action='store_true', default=False)
+
+	parser.add_argument('--button-size',		dest="button_size",
+						help='Size of the button to use (px)',
+						action='store', type=int, default=90)
+	parser.add_argument('--button-spacing',		dest="button_spacing",
+						help='Size of padding between buttons (px)',
+						action='store', type=int, default=10)
+	parser.add_argument('--frame-size-x',		dest="frame_size_x",
+						help='Width of the drawn frame in fullscreen and popup mode (px)',
+						action='store', type=int, default=0)
+	parser.add_argument('--frame-size-y',		dest="frame_size_y",
+						help='Height of the drawn frame in fullscreen and popup mode (px)',
+						action='store', type=int, default=0)
+	parser.add_argument('--list-layout',		dest="list_layout",
+						help='Selector for the listing display type (options: grid, list)',
+						action='store', type=str, default='grid')
+	parser.add_argument('--focus-color',		dest="focus_color",
+						help='Color to use to signify item that is currently focused (valid CSS color code)',
+						action='store', type=str, default='white')
+
+	parsed_args, unparsed_args = parser.parse_known_args()
+
+	return parsed_args, unparsed_args
 
 if __name__ == '__main__':
+	# Prep CLI args
+	parsed_args, unparsed_args = parse_args()
+	qt_args = sys.argv[:1] + unparsed_args
+
 	#Run in forground (dont deamonize)
 	pidf = os.environ.get('XDG_RUNTIME_DIR')
 	if not pidf:
@@ -336,22 +388,21 @@ if __name__ == '__main__':
 	do_cleanup = False
 
 	#Handle quick-exiting options
-	if "-k" in sys.argv:
+	if parsed_args.kill:
 		# If there is an invalid PID this will throw
 		# best to continue on and clean up
 		try:
 			print("Attempting to kill daemon")
-			send_parent_sig(pidf, signal.SIGINT)
-			print("Daemon killed")
+			send_daemon_sig(pidf, signal.SIGINT)
 		except ProcessLookupError:
 			print("Unable to contact daemon (invalid process)")
 			print("Performing cleanup")
 			do_cleanup = True
 
 		do_quit = True
-	elif "-c" in sys.argv:
+	elif parsed_args.call:
 		try:
-			send_parent_sig(pidf, signal.SIGUSR1)
+			send_daemon_sig(pidf, signal.SIGUSR1)
 		except ProcessLookupError:
 			print("Unable to contact daemon (invalid process)")
 
@@ -364,34 +415,11 @@ if __name__ == '__main__':
 			for line in sys.stdin:
 				app_names.append(line.strip('\n'))
 
-		app = QApplication(sys.argv)
+		app = QApplication(qt_args)
 
-		#Figure out windowing
-		app_args = AppArgs()
+		window = ExitUserSession(sorted(app_names), parsed_args)
 
-		if '-f' in sys.argv:
-			app_args.use_fullscreen = True
-		elif '-p' in sys.argv:
-			app_args.use_popup = True
-
-		if '-s' in sys.argv:
-			app_args.use_symbolic = True
-
-		if '-t' in sys.argv:
-			app_args.use_transparency = True
-
-		if '-h' in sys.argv:
-			app_args.hold_window = True
-
-		if '-n' in sys.argv:
-			app_args.use_names = True
-
-		if '-l' in sys.argv:
-			app_args.list_layout = "list"
-
-		window = ExitUserSession(sorted(app_names), app_args)
-
-		if '-d' in sys.argv:
+		if parsed_args.daemonize:
 			# Make sure there isn't a daemon running already
 			if not os.path.isfile(pidf):
 				f = open(pidf, 'w')
@@ -399,12 +427,10 @@ if __name__ == '__main__':
 				f.close()
 
 				do_cleanup = True
-				window.set_is_daemon(True)
 			else:
 				print("qute_launcher daemon already running!")
 				do_quit = True
 		else:
-			window.set_is_daemon(False)
 			window.bring_forward()
 
 	# Either continue processing or quit with bad exit code
