@@ -149,6 +149,9 @@ class ExitUserSession(WindowWidget):
 			self.setAttribute(QtCore.Qt.WA_NoSystemBackground)
 			self.setAttribute(QtCore.Qt.WA_TranslucentBackground);
 
+		if self.app_args.background_color != '-':
+			self.setStyleSheet('QWidget{background-color: ' + str(self.app_args.background_color) +';}')
+
 		# Install an event filter to hide on loss of focus
 		if not self.app_args.hold_window:
 			self.installEventFilter(self)
@@ -207,10 +210,8 @@ class ExitUserSession(WindowWidget):
 		self.update_list_layout(self.shortlist)
 
 	def update_list_layout(self, app_list, reason="Direct Call"):
-		ifprint(self.app_args.verbose, 'update_list_layout(' + reason + ')')
-
 		if self.rendering_done:
-			ifprint(self.app_args.verbose, "Updating layout")
+			ifprint(self.app_args.verbose, 'update_list_layout(' + reason + ')')
 
 			app_layout = None
 
@@ -266,6 +267,9 @@ class ExitUserSession(WindowWidget):
 			else:
 				print("FATAL: app_layout note set!")
 				QApplication.quit()
+		else:
+			ifprint(self.app_args.verbose, 'Ignored update_list_layout(' + reason + '), rendering not ready')
+
 
 	def keyPressEvent(self, event):
 		if event.key() == QtCore.Qt.Key_Escape:
@@ -280,7 +284,6 @@ class ExitUserSession(WindowWidget):
 
 	def bring_forward(self):
 		ifprint(self.app_args.verbose, 'bring_forward() -> show()')
-
 		self.show()
 
 		# For some reason window does not redraw properly
@@ -294,7 +297,9 @@ class ExitUserSession(WindowWidget):
 
 		ifprint(self.app_args.verbose, "bring_forward() -> update_filter()")
 		self.rendering_done = True
-		self.update_filter()
+
+		if not self.app_args.late_rendering:
+			self.update_filter()
 
 	def sigusr_handler(self, signum, stack):
 		ifprint(self.app_args.verbose, "Received user signal")
@@ -350,6 +355,9 @@ def parse_args():
 	parser.add_argument('-w', '--hold-window',	dest='hold_window',
 						help='Disables automatic window hiding',
 						action='store_true', default=False)
+	parser.add_argument('-l', '--late-rendering',	dest='late_rendering',
+						help='Skips first rendering step (on window show) and waits for the window resize to trigger the applicaiton list to update (this should stop a unneeded processing on tiling window systems)',
+						action='store_true', default=False)
 	parser.add_argument('-f', '--fullscreen',	dest='use_fullscreen',
 						help='Dislpays the window in fullscreen mode',
 						action='store_true', default=False)
@@ -384,6 +392,9 @@ def parse_args():
 	parser.add_argument('--focus-color',		dest="focus_color",
 						help='Color to use to signify item that is currently focused (valid CSS color code)',
 						action='store', type=str, default='white')
+	parser.add_argument('--background-color',		dest="background_color",
+						help='Color to use for background (valid CSS color code)',
+						action='store', type=str, default='-')
 
 	parsed_args, unparsed_args = parser.parse_known_args()
 
