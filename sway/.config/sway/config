@@ -101,10 +101,10 @@ include $HOME/.config/sway/config.`hostname`
     #bindsym $mod+Shift+$up move up
     #bindsym $mod+Shift+$right move right
     # ditto, with arrow keys
-    bindsym $mod+Control+Left move left
-    bindsym $mod+Control+Down move down
-    bindsym $mod+Control+Up move up
-    bindsym $mod+Control+Right move right
+    bindsym $mod+Shift+Left move left
+    bindsym $mod+Shift+Down move down
+    bindsym $mod+Shift+Up move up
+    bindsym $mod+Shift+Right move right
 
 
 ### Workspaces:
