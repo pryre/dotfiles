@@ -3,11 +3,14 @@
 #This may cause crashes
 
 #GTK
-#GDK_BACKEND=wayland
+export GDK_BACKEND=wayland
 #CLUTTER_BACKEND=wayland
 
+#Qt
+#QT_QPA_PLATFORM=wayland-egl
+
 #SDL
-#SDL_VIDEODRIVER=wayland
+export SDL_VIDEODRIVER=wayland
 
 #Java
 #_JAVA_AWT_WM_NONREPARENTING=1
@@ -24,3 +27,14 @@ export QT_QPA_PLATFORMTHEME="qt5ct"
 gsettings set org.gnome.desktop.interface cursor-theme capitaine-cursors
 gsettings set org.gnome.desktop.interface icon-theme la-capitaine-icon-theme
 gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark
+
+
+### Sway auto-start
+#
+if [[ -z $DISPLAY ]]; then #&& [[ $(tty) = /dev/tty1 ]]; then
+	export XDG_SESSION_TYPE=wayland
+	export XKB_DEFAULT_LAYOUT=us
+
+	exec sway
+fi
+
