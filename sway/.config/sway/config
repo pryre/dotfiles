@@ -4,7 +4,6 @@
 #
 # Read `man 5 sway` for a complete reference.
 
-
 ### Variables
 #
 # Logo key. Use Mod1 for Alt.
@@ -24,7 +23,7 @@ set $browser firefox
 set $filemanager pcmanfm-qt
 set $guimenu ~/Scripts/qutepy_launcher.py -c
 set $lock swaylock
-set $logout $HOME/Scripts/exit_user_session.py -platform xcb
+set $logout $HOME/Scripts/exit_user_session.py
 
 
 ### Host-Specific Configuration
@@ -62,7 +61,7 @@ include $HOME/.config/sway/config.`hostname`
 
     # start your launcher
     bindsym $mod+Return exec $menu
-	exec $HOME/Scripts/list_desktop_applications.sh | $HOME/Scripts/qutepy_launcher.py -d -f -n
+	exec $HOME/Scripts/qutepy_launcher.py -k && $HOME/Scripts/list_desktop_applications.sh | $HOME/Scripts/qutepy_launcher.py -d -f -l -n
     bindsym $mod+r exec $guimenu
 
     # screen locker
@@ -228,7 +227,8 @@ bar {
 
 	titlebar_padding 5 2
 
-	for_window [class="Xfce4-appfinder"] fullscreen enable
+	#for_window [title="Qutepy Launcher"] floating enable
+	for_window [title="Exit User Session"] floating enable
 
 	output "*" background $HOME/.background fill
 
