@@ -13,7 +13,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QWidget, QToolButton, QLineEdit,
 							 QInputDialog, QApplication, QDialog,
 							 QVBoxLayout, QGridLayout, QSizePolicy,
-							 QScrollArea, QBoxLayout)
+							 QScrollArea)
 
 def ifprint(do_print, message):
 	if do_print:
@@ -114,36 +114,39 @@ class ExitUserSession(WindowWidget):
 		return apps
 
 	def init_ui(self):
-		self.setWindowTitle( 'Qute Launcher' )
-
-		if self.app_args.daemonize:
-			self.setAttribute(QtCore.Qt.WA_QuitOnClose)
+		self.setWindowTitle( 'Qutepy Launcher' )
 
 		self.frame_margin = 2
-		#self.frame_offset_x = 0
-		#self.frame_offset_y = 0
 
 		# If a size has not bee defined, allow it to stretch (later)
 		# Otherwise we define a fallback size
 		size_lock = False
-		if (self.app_args.frame_size_x != 0) and (self.app_args.frame_size_y != 0):
+		if (self.app_args.frame_size_x > 0) and (self.app_args.frame_size_y > 0):
 			size_lock = True
+		elif (self.app_args.use_fullscreen):
+			desktop_size = QApplication.desktop().availableGeometry()
+			self.app_args.frame_size_x = desktop_size.x()
+			self.app_args.frame_size_y = desktop_size.y()
 		else:
 			self.app_args.frame_size_x = 800
 			self.app_args.frame_size_y = 600
 
-		if not self.app_args.use_fullscreen:
-			self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+		self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
 
-			if self.app_args.use_popup:
-				ifprint(self.app_args.verbose, "Popup mode")
-				self.setWindowFlags(self.windowFlags() | QtCore.Qt.Dialog)
+		self.setGeometry( QtCore.QRect(0,0,self.app_args.frame_size_x,self.app_args.frame_size_y) )
 
-				self.setGeometry( QtCore.QRect(0,0,self.app_args.frame_size_x,self.app_args.frame_size_y) )
-				qtRectangle = self.frameGeometry()
-				centerPoint = QApplication.desktop().availableGeometry().center()
-				qtRectangle.moveCenter(centerPoint)
-				self.move(qtRectangle.topLeft())
+		# Handle positioning, center if not specified
+		position_lock = False
+		if (self.app_args.frame_position_x < 0) or (self.app_args.frame_position_y < 0):
+			ifprint(self.app_args.verbose, "Frame position X and Y not set, centering")
+			frame_geometry = self.frameGeometry()
+			screen_center = QApplication.desktop().availableGeometry().center()
+			frame_geometry.moveCenter(screen_center)
+			self.app_args.frame_position_x = frame_geometry.topLeft().x()
+			self.app_args.frame_position_y = frame_geometry.topLeft().y()
+		else:
+			ifprint(self.app_args.verbose, "Frame position set")
+			position_lock = True
 
 		if self.app_args.use_transparency:
 			self.setAttribute(QtCore.Qt.WA_NoSystemBackground)
@@ -156,15 +159,21 @@ class ExitUserSession(WindowWidget):
 		if not self.app_args.hold_window:
 			self.installEventFilter(self)
 
-		self.frame_widget = QWidget()
-		window_layout = QVBoxLayout()
-		window_layout.setAlignment(QtCore.Qt.AlignHCenter)
-		window_layout.addWidget(self.frame_widget)
-		self.setLayout(window_layout)
+		self.frame_widget = QWidget(self)
 
 		# Set frame widget to stay at same size specified
 		if size_lock:
 			self.frame_widget.setFixedSize(self.app_args.frame_size_x, self.app_args.frame_size_y)
+
+		# Set frame widget to be a set location
+		# otherwise it should should be placed so it's centered
+		if position_lock:
+			self.frame_widget.move(self.app_args.frame_position_x, self.app_args.frame_position_y)
+		else:
+			window_layout = QVBoxLayout()
+			window_layout.setAlignment(QtCore.Qt.AlignHCenter)
+			window_layout.addWidget(self.frame_widget)
+			self.setLayout(window_layout)
 
 		self.app_search = QLineEdit(self)
 		self.app_search.textChanged.connect(self.update_filter)
@@ -197,11 +206,11 @@ class ExitUserSession(WindowWidget):
 		return False
 
 	def update_filter(self):
-		ft = self.app_search.text()
+		ft = self.app_search.text().lower()
 
 		if ft:
 			#shortlist = [x for x in self.app_list if all(a in x.app_name for a in ft)]
-			self.shortlist = [x for x in self.app_list if (ft in x.appName()) or (ft in x.appExec())]
+			self.shortlist = [x for x in self.app_list if (ft in x.appName().lower()) or (ft in x.appExec().lower())]
 		else:
 			self.shortlist=self.app_list
 
@@ -283,6 +292,9 @@ class ExitUserSession(WindowWidget):
 			self.do_cancel()
 
 	def bring_forward(self):
+		#Move the window to where it should be on the screen
+		self.move(self.app_args.frame_position_x, self.app_args.frame_position_y)
+
 		ifprint(self.app_args.verbose, 'bring_forward() -> show()')
 		self.show()
 
@@ -292,13 +304,16 @@ class ExitUserSession(WindowWidget):
 			self.showFullScreen()
 
 		ifprint(self.app_args.verbose, "bring_forward() -> app_search")
-		self.app_search.clear()
 		self.app_search.setFocus()
+		# See if we need to clear the search filter
+		filter_reset = self.app_search.text()
+		if filter_reset:
+			self.app_search.clear()
 
 		ifprint(self.app_args.verbose, "bring_forward() -> update_filter()")
 		self.rendering_done = True
 
-		if not self.app_args.late_rendering:
+		if filter_reset or (not self.app_args.late_rendering):
 			self.update_filter()
 
 	def sigusr_handler(self, signum, stack):
@@ -361,9 +376,6 @@ def parse_args():
 	parser.add_argument('-f', '--fullscreen',	dest='use_fullscreen',
 						help='Dislpays the window in fullscreen mode',
 						action='store_true', default=False)
-	parser.add_argument('-p', '--popup',		dest='use_popup',
-						help='Displays the window as a popup',
-						action='store_true', default=False)
 	parser.add_argument('-s', '--symbolic-icons', dest='use_symbolic',
 						help='Prefer symbolic icons (if available)',
 						action='store_true', default=False)
@@ -381,11 +393,17 @@ def parse_args():
 						help='Size of padding between buttons (px)',
 						action='store', type=int, default=10)
 	parser.add_argument('--frame-size-x',		dest="frame_size_x",
-						help='Width of the drawn frame in fullscreen and popup mode (px)',
+						help='Width of the drawn list frame (px)',
 						action='store', type=int, default=0)
 	parser.add_argument('--frame-size-y',		dest="frame_size_y",
-						help='Height of the drawn frame in fullscreen and popup mode (px)',
+						help='Height of the drawn list frame (px)',
 						action='store', type=int, default=0)
+	parser.add_argument('--frame-position-x',	dest="frame_position_x",
+						help='X position of the drawn frame (px)',
+						action='store', type=int, default=-1)
+	parser.add_argument('--frame-position-y',	dest="frame_position_y",
+						help='Y position of the drawn frame (px)',
+						action='store', type=int, default=-1)
 	parser.add_argument('--list-layout',		dest="list_layout",
 						help='Selector for the listing display type (options: grid, list)',
 						action='store', type=str, default='grid')

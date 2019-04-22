@@ -1,6 +1,15 @@
 #!/bin/sh
 
-APP_DIR_SYSTEM=~/.local/share/applications/
-APP_DIR_LOCAL=/usr/share/applications/
+if [[ -z $XDG_DATA_HOME ]]
+then
+	XDG_DATA_HOME="$HOME/.local/share"
+fi
 
-find -L $APP_DIR_SYSTEM $APP_DIR_LOCAL -maxdepth 1 -type f -name '*.desktop' #-execdir basename '{}' ';' | awk -F '.desktop' ' { print $1}'
+if [[ -z $XDG_DATA_DIRS ]]
+then
+	XDG_DATA_DIRS="/usr/local/share:/usr/share"
+fi
+
+APP_DIRS=$(echo "$XDG_DATA_HOME:$XDG_DATA_DIRS" | tr ':' '\n' | sed -e 's|$|/applications|')
+
+find -L $APP_DIRS -maxdepth 1 -type f -name '*.desktop' 2> /dev/null
