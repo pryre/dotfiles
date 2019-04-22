@@ -1,11 +1,11 @@
 #!/bin/sh
 
-if [[ -z $XDG_DATA_HOME ]]
+if [ -z $XDG_DATA_HOME ]
 then
 	XDG_DATA_HOME="$HOME/.local/share"
 fi
 
-if [[ -z $XDG_DATA_DIRS ]]
+if [ -z $XDG_DATA_DIRS ]
 then
 	XDG_DATA_DIRS="/usr/local/share:/usr/share"
 fi
