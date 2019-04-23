@@ -130,7 +130,7 @@
     "custom/exit": {
         "format": "",
         "tooltip-format": "Logout and Power Options",
-        "on-click": "swaymsg exec '$HOME/Scripts/exit_user_session.py"
+        "on-click": "swaymsg exec '$HOME/Scripts/exit_user_session.py'"
     }
     //"custom/media": {
     //    "format": "{icon} {}",
