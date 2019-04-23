@@ -9,19 +9,21 @@ then
 
 	E_INFO=$(echo "$I_INFO" | sed -n '/     End/,$p' | tail -n +2 | sed -e 's/^[[:space:]]*//')
 
-	#echo "$E_INFO"
-
 	LAST_SEC=$(echo "$E_INFO" | sort -rn | head -n 1)
 
 	echo "Sector size: $S_SIZE"
 	echo "End Sector: $LAST_SEC"
 
-	read -p "Proceed with truncation? " -n 1 -r
-	echo ""
-	if [[ $REPLY =~ ^[Yy]$ ]]
-	then
-		truncate --size=$[(${LAST_SEC}+1)*${S_SIZE}] ${IMAGE}
-	fi
+	printf "Proceed with truncation? [Yy] "
+	read -r REPLY
+	case $REPLY in
+		'Y'|'y')
+			truncate --size=$(((${LAST_SEC}+1)*${S_SIZE})) ${IMAGE}
+			echo "Operation completed"
+			;;
+		*)
+			echo "Operation canceled"
+	esac
 else
 	echo "Usage: truncate_image.sh /image/name.img"
 fi
