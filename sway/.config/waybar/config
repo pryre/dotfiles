@@ -41,7 +41,8 @@
     },
     "clock": {
         "tooltip-format": "{:%Y-%m-%d | %H:%M}",
-        "format-alt": "{:%Y-%m-%d}"
+        //"format-alt": "{:%Y-%m-%d}",
+		"on-click": "orage"
     },
     //"cpu": {
     //    "format": "{usage}% "
@@ -90,6 +91,7 @@
     },
     "network#ether": {
         "interface": "eth0", // (Optional) To force the use of this interface
+		"interval": "10",
         "tooltip-format-wifi": "{essid} ({signalStrength}%) ",
         "format-wifi": "",
         "tooltip-format-ethernet": "{ifname}: {ipaddr}/{cidr} ",
@@ -98,6 +100,7 @@
     },
     "network#wifi": {
         "interface": "wlan0", // (Optional) To force the use of this interface
+		"interval": "10",
         "tooltip-format-wifi": "{essid} ({signalStrength}%) ",
         "format-wifi": "",
         "tooltip-format-ethernet": "{ifname}: {ipaddr}/{cidr} ",

@@ -1,0 +1,9 @@
+### Application specific settings
+#
+
+### Floating Windows
+#
+#for_window [title="Qutepy Launcher"] floating enable
+for_window [title="Exit User Session"] floating enable
+for_window [title="Orage"] floating enable
+for_window [title="SpeedCrunch"] floating enable

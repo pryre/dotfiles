@@ -227,11 +227,9 @@ bar {
 
 	titlebar_padding 5 2
 
-	#for_window [title="Qutepy Launcher"] floating enable
-	for_window [title="Exit User Session"] floating enable
-
 	output "*" background $HOME/.background fill
 
+	include $HOME/.config/sway/config.apps
 
 ### Keyboard Extras
 #
