@@ -35,6 +35,9 @@ if [[ -z $DISPLAY ]]; then #&& [[ $(tty) = /dev/tty1 ]]; then
 	export XDG_SESSION_TYPE=wayland
 	export XKB_DEFAULT_LAYOUT=us
 
-	exec sway
+	SWAYCACHE=$HOME/.cache/sway
+	mkdir -p $SWAYCACHE
+	mv $SWAYCACHE/sway.log $SWAYCACHE/sway.log.last
+	exec sway 2> $SWAYCACHE/sway.log
 fi
 
