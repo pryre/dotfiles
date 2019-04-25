@@ -8,7 +8,6 @@ from PyQt5.QtWidgets import (QWidget, QPushButton, QLineEdit,
 							 QInputDialog, QApplication, QDialog,
 							 QVBoxLayout)
 
-
 class ExitUserSessionPopup(QWidget):
 	def __init__(self):
 		super().__init__()
@@ -21,30 +20,19 @@ class ExitUserSessionPopup(QWidget):
 							QtCore.Qt.WindowStaysOnTopHint |
 							QtCore.Qt.FramelessWindowHint)
 
-		self.setGeometry(0, 0, 160, 210)
-		qtRectangle = self.frameGeometry()
-		centerPoint = QApplication.desktop().availableGeometry().center()
-		qtRectangle.moveCenter(centerPoint)
-		self.move(qtRectangle.topLeft())
-
 		self.button_logout = QPushButton('Logout', self)
-		self.button_logout.move(20, 20)
 		self.button_logout.clicked.connect(self.do_logout)
 
 		self.button_suspend = QPushButton('Suspend', self)
-		self.button_suspend.move(20, 60)
 		self.button_suspend.clicked.connect(self.do_suspend)
 
 		self.button_reboot = QPushButton('Reboot', self)
-		self.button_reboot.move(20, 100)
 		self.button_reboot.clicked.connect(self.do_reboot)
 
 		self.button_shutdown = QPushButton('Shutdown', self)
-		self.button_shutdown.move(20, 140)
 		self.button_shutdown.clicked.connect(self.do_shutdown)
 
 		self.button_cancel = QPushButton('Cancel', self)
-		self.button_cancel.move(20, 180)
 		self.button_cancel.clicked.connect(self.do_cancel)
 
 		layout = QVBoxLayout()
@@ -54,6 +42,15 @@ class ExitUserSessionPopup(QWidget):
 		layout.addWidget(self.button_shutdown)
 		layout.addWidget(self.button_cancel)
 		self.setLayout(layout)
+
+		# Set an appropriate size
+		self.setGeometry(0,0,160,240)
+
+		# Move the window to be centred
+		qtRectangle = self.frameGeometry()
+		centerPoint = QApplication.desktop().availableGeometry().center()
+		qtRectangle.moveCenter(centerPoint)
+		self.move(qtRectangle.topLeft())
 
 	def keyPressEvent(self, event):
 		if event.key() == QtCore.Qt.Key_Escape:
