@@ -61,7 +61,6 @@ include $HOME/.config/sway/config.`hostname`
 
     # start your launcher
     bindsym $mod+Return exec $menu
-	exec $HOME/Scripts/qutepy_launcher.py -k && $HOME/Scripts/list_desktop_applications.sh | $HOME/Scripts/qutepy_launcher.py -d -f -l -n
     bindsym $mod+r exec $guimenu
 
     # screen locker
@@ -198,7 +197,32 @@ mode "resize" {
 bindsym $mod+Shift+r mode "resize"
 
 
-### Status Bar:
+### Keyboard Extras
+#
+# Pulse Audio controls
+	bindsym XF86AudioRaiseVolume exec pactl set-sink-volume $(pacmd list-sinks |awk '/* index:/{print $3}') +5%
+	bindsym XF86AudioLowerVolume exec pactl set-sink-volume $(pacmd list-sinks |awk '/* index:/{print $3}') -5%
+	bindsym XF86AudioMute exec pactl set-sink-mute $(pacmd list-sinks |awk '/* index:/{print $3}') toggle
+
+# Sreen brightness controls
+	bindsym XF86MonBrightnessDown exec $HOME/Scripts/brightness_control.sh step -30
+	bindsym XF86MonBrightnessUp exec $HOME/Scripts/brightness_control.sh step 30
+
+# Touchpad toggles
+	#bindsym XF86TouchpadToggle exec $HOME/.config/sway/scripts/toggletouchpad.sh # toggle touchpad
+
+# Media player controls
+	bindsym XF86AudioPlay exec $HOME/Scripts/deadbeef-play-pause.sh
+	#bindsym XF86AudioPause exec playerctl pause
+	#bindsym XF86AudioNext exec playerctl next
+	#bindsym XF86AudioPrev exec playerctl previous
+
+# Shortcut buttons
+	bindsym Print exec grim $HOME/Pictures/$(date +'%Y-%m-%d-%H-%M-%S_screenshot.png')
+	bindsym XF86Calculator exec speedcrunch
+	
+
+### Status Bar
 #
 # Read `man 5 sway-bar` for more information about this section.
 bar {
@@ -230,27 +254,6 @@ bar {
 	output "*" background $HOME/.background fill
 
 	include $HOME/.config/sway/config.apps
-
-### Keyboard Extras
-#
-# Pulse Audio controls
-	bindsym XF86AudioRaiseVolume exec pactl set-sink-volume $(pacmd list-sinks |awk '/* index:/{print $3}') +5%
-	bindsym XF86AudioLowerVolume exec pactl set-sink-volume $(pacmd list-sinks |awk '/* index:/{print $3}') -5%
-	bindsym XF86AudioMute exec pactl set-sink-mute $(pacmd list-sinks |awk '/* index:/{print $3}') toggle
-
-# Sreen brightness controls
-	bindsym XF86MonBrightnessDown exec $HOME/Scripts/brightness_control.sh step -30
-	bindsym XF86MonBrightnessUp exec $HOME/Scripts/brightness_control.sh step 30
-
-# Touchpad toggles
-	#bindsym XF86TouchpadToggle exec $HOME/.config/sway/scripts/toggletouchpad.sh # toggle touchpad
-
-# Media player controls
-	bindsym XF86AudioPlay exec $HOME/Scripts/deadbeef-play-pause.sh
-	#bindsym XF86AudioPause exec playerctl pause
-	#bindsym XF86AudioNext exec playerctl next
-	#bindsym XF86AudioPrev exec playerctl previous
-
 
 ### Additional config
 #
