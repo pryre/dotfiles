@@ -4,16 +4,17 @@
 
 #GTK
 export GDK_BACKEND=wayland
-#CLUTTER_BACKEND=wayland
+#export CLUTTER_BACKEND=wayland
 
 #Qt
 #QT_QPA_PLATFORM=wayland-egl
+export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
 
 #SDL
 export SDL_VIDEODRIVER=wayland
 
 #Java
-#_JAVA_AWT_WM_NONREPARENTING=1
+#export _JAVA_AWT_WM_NONREPARENTING=1
 
 
 
@@ -37,7 +38,7 @@ if [[ -z $DISPLAY ]]; then #&& [[ $(tty) = /dev/tty1 ]]; then
 
 	SWAYCACHE=$HOME/.cache/sway
 	mkdir -p $SWAYCACHE
-	mv $SWAYCACHE/sway.log $SWAYCACHE/sway.log.last
+	mv $SWAYCACHE/sway.log $SWAYCACHE/sway.log.old
 	exec sway 2> $SWAYCACHE/sway.log
 fi
 

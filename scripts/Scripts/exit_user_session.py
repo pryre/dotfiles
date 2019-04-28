@@ -17,8 +17,8 @@ class ExitUserSessionPopup(QWidget):
 		self.setWindowTitle('Exit User Session')
 		self.setWindowFlags(self.windowFlags() |
 							QtCore.Qt.Dialog |
-							QtCore.Qt.WindowStaysOnTopHint |
-							QtCore.Qt.FramelessWindowHint)
+							QtCore.Qt.WindowStaysOnTopHint) # |
+							#QtCore.Qt.FramelessWindowHint)
 
 		self.button_logout = QPushButton('Logout', self)
 		self.button_logout.clicked.connect(self.do_logout)

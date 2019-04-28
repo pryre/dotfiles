@@ -131,7 +131,7 @@ class ExitUserSession(WindowWidget):
 			self.app_args.frame_size_x = 800
 			self.app_args.frame_size_y = 600
 
-		self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+		#self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
 
 		self.setGeometry( QtCore.QRect(0,0,self.app_args.frame_size_x,self.app_args.frame_size_y) )
 
