@@ -15,9 +15,14 @@ from PyQt5.QtWidgets import (QWidget, QToolButton, QLineEdit,
 							 QVBoxLayout, QGridLayout, QSizePolicy,
 							 QScrollArea)
 
-def ifprint(do_print, message):
-	if do_print:
-		print(str(time.time()) + ":\t" + str(message))
+def vprint(message, is_verbose=False, is_error=False):
+	if is_verbose or is_error:
+		f=sys.stdout
+		if is_error:
+			f=sys.stderr
+			message = "Error: " + message
+
+		print(str(time.time()) + ":\t" + str(message), file=f)
 
 class AppWidget():
 	def __init__(self, app_path, use_symbolic):
@@ -25,12 +30,14 @@ class AppWidget():
 		self.app_name = ""
 		self.app_comment = ""
 		self.app_exec = ""
-		self.app_icon = ""
+		self.app_icon = None
 		self.app_path = app_path
 		self.use_symbolic = use_symbolic
 
 		self.config = configparser.RawConfigParser()
-		self.load_config(self.app_path)
+
+		if self.app_path:
+			self.load_config(self.app_path)
 
 	def load_config(self, app_path):
 		self.config.read(self.app_path)
@@ -54,9 +61,7 @@ class AppWidget():
 			fallback_icon = "content-loading-symbolic"
 			self.app_icon = QIcon.fromTheme(icon, QIcon.fromTheme(fallback_icon))
 
-			self.valid = True
-		else:
-			print("Could not load: " + self.app_path)
+			self.is_valid = True
 
 	def appValid(self):
 		return self.is_valid
@@ -109,7 +114,11 @@ class ExitUserSession(WindowWidget):
 
 		for n in app_names:
 			a = AppWidget(n,self.app_args.use_symbolic)
-			apps.append(a)
+
+			if a.appValid():
+				apps.append(a)
+			else:
+				vprint("Application file \'" + str(n) + "\' is not valid", is_error=True)
 
 		return apps
 
@@ -131,21 +140,19 @@ class ExitUserSession(WindowWidget):
 			self.app_args.frame_size_x = 800
 			self.app_args.frame_size_y = 600
 
-		#self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-
 		self.setGeometry( QtCore.QRect(0,0,self.app_args.frame_size_x,self.app_args.frame_size_y) )
 
 		# Handle positioning, center if not specified
 		position_lock = False
 		if (self.app_args.frame_position_x < 0) or (self.app_args.frame_position_y < 0):
-			ifprint(self.app_args.verbose, "Frame position X and Y not set, centering")
+			vprint("Frame position X and Y not set, centering", is_verbose=self.app_args.verbose)
 			frame_geometry = self.frameGeometry()
 			screen_center = QApplication.desktop().availableGeometry().center()
 			frame_geometry.moveCenter(screen_center)
 			self.app_args.frame_position_x = frame_geometry.topLeft().x()
 			self.app_args.frame_position_y = frame_geometry.topLeft().y()
 		else:
-			ifprint(self.app_args.verbose, "Frame position set")
+			vprint("Frame position set", is_verbose=self.app_args.verbose)
 			position_lock = True
 
 		if self.app_args.use_transparency:
@@ -220,7 +227,7 @@ class ExitUserSession(WindowWidget):
 
 	def update_list_layout(self, app_list, reason="Direct Call"):
 		if self.rendering_done:
-			ifprint(self.app_args.verbose, 'update_list_layout(' + reason + ')')
+			vprint('update_list_layout(' + reason + ')', is_verbose=self.app_args.verbose)
 
 			app_layout = None
 
@@ -277,7 +284,7 @@ class ExitUserSession(WindowWidget):
 				print("FATAL: app_layout note set!")
 				QApplication.quit()
 		else:
-			ifprint(self.app_args.verbose, 'Ignored update_list_layout(' + reason + '), rendering not ready')
+			vprint('Ignored update_list_layout(' + reason + '), rendering not ready', is_verbose=self.app_args.verbose)
 
 
 	def keyPressEvent(self, event):
@@ -295,7 +302,7 @@ class ExitUserSession(WindowWidget):
 		#Move the window to where it should be on the screen
 		self.move(self.app_args.frame_position_x, self.app_args.frame_position_y)
 
-		ifprint(self.app_args.verbose, 'bring_forward() -> show()')
+		vprint('bring_forward() -> show()', is_verbose=self.app_args.verbose)
 		self.show()
 
 		# For some reason window does not redraw properly
@@ -303,21 +310,21 @@ class ExitUserSession(WindowWidget):
 		if self.app_args.use_fullscreen:
 			self.showFullScreen()
 
-		ifprint(self.app_args.verbose, "bring_forward() -> app_search")
+		vprint("bring_forward() -> app_search", is_verbose=self.app_args.verbose)
 		self.app_search.setFocus()
 		# See if we need to clear the search filter
 		filter_reset = self.app_search.text()
 		if filter_reset:
 			self.app_search.clear()
 
-		ifprint(self.app_args.verbose, "bring_forward() -> update_filter()")
+		vprint("bring_forward() -> update_filter()", is_verbose=self.app_args.verbose)
 		self.rendering_done = True
 
 		if filter_reset or (not self.app_args.late_rendering):
 			self.update_filter()
 
 	def sigusr_handler(self, signum, stack):
-		ifprint(self.app_args.verbose, "Received user signal")
+		vprint("Received user signal", is_verbose=self.app_args.verbose)
 		self.bring_forward()
 
 	def do_cancel(self):
