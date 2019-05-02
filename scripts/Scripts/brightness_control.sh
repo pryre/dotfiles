@@ -5,8 +5,10 @@ BL_SYS_DIR=/sys/class/backlight
 show_help() {
 	echo "Usage: brightness_control COMMAND <args>"
 	echo "Commands:"
-	echo "    step [+/-] STEP"
-	echo "    get_percent"
+	echo "    step [+/-]STEP"
+	echo "    get_percent [DEVICE]"
+	echo "    set_percent PERCENT"
+	echo "    set VALUE [DEVICE]"
 	echo "    show_rules"
 }
 
@@ -16,18 +18,81 @@ do_show_rules() {
 	echo '    SUBSYSTEM=="backlight", ACTION=="add", RUN+="/bin/chgrp video /sys/class/backlight/%k/brightness", RUN+="/bin/chmod g+w /sys/class/backlight/%k/brightness"'
 }
 
+do_get_percent_single() {
+	DEVICE=$1
+	B=$(cat ${DEVICE}/brightness)
+	MB=$(cat ${DEVICE}/max_brightness)
+	BRIGHTNESS="${BRIGHTNESS} $(((100*B)/MB))"
+
+	echo $BRIGHTNESS
+}
+
 do_get_percent() {
-	BRIGHNESS=""
+	DEVICE=$1
+
+	if [ $DEVICE -z ]
+	then
+		# No deviceses specified
+		BRIGHTNESSES=""
+
+		for DEVICE in $(find ${BL_SYS_DIR} -not -path ${BL_SYS_DIR})
+		do
+			BRIGHTNESSES="$BRIGHTNESSES $(do_get_percent_single $DEVICE)"
+		done
+
+		echo $BRIGHTNESSES
+	else
+		# Single device specified
+		echo $(do_get_percent_single $DEVICE)
+	fi
+}
+
+do_set_single() {
+	NB=$1
+	DEVICE=$2
+	MB=$(cat ${DEVICE}/max_brightness)
+
+	if [ $NB -ge $MB ]
+	then
+		NB=$MB
+	fi
+
+	if [ $NB -le 0 ]
+	then
+		NB=0
+	fi
+
+	echo "$NB" > ${DEVICE}/brightness
+}
+
+do_set() {
+	VALUE=$1
+	DEVICE=$2
+
+	if [ $DEVICE -z ]
+	then
+		# No deviceses specified
+		for DEVICE in $(find ${BL_SYS_DIR} -not -path ${BL_SYS_DIR})
+		do
+			do_set_single $VALUE $DEVICE
+		done
+	else
+		# Single device specified
+		do_set_single $VALUE $DEVICE
+	fi
+}
+
+do_set_percent() {
+	NBP=$(($1))
 
 	for DEVICE in $(find ${BL_SYS_DIR} -not -path ${BL_SYS_DIR})
 	do
-		B="$(cat ${DEVICE}/brightness)"
-		MB="$(cat ${DEVICE}/max_brightness)"
+		MB=$(cat ${DEVICE}/max_brightness)
+		NB=$((NBP*MB/100))
 
-		BRIGHTNESS="${BRIGHTNESS} $(((100*B)/MB))"
+		do_set_single $NB $DEVICE
 	done
 
-	echo "${BRIGHTNESS}"
 }
 
 do_step() {
@@ -35,41 +100,34 @@ do_step() {
 
 	for DEVICE in $(find ${BL_SYS_DIR} -not -path ${BL_SYS_DIR})
 	do
-		B="$(cat ${DEVICE}/brightness)"
-		MB="$(cat ${DEVICE}/max_brightness)"
+		B=$(cat ${DEVICE}/brightness)
 		NB=$((B+STEP))
 
-		if [ $NB -ge $MB ]
-		then
-			NB=$MB
-		fi
-
-		if [ $NB -le 0 ]
-		then
-			NB=0
-		fi
-
-		echo "$NB" > ${DEVICE}/brightness
+		do_set_single $NB $DEVICE
 	done
 }
 
 if [ $# -ge 0 ]
 then
-	#if [ $1 == '--help' ]
-	#then
-	#	show_help
-	#	exit 1
-	#fi
-
-	#DEVICE=$1
-
 	case $1 in
 		"step")
 			do_step $2
 			break
 			;;
+		"set")
+			do_set $2 $3
+			break
+			;;
 		"get_percent")
-			do_get_percent
+			do_get_percent $2
+			break
+			;;
+		"set_percent")
+			do_set_percent $2
+			break
+			;;
+		"toggle")
+			do_toggle
 			break
 			;;
 		"show_rules")
