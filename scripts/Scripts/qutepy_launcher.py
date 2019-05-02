@@ -10,7 +10,7 @@ import signal
 
 from PyQt5 import QtCore
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import (QWidget, QToolButton, QLineEdit,
+from PyQt5.QtWidgets import (QWidget, QPushButton, QToolButton, QLineEdit,
 							 QInputDialog, QApplication, QDialog,
 							 QVBoxLayout, QGridLayout, QSizePolicy,
 							 QScrollArea)
@@ -83,6 +83,14 @@ class AppWidget():
 
 	def runExec(self):
 		os.system("swaymsg exec \'" + self.appExec() + "\'")
+
+class CustomToolButton(QToolButton):
+	def __init__(self):
+		super().__init__()
+
+	def keyPressEvent(self, event):
+		if (event.key() == QtCore.Qt.Key_Return) or (event.key() == QtCore.Qt.Key_Enter):
+			self.click()
 
 class WindowWidget(QWidget):
 	resized = QtCore.pyqtSignal()
@@ -241,14 +249,14 @@ class ExitUserSession(WindowWidget):
 				usable_space -= 2*self.app_args.button_spacing #leave a little bit of extra space for either-side of the buttons
 
 				for ind, app in enumerate(app_list):
-					w = QToolButton()
+					w = CustomToolButton()
 					w.clicked.connect(lambda arg, text=ind: self.do_run(text))
 					w.setFixedSize(usable_space, self.app_args.button_size)
 					w.setText("\t" + app.appName() + "\n\t" + app.appComment())
 					w.setIcon(app.appIcon())
 					w.setIconSize(QtCore.QSize(self.app_args.button_size, self.app_args.button_size))
 					w.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
-					w.setStyleSheet('QToolButton{border: 0px solid;}') #Remove boarder
+					w.setStyleSheet('QToolButton{border: 1px solid; border-color: transparent;} QToolButton:focus{border: 1px solid; border-color: ' + self.app_args.focus_color + ';}')
 					app_layout.addWidget(w)
 			else:
 				#Use grid mode by default
@@ -264,7 +272,7 @@ class ExitUserSession(WindowWidget):
 
 				for ind, app in enumerate(app_list):
 					row = int(ind / cols)
-					w = QToolButton()
+					w = CustomToolButton()
 					w.clicked.connect(lambda arg, text=ind: self.do_run(text))
 					w.setFixedSize(self.app_args.button_size, self.app_args.button_size)
 					if self.app_args.use_names:
@@ -273,7 +281,7 @@ class ExitUserSession(WindowWidget):
 					w.setIcon(app.appIcon())
 					w.setIconSize(QtCore.QSize(icon_size, icon_size))
 					w.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-					w.setStyleSheet('QToolButton{border: 1px solid; border-color: transparent;} QToolButton:focus{border: 1px solid; border-color: ' + self.app_args.focus_color + ';}') #Remove boarder
+					w.setStyleSheet('QToolButton{border: 1px solid; border-color: transparent;} QToolButton:focus{border: 1px solid; border-color: ' + self.app_args.focus_color + ';}')
 					app_layout.addWidget(w, row, ind % cols)
 
 			if app_layout is not None:

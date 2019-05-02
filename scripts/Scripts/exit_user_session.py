@@ -15,25 +15,30 @@ class ExitUserSessionPopup(QWidget):
 
 	def init_ui(self):
 		self.setWindowTitle('Exit User Session')
-		self.setWindowFlags(self.windowFlags() |
-							QtCore.Qt.Dialog |
-							QtCore.Qt.WindowStaysOnTopHint) # |
-							#QtCore.Qt.FramelessWindowHint)
+		#self.setWindowFlags(self.windowFlags() |
+		#					QtCore.Qt.WindowStaysOnTopHint) # |
+		#					#QtCore.Qt.FramelessWindowHint)
+		self.setFocusPolicy(QtCore.Qt.StrongFocus)
 
 		self.button_logout = QPushButton('Logout', self)
 		self.button_logout.clicked.connect(self.do_logout)
+		self.button_logout.setAutoDefault(True)
 
 		self.button_suspend = QPushButton('Suspend', self)
 		self.button_suspend.clicked.connect(self.do_suspend)
+		self.button_suspend.setAutoDefault(True)
 
 		self.button_reboot = QPushButton('Reboot', self)
 		self.button_reboot.clicked.connect(self.do_reboot)
+		self.button_reboot.setAutoDefault(True)
 
 		self.button_shutdown = QPushButton('Shutdown', self)
 		self.button_shutdown.clicked.connect(self.do_shutdown)
+		self.button_shutdown.setAutoDefault(True)
 
 		self.button_cancel = QPushButton('Cancel', self)
 		self.button_cancel.clicked.connect(self.do_cancel)
+		self.button_cancel.setAutoDefault(True)
 
 		layout = QVBoxLayout()
 		layout.addWidget(self.button_logout)
