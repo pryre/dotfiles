@@ -20,7 +20,9 @@ set $mod Mod4
 set $menu dmenu_path | bemenu -i -w | xargs swaymsg exec
 set $term alacritty
 set $browser firefox
-set $filemanager pcmanfm-qt
+#set $filemanager pcmanfm-qt
+set $filemanager thunar
+set $taskmanager xfce4-taskmanager
 set $guimenu ~/Scripts/qutepy_launcher.py -c
 set $lock swaylock
 set $logout $HOME/Scripts/exit_user_session.py
@@ -54,6 +56,7 @@ include $HOME/.config/sway/config.`hostname`
     bindsym $mod+t exec $term
 	bindsym $mod+e exec $filemanager
 	bindsym $mod+w exec $browser
+	bindsym Control+Shift+Escape exec $taskmanager
 
     # kill focused window
     bindsym $mod+q kill
