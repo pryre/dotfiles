@@ -17,7 +17,7 @@ if [ -z $DISPLAY ] && [ -f /usr/bin/sway ] && [ $(tty) = /dev/tty1 ]; then
 	export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
 
 	#SDL
-	export SDL_VIDEODRIVER=wayland
+	#export SDL_VIDEODRIVER=wayland
 
 	#Java
 	#export _JAVA_AWT_WM_NONREPARENTING=1
