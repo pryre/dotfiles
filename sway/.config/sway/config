@@ -208,8 +208,8 @@ bindsym $mod+Shift+r mode "resize"
 	bindsym XF86AudioMute exec pactl set-sink-mute $(pacmd list-sinks |awk '/* index:/{print $3}') toggle
 
 # Sreen brightness controls
-	bindsym XF86MonBrightnessDown exec $HOME/Scripts/brightness_control.sh step -30
-	bindsym XF86MonBrightnessUp exec $HOME/Scripts/brightness_control.sh step 30
+	bindsym XF86MonBrightnessDown exec $HOME/Scripts/brightness_control.sh step_percent -10
+	bindsym XF86MonBrightnessUp exec $HOME/Scripts/brightness_control.sh step_percent 10
 
 # Touchpad toggles
 	#bindsym XF86TouchpadToggle exec $HOME/.config/sway/scripts/toggletouchpad.sh # toggle touchpad

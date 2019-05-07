@@ -5,10 +5,11 @@ BL_SYS_DIR=/sys/class/backlight
 show_help() {
 	echo "Usage: brightness_control COMMAND <args>"
 	echo "Commands:"
+	echo "    set VALUE [DEVICE]"
 	echo "    step [+/-]STEP"
 	echo "    get_percent [DEVICE]"
-	echo "    set_percent PERCENT"
-	echo "    set VALUE [DEVICE]"
+	echo "    set_percent PERCENT [DEVICE]"
+	echo "    step_percent [+/-]STEP"
 	echo "    show_rules"
 }
 
@@ -30,7 +31,7 @@ do_get_percent_single() {
 do_get_percent() {
 	DEVICE=$1
 
-	if [ $DEVICE -z ]
+	if [ -z $DEVICE ]
 	then
 		# No deviceses specified
 		BRIGHTNESSES=""
@@ -69,7 +70,7 @@ do_set() {
 	VALUE=$1
 	DEVICE=$2
 
-	if [ $DEVICE -z ]
+	if [ -z $DEVICE ]
 	then
 		# No deviceses specified
 		for DEVICE in $(find ${BL_SYS_DIR} -not -path ${BL_SYS_DIR})
@@ -82,17 +83,30 @@ do_set() {
 	fi
 }
 
+do_set_percent_single() {
+	NBP=$1
+	DEVICE=$2
+
+	MB=$(cat ${DEVICE}/max_brightness)
+	NB=$((NBP*MB/100))
+	do_set_single $NB $DEVICE
+}
+
 do_set_percent() {
-	NBP=$(($1))
+	NBP=$1
+	DEVICE=$2
 
-	for DEVICE in $(find ${BL_SYS_DIR} -not -path ${BL_SYS_DIR})
-	do
-		MB=$(cat ${DEVICE}/max_brightness)
-		NB=$((NBP*MB/100))
-
-		do_set_single $NB $DEVICE
-	done
-
+	if [ -z $DEVICE ]
+	then
+		# No deviceses specified
+		for DEVICE in $(find ${BL_SYS_DIR} -not -path ${BL_SYS_DIR})
+		do
+			do_set_percent_single $NB $DEVICE
+		done
+	else
+		# Single device specified
+		do_set_percent_single $NB $DEVICE
+	fi
 }
 
 do_step() {
@@ -100,10 +114,24 @@ do_step() {
 
 	for DEVICE in $(find ${BL_SYS_DIR} -not -path ${BL_SYS_DIR})
 	do
-		B=$(cat ${DEVICE}/brightness)
+		B=$(get_percent ${DEVICE})
 		NB=$((B+STEP))
 
 		do_set_single $NB $DEVICE
+	done
+}
+
+do_step_percent() {
+	STEP=$1
+
+	for DEVICE in $(find ${BL_SYS_DIR} -not -path ${BL_SYS_DIR})
+	do
+		B=$(do_get_percent $DEVICE)
+		NB=$((B+STEP))
+
+		echo $B
+		echo $NB
+		do_set_percent $NB $DEVICE
 	done
 }
 
@@ -119,15 +147,15 @@ then
 			break
 			;;
 		"get_percent")
-			do_get_percent $2
+			do_get_percent $2 $3
 			break
 			;;
 		"set_percent")
-			do_set_percent $2
+			do_set_percent $2 $3
 			break
 			;;
-		"toggle")
-			do_toggle
+		"step_percent")
+			do_step_percent $2
 			break
 			;;
 		"show_rules")

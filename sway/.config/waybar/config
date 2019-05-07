@@ -71,8 +71,8 @@
         "max-length": 40,
         "interval": "once",
         "exec": "$HOME/Scripts/brightness_control.sh get_percent",
-		"on-scroll-up": "$HOME/Scripts/brightness_control.sh step 10 && pkill -RTMIN+8 waybar",
-		"on-scroll-down": "$HOME/Scripts/brightness_control.sh step -10 && pkill -RTMIN+8 waybar",
+		"on-scroll-up": "$HOME/Scripts/brightness_control.sh step_percent 2 && pkill -RTMIN+8 waybar",
+		"on-scroll-down": "$HOME/Scripts/brightness_control.sh step_percent -2 && pkill -RTMIN+8 waybar",
 		"signal": 8
     },
     "battery": {
