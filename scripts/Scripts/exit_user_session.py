@@ -63,15 +63,19 @@ class ExitUserSessionPopup(QWidget):
 
 	def do_logout(self):
 		subprocess.run(["swaymsg", "exit"])
+		self.do_cancel()
 
 	def do_suspend(self):
 		subprocess.run(["systemctl", "suspend"])
+		self.do_cancel()
 
 	def do_reboot(self):
 		subprocess.run(["systemctl", "reboot"])
+		self.do_cancel()
 
 	def do_shutdown(self):
 		subprocess.run(["systemctl", "poweroff"])
+		self.do_cancel()
 
 	def do_cancel(self):
 		self.close()

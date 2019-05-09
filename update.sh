@@ -26,6 +26,7 @@ then
 
 		echo "Merging changes:"
 		git merge
+		git submodule update --init
 		echo ""
 
 		NEW_DIRS=$(ls -d */ | tr -d '/')

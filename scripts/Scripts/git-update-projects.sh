@@ -9,9 +9,10 @@ check_git_update() {
 	if [ "$REPO_STATUS" ]
 	then
 		MERGE_STATUS="$(git merge --ff-only 2>&1)"
+		SUBMODULE_STATUS="$(git submodule update --init 2>&1)"
 
 		TITLE="$(tput bold)$(basename $(pwd))$(tput sgr0)"
-		printf "$TITLE\n$REPO_STATUS\n$MERGE_STATUS\n---\n"
+		printf "$TITLE\n$REPO_STATUS\n$MERGE_STATUS\n$SUBMODULE_STATUS\n---\n"
 	fi
 
 	cd "$START_DIR"
