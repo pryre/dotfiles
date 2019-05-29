@@ -7,9 +7,11 @@
 for_window [title="Exit User Session"] floating enable
 for_window [title="Orage"] floating enable
 for_window [title="SpeedCrunch"] floating enable
+for_window [title="Steam Guard - Computer Authorization Required"] floating enable
 
 ### Auto-Start
 #
-exec dunst
+#exec dunst
+exec mako
 exec $HOME/Scripts/qutepy_launcher.py -k && $HOME/Scripts/list_desktop_applications.sh | $HOME/Scripts/qutepy_launcher.py -d -f -l -n
 exec thunar --daemon

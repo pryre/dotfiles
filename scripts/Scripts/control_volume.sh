@@ -3,7 +3,7 @@ COMMAND=$1
 shift
 SINKS="$@"
 
-MSG_ID=$(echo "control_volume" | md5sum | head -c4 | awk '{print "obase=10; ibase=16; " toupper($1)}' | bc)
+#MSG_ID=$(echo "control_volume" | md5sum | head -c4 | awk '{print "obase=10; ibase=16; " toupper($1)}' | bc)
 
 if [ -z $SINKS ]
 then
@@ -25,10 +25,12 @@ send_notify() {
 	if [ "$VOLUME" -eq 0 ] || [ "$MUTE" ]
 	then
 		# Show the sound muted notification
-		dunstify -t 2000 -a "changeVolume" -u low -i audio-volume-low -r "$MSG_ID" "Volume: ---"
+		#dusntify -t 2000 -a "changeVolume" -u low -i audio-volume-low -r "$MSG_ID" "Volume: ---"
+		notify-send -t 2000 -a "control_volume" -u low -i audio-volume-low "Volume: ---"
 	else
 		# Show the volume notification
-		dunstify -t 2000 -a "changeVolume" -u low -i audio-volume-high -r "$MSG_ID" "Volume: ${VOLUME}%"
+		#dunstify -t 2000 -a "changeVolume" -u low -i audio-volume-high -r "$MSG_ID" "Volume: ${VOLUME}%"
+		notify-send -t 2000 -a "control_volume" -u low -i audio-volume-high "Volume: ${VOLUME}%"
 	fi
 }
 
