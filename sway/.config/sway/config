@@ -203,13 +203,16 @@ bindsym $mod+Shift+r mode "resize"
 ### Keyboard Extras
 #
 # Pulse Audio controls
-	bindsym XF86AudioRaiseVolume exec pactl set-sink-volume $(pacmd list-sinks |awk '/* index:/{print $3}') +5%
-	bindsym XF86AudioLowerVolume exec pactl set-sink-volume $(pacmd list-sinks |awk '/* index:/{print $3}') -5%
-	bindsym XF86AudioMute exec pactl set-sink-mute $(pacmd list-sinks |awk '/* index:/{print $3}') toggle
+	#bindsym XF86AudioRaiseVolume exec pactl set-sink-volume $(pacmd list-sinks |awk '/* index:/{print $3}') +5%
+	#bindsym XF86AudioLowerVolume exec pactl set-sink-volume $(pacmd list-sinks |awk '/* index:/{print $3}') -5%
+	#bindsym XF86AudioMute exec pactl set-sink-mute $(pacmd list-sinks |awk '/* index:/{print $3}') toggle
+	bindsym XF86AudioRaiseVolume exec $HOME/Scripts/control_volume.sh raise
+	bindsym XF86AudioLowerVolume exec $HOME/Scripts/control_volume.sh lower
+	bindsym XF86AudioMute exec $HOME/Scripts/control_volume.sh toggle_mute
 
 # Sreen brightness controls
-	bindsym XF86MonBrightnessDown exec $HOME/Scripts/brightness_control.sh step_percent -10
-	bindsym XF86MonBrightnessUp exec $HOME/Scripts/brightness_control.sh step_percent 10
+	bindsym XF86MonBrightnessDown exec $HOME/Scripts/control_brightness.sh step_percent -10
+	bindsym XF86MonBrightnessUp exec $HOME/Scripts/control_brightness.sh step_percent 10
 
 # Touchpad toggles
 	#bindsym XF86TouchpadToggle exec $HOME/.config/sway/scripts/toggletouchpad.sh # toggle touchpad

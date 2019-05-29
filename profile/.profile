@@ -20,7 +20,7 @@ if [ -z $DISPLAY ] && [ -f /usr/bin/sway ] && [ $(tty) = /dev/tty1 ]; then
 	#export SDL_VIDEODRIVER=wayland
 
 	#Java
-	#export _JAVA_AWT_WM_NONREPARENTING=1
+	export _JAVA_AWT_WM_NONREPARENTING=1
 
 	### Theming
 	#

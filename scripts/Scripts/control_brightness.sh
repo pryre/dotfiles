@@ -3,7 +3,7 @@
 BL_SYS_DIR=/sys/class/backlight
 
 show_help() {
-	echo "Usage: brightness_control COMMAND <args>"
+	echo "Usage: control_brightness COMMAND <args>"
 	echo "Commands:"
 	echo "    set VALUE [DEVICE]"
 	echo "    step [+/-]STEP"
