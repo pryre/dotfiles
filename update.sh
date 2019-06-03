@@ -35,7 +35,7 @@ then
 		stow $NEW_DIRS
 
 		git submodule update
-		gtk-update-icon-cache ~/.icons/la-capitaine-icon-theme
+		gtk-update-icon-cache ~/.local/share/icons/la-capitaine-icon-theme/
 	else
 		echo "Dotfiles are up to date!"
 	fi
