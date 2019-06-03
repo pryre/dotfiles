@@ -86,6 +86,10 @@ window > box {
 	color: gray;
 }
 
+#network.linked {
+	color: gray;
+}
+
 #pulseaudio.muted {
 	color: gray;
 }
