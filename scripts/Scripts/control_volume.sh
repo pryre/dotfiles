@@ -1,7 +1,11 @@
 #!/bin/sh
 COMMAND=$1
-shift
-SINKS="$@"
+SINKS=""
+if [ $# -ge 2 ]
+then
+	shift
+	SINKS="$@"
+fi
 
 #MSG_ID=$(echo "control_volume" | md5sum | head -c4 | awk '{print "obase=10; ibase=16; " toupper($1)}' | bc)
 
@@ -19,8 +23,9 @@ show_help() {
 }
 
 send_notify() {
-	VOLUME=$(pactl list sinks | grep "Volume:" | grep -v "Base" | awk '{print $5}' | sed -e 's/%//')
-	MUTE=$(pactl list sinks | grep "Mute: yes")
+	SINK_LIST=$(pactl list sinks)
+	VOLUME=$(echo "$SINK_LIST" | grep "Volume:" | grep -v "Base" | awk '{print $5}' | sed -e 's/%//')
+	MUTE=$(echo "$SINK_LIST" | grep "Mute: yes")
 
 	if [ "$VOLUME" -eq 0 ] || [ "$MUTE" ]
 	then
