@@ -6,7 +6,7 @@
     // Choose the order of the modules
     //"modules-left": ["sway/workspaces", "sway/mode"],
     "modules-left": ["custom/launcher","sway/workspaces"],
-    //"modules-center": ["sway/window"],
+    "modules-center": ["sway/mode"],
     //"modules-right": ["idle_inhibitor", "pulseaudio", "network", "cpu", "memory", "temperature", "backlight", "battery", "battery#bat2", "clock", "tray"],
     "modules-right": ["tray", "network#ether", "network#wifi", "pulseaudio", "custom/backlight", "battery", "clock", "custom/exit"],
     // Modules configuration
@@ -26,7 +26,8 @@
     //     }
     // },
     "sway/mode": {
-        "format": "<span style=\"italic\">{}</span>"
+        "format": "<span style=\"italic\">{}</span>",
+        "rotate": 90
     },
     //"idle_inhibitor": {
     //    "format": "{icon}",
