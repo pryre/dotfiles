@@ -1,18 +1,25 @@
 #!/bin/sh
+
+
 COMMAND=$1
 SINKS=""
 if [ $# -ge 2 ]
 then
-	shift
-	SINKS="$@"
+	if [ $2 = '-a' ]
+	then
+		# Use all sinks if flagged
+		SINKS=$(pacmd list-sinks | tr \* ' ' | awk '/index:/{print $2}')
+	else
+		# Use list of sinks if provided
+		shift
+		SINKS="$@"
+	fi
+else
+	# Use default sink if none provided
+	SINKS=$(pacmd list-sinks | grep '*' | tr \* ' ' | awk '/index:/{print $2}')
 fi
 
 #MSG_ID=$(echo "control_volume" | md5sum | head -c4 | awk '{print "obase=10; ibase=16; " toupper($1)}' | bc)
-
-if [ -z $SINKS ]
-then
-	SINKS=$(pacmd list-sinks |awk '/* index:/{print $3}')
-fi
 
 show_help() {
 	echo "Usage: control_volume COMMAND <args>"
@@ -22,37 +29,65 @@ show_help() {
 	echo "    raise [DEVICES]"
 }
 
-send_notify() {
-	SINK_LIST=$(pactl list sinks)
-	VOLUME=$(echo "$SINK_LIST" | grep "Volume:" | grep -v "Base" | awk '{print $5}' | sed -e 's/%//')
-	MUTE=$(echo "$SINK_LIST" | grep "Mute: yes")
+do_cmd_many() {
+	CMD=$1
+	ARGS=$2
+	shift
+	shift
+    SINKS="$@"
+	for SINK in $SINKS
+	do
+		$CMD $SINK $ARGS
+	done
+}
 
-	if [ "$VOLUME" -eq 0 ] || [ "$MUTE" ]
-	then
-		# Show the sound muted notification
-		#dusntify -t 2000 -a "changeVolume" -u low -i audio-volume-low -r "$MSG_ID" "Volume: ---"
-		notify-send -t 2000 -a "control_volume" -u low -i audio-volume-low "Volume: ---"
-	else
-		# Show the volume notification
-		#dunstify -t 2000 -a "changeVolume" -u low -i audio-volume-high -r "$MSG_ID" "Volume: ${VOLUME}%"
-		notify-send -t 2000 -a "control_volume" -u low -i audio-volume-high "Volume: ${VOLUME}%"
-	fi
+do_get_volume_many() {
+	SINKS=$@
+	SINKS_DETAILS=$(pacmd list-sinks | \
+				  grep -e 'index' -e 'volume:' -e 'device.description' -e 'muted' | \
+				  grep -e 'base volume' -v)
+
+	for SINK in $SINKS
+	do
+		SINK_DETAILS=$(echo "$SINKS_DETAILS" | grep -e "index: $SINK" -A 3 | grep -e index -v)
+		SINK_VOLUME=$(echo "$SINK_DETAILS" | grep "volume" | awk '{print $5}' | sed -e 's/%//')
+		SINK_MUTED=$(echo "$SINK_DETAILS" | grep "muted: yes")
+		SINK_NAME=$(echo "$SINK_DETAILS" | grep "description" | cut -d '"' -f 2 | cut -d '[' -f 1 | cut -d '(' -f 1 | sed 's/[[:space:]]*$//')
+
+		if [ "$SINK_VOLUME" -eq 0 ] || [ "$SINK_MUTED" ]
+		then
+			echo "$SINK_NAME: ---"
+		else
+			echo "$SINK_NAME: ${SINK_VOLUME}%"
+		fi
+	done
+}
+
+send_notify() {
+	SINKS=$@
+	VOLUMES=$(do_get_volume_many $SINKS)
+	#echo "$VOLUMES"
+	notify-send -t 2000 -a "control_volume" -u low -i audio-volume-high "$VOLUMES"
+#	notify-send -t 2000 -a "control_volume" -u low -i audio-volume-low "Volume: ---"
 }
 
 case $COMMAND in
 	"toggle_mute")
-		pactl set-sink-mute $SINKS toggle
-		send_notify
+		#pactl set-sink-mute $SINKS toggle
+		do_cmd_many "pactl set-sink-mute" "toggle" $SINKS
+		send_notify $SINKS
 		break
 		;;
 	"lower")
-		pactl set-sink-volume $SINKS -5%
-		send_notify
+		#pactl set-sink-volume $SINKS -5%
+		do_cmd_many "pactl set-sink-volume" "-5%" $SINKS
+		send_notify $SINKS
 		break
 		;;
 	"raise")
-		pactl set-sink-volume $SINKS +5%
-		send_notify
+		#pactl set-sink-volume $SINKS +5%
+		do_cmd_many "pactl set-sink-volume" "+5%" $SINKS
+		send_notify $SINKS
 		break
 		;;
 	*)
