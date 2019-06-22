@@ -38,7 +38,7 @@ if [ -z $DISPLAY ] && [ -f /usr/bin/sway ] && [ $(tty) = /dev/tty1 ]; then
 	SWAYCACHE=$HOME/.cache/sway
 	mkdir -p $SWAYCACHE
 	mv $SWAYCACHE/sway.log $SWAYCACHE/sway.log.old
-	exec sway 2> $SWAYCACHE/sway.log
+	exec sway > $SWAYCACHE/sway.log 2>&1
 	
 	#WLR_RDP_TLS_CERT_PATH=$HOME/.ssh/tls.crt \
 	#WLR_RDP_TLS_KEY_PATH=$HOME/.ssh/tls.key \
