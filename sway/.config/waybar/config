@@ -93,8 +93,8 @@
         "interface": "eth0", // (Optional) To force the use of this interface
         "format-wifi": "",
         "format-ethernet": "",
-    //    "tooltip-format-wifi": "{essid} ({signalStrength}%) ",
-        "format-alt": "{ifname} ({essid}): {ipaddr}/{cidr}",
+        "tooltip-format": "{ifname}: {ipaddr}/{cidr}",
+		"tooltip-format-disconnected": "{ifname}: Disconnected",
         "format-linked": "",
         "format-disconnected": ""
     },
@@ -104,7 +104,8 @@
         "format-ethernet": "",
         "format-linked": "",
         "format-disconnected": "",
-        "format-alt": "{ifname} ({essid}): {ipaddr}/{cidr}"
+		"tooltip-format-disconnected": "{ifname}: Disconnected",
+        "tooltip-format": "{ifname} ({essid} - {signalStrength}%): {ipaddr}/{cidr}"
     },
     "pulseaudio": {
         "scroll-step": 5,

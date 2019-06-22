@@ -8,3 +8,11 @@ for_window [title="Exit User Session"] floating enable
 for_window [title="Orage"] floating enable
 for_window [title="SpeedCrunch"] floating enable
 for_window [title="Steam Guard - Computer Authorization Required"] floating enable
+
+### Workaround for waybar popup positioning
+for_window [app_id="waybar" floating] {
+    #move position pointer
+    #move right 120px # Guess adjustment to make sure windows sort of stay on screen
+	move position 0 850
+}
+
