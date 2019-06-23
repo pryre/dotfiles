@@ -4,5 +4,5 @@
 ### Auto-Start
 #
 exec mako
-exec $HOME/Scripts/qutepy_launcher.py -k && $HOME/Scripts/list_desktop_applications.sh | $HOME/Scripts/qutepy_launcher.py -d -f -l -n
+exec $HOME/Scripts/qutepy_launcher.py -k && $HOME/Scripts/list_desktop_applications.sh | QT_QPA_PLATFORM=xcb $HOME/Scripts/qutepy_launcher.py -d -f -l -n
 exec thunar --daemon
