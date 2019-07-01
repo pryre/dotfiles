@@ -12,8 +12,8 @@ if [ -z $DISPLAY ] && [ -f /usr/bin/sway ] && [ $(tty) = /dev/tty1 ]; then
 	export GDK_BACKEND=wayland
 	#export CLUTTER_BACKEND=wayland
 
-	#Qt
-	#QT_QPA_PLATFORM=wayland-egl
+	#Qt (should use wayland by default)
+	#export QT_QPA_PLATFORM=xcb
 	export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
 
 	#SDL

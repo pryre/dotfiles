@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 COMMAND=$1
 SINKS=""
 if [ $# -ge 2 ]
@@ -20,6 +19,7 @@ else
 fi
 
 #MSG_ID=$(echo "control_volume" | md5sum | head -c4 | awk '{print "obase=10; ibase=16; " toupper($1)}' | bc)
+MSG_ID_FILE="$XDG_RUNTIME_DIR/notifications/volume"
 
 show_help() {
 	echo "Usage: control_volume COMMAND <args>"
@@ -67,7 +67,8 @@ send_notify() {
 	SINKS=$@
 	VOLUMES=$(do_get_volume_many $SINKS)
 	#echo "$VOLUMES"
-	notify-send -t 2000 -a "control_volume" -u low -i audio-volume-high "$VOLUMES"
+	notify-send.sh -t 2000 -a "control_volume" -u low -i audio-volume-high -R "$MSG_ID_FILE" "$VOLUMES"
+#	notify-send -t 2000 -a "control_volume" -u low -i audio-volume-high "$VOLUMES"
 #	notify-send -t 2000 -a "control_volume" -u low -i audio-volume-low "Volume: ---"
 }
 

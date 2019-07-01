@@ -1,6 +1,7 @@
 #!/bin/sh
 
 BL_SYS_DIR=/sys/class/backlight
+MSG_ID_FILE="$XDG_RUNTIME_DIR/notifications/brightness"
 
 show_help() {
 	echo "Usage: control_brightness COMMAND <args>"
