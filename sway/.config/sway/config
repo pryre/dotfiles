@@ -9,6 +9,7 @@ set $mod Mod4
 # Your preferred application launcher
 # Note: it's recommended that you pass the final command to sway
 
+
 ### Default applications
 # (Should ve included before keybinds)
 include $HOME/.config/sway/config.apps
@@ -69,6 +70,8 @@ gaps outer 0
 titlebar_padding 5 2
 
 output "*" background $HOME/.background fill
+
+include $HOME/.config/sway/config.theme
 
 include $HOME/.config/sway/config.windows
 
