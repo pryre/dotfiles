@@ -2,6 +2,7 @@ set nowrap
 set tabsize 4
 set multibuffer
 #set linenumbers
+set speller "aspell -x -c"
 
 include "~/.nano/apacheconf.nanorc"
 include "~/.nano/arduino.nanorc"
