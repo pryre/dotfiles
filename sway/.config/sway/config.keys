@@ -1,7 +1,9 @@
-### Key bindings
+### Key Setup
 #
+input '*' xkb_numlock enabled
 
-### Basics:
+
+### Bindings:
 #
 # Home row direction keys, like vim
 #set $left h

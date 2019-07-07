@@ -14,6 +14,8 @@ BUILD_DIR="$XDG_RUNTIME_DIR/latex/$(echo $BASE_FILE | tr '/' '_' | tail -c 250)"
 mkdir -p $BUILD_DIR
 echo "Building in $BUILD_DIR"
 
+export max_print_line=10000
+
 LFLAGS="-interaction=nonstopmode --output-directory $BUILD_DIR"
 #pdflatex -output-directory "$BUILD_DIR" "$RPATH"
 OUTNAME=$(pdflatex $LFLAGS "$RPATH" | grep -F "Output written on")
