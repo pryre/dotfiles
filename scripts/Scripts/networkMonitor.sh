@@ -1,5 +1,13 @@
 #!/bin/sh
 
+NIPATH="$HOME/.local/share/icons/la-capitaine-icon-theme/devices/scalable/"
+NINAME_DISCONNECTED="network-wired-disconnected.svg"
+NINAME_ETH_WAITING="network-wired-acquiring.svg"
+NINAME_ETH_CONNECTED="network-wired-symbolic.svg"
+NINAME_WL_BLOCKED="network-wireless-disconnected.svg"
+NINAME_WL_UNBLOCKED="network-wireless-connected-25.svg"
+NINAME_WL_CONNECTED="network-wireless-connected-100.svg"
+
 DEVICE=$1
 CONN_STATUS=$(ip addr | grep "$DEVICE" | grep 'state UP')
 
@@ -53,7 +61,7 @@ else
 fi
 
 # Set the default icon (disconnected/doesn't exist)
-IMG_PATH="<img>/home/pryre/.icons/la-capitaine-icon-theme/devices/scalable/network-wired-disconnected.svg</img>"
+IMG_PATH="<img>${NIPATH}${NINAME_DISCONNECTED}</img>"
 TOOLTIP_PRE="Status"
 
 case "$DEVICE" in
@@ -62,9 +70,9 @@ case "$DEVICE" in
 
 		if [ -z "$CONN_STATUS" ];
 		then #Connection is not running
-			IMG_PATH="<img>/home/pryre/.icons/la-capitaine-icon-theme/devices/scalable/network-wired-acquiring.svg</img>"
+			IMG_PATH="<img>${NIPATH}${NINAME_ETH_WAITING}</img>"
 		else #Connection up and running
-			IMG_PATH="<img>/home/pryre/.icons/la-capitaine-icon-theme/devices/scalable/network-wired-symbolic.svg</img>"
+			IMG_PATH="<img>${NIPATH}${NINAME_ETH_CONNECTED}</img>"
 		fi
 
 	;;
@@ -77,13 +85,13 @@ case "$DEVICE" in
 
 			if [ -z "$RF_STATUS" ];
 			then #Connection is unblocked
-				IMG_PATH="<img>/home/pryre/.icons/la-capitaine-icon-theme/devices/scalable/network-wireless-connected-25.svg</img>"
+				IMG_PATH="<img>${NIPATH}${NINAME_WL_UNBLOCKED}</img>"
 			else
 				#Connection is blocked
-				IMG_PATH="<img>/home/pryre/.icons/la-capitaine-icon-theme/devices/scalable/network-wireless-disconnected.svg</img>"
+				IMG_PATH="<img>${NIPATH}${NINAME_WL_BLOCKED}</img>"
 			fi
 		else #Connection up and running
-			IMG_PATH="<img>/home/pryre/.icons/la-capitaine-icon-theme/devices/scalable/network-wireless-connected-100.svg</img>"
+			IMG_PATH="<img>${NIPATH}${NINAME_WL_CONNECTED}</img>"
 		fi
 	;;
 	*) #Case: the device type could not be found
