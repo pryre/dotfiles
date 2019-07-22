@@ -6,12 +6,14 @@ then
     return 1
 fi
 
-RPATH=$(realpath $1)
-BNAME=$(basename -s .tex $RPATH)
-BASE_FILE="$(dirname $RPATH)/$BNAME"
-BUILD_DIR="$XDG_RUNTIME_DIR/latex/$(echo $BASE_FILE | tr '/' '_' | tail -c 250)"
+#RPATH=$(realpath $1)
+#BNAME=$(basename -s .tex $RPATH)
+#BASE_FILE="$(dirname $RPATH)/$BNAME"
+#BUILD_DIR="$XDG_RUNTIME_DIR/latex/$(echo $BASE_FILE | tr '/' '_' | tail -c 250)"
 
-mkdir -p $BUILD_DIR
+#mkdir -p $BUILD_DIR
+
+. $HOME/Scripts/latex_clean_getbuilddir.sh $1
 echo "Building in $BUILD_DIR"
 
 export max_print_line=10000
