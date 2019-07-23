@@ -20,7 +20,7 @@ do_show_rules() {
 	echo '    SUBSYSTEM=="backlight", ACTION=="add", RUN+="/bin/chgrp video /sys/class/backlight/%k/brightness", RUN+="/bin/chmod g+w /sys/class/backlight/%k/brightness"'
 }
 
-do_get_percent_single() {
+do_get_percent_raw() {
 	DEVICE=$1
 	B=$(cat ${DEVICE}/brightness)
 	MB=$(cat ${DEVICE}/max_brightness)
@@ -30,23 +30,17 @@ do_get_percent_single() {
 }
 
 do_get_percent() {
-	DEVICE=$1
+	DEVICES=$1
 
-	if [ -z $DEVICE ]
+	if [ -z $DEVICES ]
 	then
-		# No deviceses specified
-		BRIGHTNESSES=""
-
-		for DEVICE in $(find ${BL_SYS_DIR} -not -path ${BL_SYS_DIR})
-		do
-			BRIGHTNESSES="$BRIGHTNESSES $(do_get_percent_single $DEVICE)"
-		done
-
-		echo $BRIGHTNESSES
-	else
-		# Single device specified
-		echo $(do_get_percent_single $DEVICE)
+    	DEVICES=$(find ${BL_SYS_DIR} -not -path ${BL_SYS_DIR})
 	fi
+
+	for DEVICE in $DEVICES
+	do
+		echo "$(basename $DEVICE): $(do_get_percent_raw $DEVICE)%"
+	done
 }
 
 do_set_single() {
@@ -115,7 +109,7 @@ do_step() {
 
 	for DEVICE in $(find ${BL_SYS_DIR} -not -path ${BL_SYS_DIR})
 	do
-		B=$(get_percent ${DEVICE})
+		B=$(do_get_percent_raw ${DEVICE})
 		NB=$((B+STEP))
 
 		do_set_single $NB $DEVICE
@@ -127,7 +121,7 @@ do_step_percent() {
 
 	for DEVICE in $(find ${BL_SYS_DIR} -not -path ${BL_SYS_DIR})
 	do
-		B=$(do_get_percent $DEVICE)
+		B=$(do_get_percent_raw $DEVICE)
 		NB=$((B+STEP))
 
 		echo $B
@@ -136,27 +130,35 @@ do_step_percent() {
 	done
 }
 
+send_notify() {
+	notify-send.sh -t 2000 -a "control_brightness" -u low -i display-brightness-symbolic -R "$MSG_ID_FILE" "$(do_get_percent)"
+}
+
 if [ $# -ge 0 ]
 then
 	case $1 in
 		"step")
 			do_step $2
+			send_notify
 			break
 			;;
 		"set")
 			do_set $2 $3
+			send_notify
 			break
 			;;
 		"get_percent")
-			do_get_percent $2 $3
+			do_get_percent $2
 			break
 			;;
 		"set_percent")
 			do_set_percent $2 $3
+			send_notify
 			break
 			;;
 		"step_percent")
 			do_step_percent $2
+			send_notify
 			break
 			;;
 		"show_rules")
