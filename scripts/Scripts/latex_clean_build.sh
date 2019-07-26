@@ -6,6 +6,8 @@ then
     return 1
 fi
 
+INPUT_TEX=$1
+
 #RPATH=$(realpath $1)
 #BNAME=$(basename -s .tex $RPATH)
 #BASE_FILE="$(dirname $RPATH)/$BNAME"
@@ -13,7 +15,7 @@ fi
 
 #mkdir -p $BUILD_DIR
 
-. $HOME/Scripts/latex_clean_getbuilddir.sh $1
+. $HOME/Scripts/latex_clean_getbuilddir.sh $INPUT_TEX
 echo "Building in $BUILD_DIR"
 
 export max_print_line=10000

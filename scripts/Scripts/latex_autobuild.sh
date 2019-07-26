@@ -10,5 +10,9 @@ PDF_F=$1
 while inotifywait -e modify -e access -e attrib "$PDF_F"
 do
 	echo "$PDF_F modified"
-	~/Scripts/latex_clean_build.sh "$PDF_F"
+	$HOME/Scripts/latex_clean_build.sh "$PDF_F"
+
+	echo "--- Quicklog ---"
+	$HOME/Scripts/latex_clean_quicklog.sh "$PDF_F"
+	echo "----------------"
 done
