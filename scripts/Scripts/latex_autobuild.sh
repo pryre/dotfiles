@@ -9,6 +9,8 @@ fi
 PDF_F=$1
 while inotifywait -e modify -e access -e attrib "$PDF_F"
 do
+	clear
+
 	echo "$PDF_F modified"
 	$HOME/Scripts/latex_clean_build.sh "$PDF_F"
 
