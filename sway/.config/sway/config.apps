@@ -4,8 +4,8 @@
 set $menu dmenu_path | bemenu -i -w | xargs swaymsg exec
 set $term alacritty
 set $browser firefox
-#set $filemanager pcmanfm-qt
-set $filemanager thunar
+set $filemanager pcmanfm-qt
+#set $filemanager thunar
 set $taskmanager xfce4-taskmanager
 set $calculator speedcrunch
 set $guimenu ~/Scripts/qutepy_launcher.py -c

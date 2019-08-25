@@ -15,4 +15,5 @@ exec mako
 exec $HOME/Scripts/qutepy_launcher.py -k && $HOME/Scripts/list_desktop_applications.sh | $HOME/Scripts/qutepy_launcher.py -d -f -l -n
 
 # File Manager Daemon
-exec thunar --daemon
+#exec thunar --daemon
+exec pcmanfm-qt -d
