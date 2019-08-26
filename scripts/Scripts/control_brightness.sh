@@ -96,11 +96,11 @@ do_set_percent() {
 		# No deviceses specified
 		for DEVICE in $(find ${BL_SYS_DIR} -not -path ${BL_SYS_DIR})
 		do
-			do_set_percent_single $NB $DEVICE
+			do_set_percent_single $NBP $DEVICE
 		done
 	else
 		# Single device specified
-		do_set_percent_single $NB $DEVICE
+		do_set_percent_single $NBP $DEVICE
 	fi
 }
 
