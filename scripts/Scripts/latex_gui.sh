@@ -4,7 +4,7 @@
 #for IFNAME in $@; do :; done
 #CREATE_NEW_FILE=false
 #if [ $# -ge 2 ] && [ "$1" = '-c' ]; then CREATE_NEW_FILE=true; fi
-IFNAME=$1
+IFNAME=$(realpath $1)
 
 # Make sure arguments are valid
 if [ "$(basename -s .tex $IFNAME | grep -F '.tex')" ]; then
@@ -52,7 +52,8 @@ cd "$(dirname $IFNAME)"
 FNAME="$(basename $IFNAME)"
 PNAME="$(basename -s .tex $FNAME).pdf"
 
-if [ ! -e "$IFNAME" ]
+# Create the file if it does not exist
+if [ ! -f "$IFNAME" ]
 then
 	echo "Creating file: $IFNAME"
 	minimal_template > $IFNAME
