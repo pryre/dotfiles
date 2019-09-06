@@ -96,7 +96,7 @@ scrolling:
 # Some applications, like Emacs, rely on knowing about the width of a tab.
 # To prevent unexpected behavior in these applications, it's also required to
 # change the `it` value in terminfo when altering this setting.
-tabspaces: 8
+tabspaces: 4
 
 # Font configuration (changes require restart)
 font:
@@ -175,24 +175,24 @@ draw_bold_text_with_bright_colors: true
 colors:
   # Default colors
   primary:
-    background: '0x151515'
-    foreground: '0xD28445'
+    background: '0x1A1A1A'
+    foreground: '0xCC8843'
 
   # Colors the cursor will use if `custom_cursor_colors` is true
   cursor:
-    text: '0x151515'
-    cursor: '0xd0d0d0'
+    text: '0x1A1A1A'
+    cursor: '0xFFFFFF'
 
   # Normal colors
   normal:
     black:   '0x151515'
-    red:     '0xac4142'
-    green:   '0x90a959'
-    yellow:  '0xf4bf75'
-    blue:    '0x6a9fb5'
-    magenta: '0xaa759f'
-    cyan:    '0x75b5aa'
-    white:   '0xd0d0d0'
+    red:     '0xCC4343'
+    green:   '0x669932'
+    yellow:  '0xF4Bf75'
+    blue:    '0x326699'
+    magenta: '0xAB3872'
+    cyan:    '0x329999'
+    white:   '0xABABAB'
 
   # Bright colors
   #bright:
