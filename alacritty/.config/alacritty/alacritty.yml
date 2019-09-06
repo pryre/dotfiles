@@ -181,7 +181,7 @@ colors:
   # Colors the cursor will use if `custom_cursor_colors` is true
   cursor:
     text: '0x1A1A1A'
-    cursor: '0xFFFFFF'
+    cursor: '0xABABAB'
 
   # Normal colors
   normal:
