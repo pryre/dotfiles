@@ -181,7 +181,7 @@ colors:
   # Colors the cursor will use if `custom_cursor_colors` is true
   cursor:
     text: '0x1A1A1A'
-    cursor: '0xABABAB'
+    cursor: '0xCCCCCC'
 
   # Normal colors
   normal:
@@ -192,7 +192,7 @@ colors:
     blue:    '0x326699'
     magenta: '0xAB3872'
     cyan:    '0x329999'
-    white:   '0xABABAB'
+    white:   '0xCCCCCC'
 
   # Bright colors
   #bright:
