@@ -35,14 +35,13 @@ if [ -z $DISPLAY ] && [ -f /usr/bin/sway ] && [ $(tty) = /dev/tty1 ]; then
 
 	### Run Sway
 	#
+	#export WLR_RDP_TLS_CERT_PATH=$HOME/.ssh/rdp/tls.crt
+	#export WLR_RDP_TLS_KEY_PATH=$HOME/.ssh/rdp/tls.key
+	#export WLR_BACKENDS=rdp
+
 	SWAYCACHE=$HOME/.cache/sway
 	mkdir -p $SWAYCACHE
 	mv $SWAYCACHE/sway.log $SWAYCACHE/sway.log.old
 	exec sway > $SWAYCACHE/sway.log 2>&1
-	
-	#WLR_RDP_TLS_CERT_PATH=$HOME/.ssh/tls.crt \
-	#WLR_RDP_TLS_KEY_PATH=$HOME/.ssh/tls.key \
-	#WLR_BACKENDS=rdp \
-	#sway
 fi
 
