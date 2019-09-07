@@ -1,3 +1,8 @@
+### User Setup
+#
+export EDITOR=kak
+export PATH=~/.local/bin:$PATH
+
 ### Sway auto-start
 #
 if [ -z $DISPLAY ] && [ -f /usr/bin/sway ] && [ $(tty) = /dev/tty1 ]; then

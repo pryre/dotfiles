@@ -39,7 +39,12 @@ open_gui() {
 	alacritty --title "Latex GUI - $FNAME [pdf]" -e bash -c "${BASH_PRE}${HOMERC} \; ${PDFCMD}${BASH_LAT}" &
 	PID_PDF=$!
 
-	nano $FNAME
+	if [ "$EDITOR" ]
+	then
+		$EDITOR $FNAME
+	else
+		edit $FNAME
+	fi
 
 	kill $PID_LOG $PID_BIB $PID_AUT $PID_PDF 2> /dev/null
 
