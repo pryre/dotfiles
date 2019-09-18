@@ -3,3 +3,7 @@ set-option global indentwidth 0
 
 colorscheme base16-sunburn
 
+#Soft Wrapping
+def softwarp-enable 'add-highlighter buffer/ wrap -word'
+def softwarp-disable 'remove-highlighter buffer/wrap_-word'
+
