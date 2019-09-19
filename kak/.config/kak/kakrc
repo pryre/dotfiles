@@ -1,5 +1,18 @@
+# Themes
+colorscheme base16-sunburn
+
+# Display options
 set-option global tabstop 4
 set-option global indentwidth 0
 
-colorscheme base16-sunburn
+# Keybinds
+# Tab auto-completion
+hook global InsertCompletionShow .* %{ map window insert <tab> <c-n>; map window insert <s-tab> <c-p> }
+hook global InsertCompletionHide .* %{ unmap window insert <tab> <c-n>; unmap window insert <s-tab> <c-p> }
+# Shortcuts to enter normal mode
+map global normal <ret> <i><ret>
+map global normal <del> <i><del>
+map global normal <backspace> <i><backspace>
+# Wrapping commands
+
 

@@ -3,6 +3,10 @@
 export EDITOR=kak
 export PATH=~/.local/bin:$PATH
 
+alias ed="$EDITOR"
+alias ls='ls --color=auto'
+alias la='ls -a'
+
 ### Sway auto-start
 #
 if [ -z $DISPLAY ] && [ -f /usr/bin/sway ] && [ $(tty) = /dev/tty1 ]; then
