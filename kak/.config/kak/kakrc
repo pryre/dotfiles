@@ -16,3 +16,7 @@ map global normal <backspace> <i><backspace>
 # Wrapping commands
 
 
+#Soft Wrapping
+def softwarp-enable 'add-highlighter buffer/ wrap -word'
+def softwarp-disable 'remove-highlighter buffer/wrap_-word'
+
