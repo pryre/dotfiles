@@ -13,10 +13,14 @@ hook global InsertCompletionHide .* %{ unmap window insert <tab> <c-n>; unmap wi
 map global normal <ret> <i><ret>
 map global normal <del> <i><del>
 map global normal <backspace> <i><backspace>
-# Wrapping commands
-
-
+# Arrow Movements
+#map global normal <c-l> <w><\;>
+#map global normal <c-h> <b><\;>
+#map global normal <c-right> <w><\;>
+#map global normal <c-left> <b><\;>
 #Soft Wrapping
 def softwarp-enable 'add-highlighter buffer/ wrap -word'
 def softwarp-disable 'remove-highlighter buffer/wrap_-word'
-
+#Commenting
+map global normal '#' :comment-line<ret> -docstring 'comment line'
+map global normal '<a-#>' :comment-block<ret> -docstring 'comment block'
