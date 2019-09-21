@@ -1,3 +1,12 @@
 # Mako config file
 
+# Option
+default-timeout=5000
+
+# Theme
+text-color=#CC8843
+background-color=#262626
+border-color=#996632
+border-size=4
+
 icon-path=/home/pryre/.local/share/icons/la-capitaine-icon-theme/apps/:home/pryre/.local/share/icons/la-capitaine-icon-theme/devices/
