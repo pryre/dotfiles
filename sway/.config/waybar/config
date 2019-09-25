@@ -96,7 +96,8 @@
         "tooltip-format": "{ifname}: {ipaddr}/{cidr}",
 		"tooltip-format-disconnected": "{ifname}: Disconnected",
         "format-linked": "",
-        "format-disconnected": ""
+        "format-disconnected": "",
+		"on-click": "netctl restart eth0-dhcp"
     },
     "network#wifi": {
         "interface": "wlan*", // (Optional) To force the use of this interface
@@ -105,8 +106,9 @@
         "format-linked": "",
         "format-disconnected": "",
 		"tooltip-format-disconnected": "{ifname}: Disconnected",
-        "tooltip-format": "{ifname} ({essid} - {signalStrength}%): {ipaddr}/{cidr}"
-    },
+        "tooltip-format": "{ifname} ({essid} - {signalStrength}%): {ipaddr}/{cidr}",
+		"on-click": "systemctl restart netctl-auto@wlan0.service"
+	},
     "pulseaudio": {
         "scroll-step": 5,
         "format": "{icon}",
