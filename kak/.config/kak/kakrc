@@ -5,6 +5,10 @@ colorscheme base16-sunburn
 set-option global tabstop 4
 set-option global indentwidth 0
 
+# Hooks
+# Remove trailing whitespace on save
+hook global BufWritePre .* %{try %{exec -draft '%s\h+$<ret>d'}}
+
 # Keybinds
 # Tab auto-completion
 hook global InsertCompletionShow .* %{ map window insert <tab> <c-n>; map window insert <s-tab> <c-p> }
