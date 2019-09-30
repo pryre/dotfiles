@@ -65,9 +65,15 @@ then
 fi
 
 #Perform a clean build first to create the environment
-if ~/Scripts/latex_clean_build.sh $FNAME
+~/Scripts/latex_clean_build.sh $FNAME
+BUILD_SUCCESS=$?
+if [ $BUILD_SUCCESS -ne 0 ]
+then
+	read -p"Press enter to continue..." INPUT
+	BUILD_SUCCESS=$?
+fi
+
+if [ $BUILD_SUCCESS -eq 0 ]
 then
 	open_gui $FNAME $PNAME
-else
-	echo "Unable to build .tex file, are you sure this is a valid text file?"
 fi

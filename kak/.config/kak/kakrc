@@ -25,6 +25,8 @@ map global normal <backspace> <i><backspace>
 #Soft Wrapping
 def softwarp-enable 'add-highlighter buffer/ wrap -word'
 def softwarp-disable 'remove-highlighter buffer/wrap_-word'
-#Commenting
+# Commenting
 map global normal '#' :comment-line<ret> -docstring 'comment line'
 map global normal '<a-#>' :comment-block<ret> -docstring 'comment block'
+# Latex spell checking
+source ~/.config/kak/rc/spell-tex.kak
