@@ -3,6 +3,8 @@
 export EDITOR=kak
 export PATH=~/.local/bin:$PATH
 
+stty -ctlecho
+
 alias ed="$EDITOR"
 alias ls='ls --color=auto'
 alias la='ls -a'
