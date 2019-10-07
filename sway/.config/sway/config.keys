@@ -177,10 +177,10 @@ bindsym XF86MonBrightnessUp exec $HOME/Scripts/control_brightness.sh step_percen
 #bindsym XF86TouchpadToggle exec $HOME/.config/sway/scripts/toggletouchpad.sh # toggle touchpad
 
 # Media player controls
-bindsym XF86AudioPlay exec $HOME/Scripts/deadbeef-play-pause.sh
-#bindsym XF86AudioPause exec playerctl pause
-#bindsym XF86AudioNext exec playerctl next
-#bindsym XF86AudioPrev exec playerctl previous
+bindsym XF86AudioPlay exec playerctl play-pause || $player-music-autostart
+# bindsym XF86AudioPause exec playerctl pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
 
 # Shortcut buttons
 bindsym Print exec grim $HOME/Pictures/$(date +'%Y-%m-%d-%H-%M-%S_screenshot.png')
