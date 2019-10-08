@@ -15,7 +15,7 @@ hook global InsertCompletionShow .* %{ map window insert <tab> <c-n>; map window
 hook global InsertCompletionHide .* %{ unmap window insert <tab> <c-n>; unmap window insert <s-tab> <c-p> }
 # Shortcuts to enter normal mode
 map global normal <ret> <i><ret>
-map global normal <del> <i><del>
+map global normal <del> <a-c>
 map global normal <backspace> <i><backspace>
 # Arrow Movements
 #map global normal <c-l> <w><\;>
