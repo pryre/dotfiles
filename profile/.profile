@@ -1,4 +1,10 @@
-### User Setup
+# If not running interactively, don't do anything
+case $- in
+	*i*) ;;
+	*) return;;
+esac
+
+### User Setup For Interractive Shells
 #
 export EDITOR=kak
 export PATH=~/.local/bin:$PATH
