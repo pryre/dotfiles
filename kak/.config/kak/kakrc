@@ -23,8 +23,8 @@ map global normal <backspace> <i><backspace>
 #map global normal <c-right> <w><\;>
 #map global normal <c-left> <b><\;>
 #Soft Wrapping
-def softwarp-enable 'add-highlighter buffer/ wrap -word'
-def softwarp-disable 'remove-highlighter buffer/wrap_-word'
+define-command softwarp-enable 'add-highlighter buffer/ wrap -word'
+define-command softwarp-disable 'remove-highlighter buffer/wrap_-word'
 # Commenting
 map global normal '#' :comment-line<ret> -docstring 'comment line'
 map global normal '<a-#>' :comment-block<ret> -docstring 'comment block'
@@ -32,3 +32,4 @@ map global normal '<a-#>' :comment-block<ret> -docstring 'comment block'
 source ~/.config/kak/rc/spell-tex.kak
 map global normal <=> :spell<ret>
 map global normal <+> ':spell-tex<ret>'
+define-command spell-next-replace %{ try %{ spell-next; spell-replace } }
