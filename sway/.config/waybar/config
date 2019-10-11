@@ -8,7 +8,7 @@
     "modules-left": ["custom/launcher","sway/workspaces"],
     "modules-center": ["sway/mode"],
     //"modules-right": ["idle_inhibitor", "pulseaudio", "network", "cpu", "memory", "temperature", "backlight", "battery", "battery#bat2", "clock", "tray"],
-    "modules-right": ["tray", "network#ether", "network#wifi", "pulseaudio", "custom/backlight", "battery", "clock", "custom/exit"],
+    "modules-right": ["tray", "network#usb", "network#ether", "network#wifi", "pulseaudio", "custom/backlight", "battery", "clock", "custom/exit"],
     // Modules configuration
     // "sway/workspaces": {
     //     "disable-scroll": true,
@@ -88,6 +88,16 @@
         // "format-good": "", // An empty format will hide the module
         // "format-full": "",
         "format-icons": ["", "", "", "", ""]
+    },
+    "network#usb": {
+        "interface": "usb0", // (Optional) To force the use of this interface
+        "format-wifi": "",
+        "format-ethernet": "",
+        "tooltip-format": "{ifname}: {ipaddr}/{cidr}",
+		"tooltip-format-disconnected": "{ifname}: Disconnected",
+        "format-linked": "",
+        "format-disconnected": "",
+		"on-click": "netctl restart usb0-dhcp"
     },
     "network#ether": {
         "interface": "eth0", // (Optional) To force the use of this interface

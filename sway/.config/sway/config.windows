@@ -9,6 +9,12 @@ for_window [title="Orage"] floating enable
 for_window [title="SpeedCrunch"] floating enable
 for_window [title="Steam Guard - Computer Authorization Required"] floating enable
 
+### MATLAB Specific
+#for_window [title="Figure *"] floating enable
+for_window [title="HG_Peer_OffScreenWindow"] floating enable
+for_window [title="HG_Peer_OffScreenWindow"] opacity set 0
+no_focus [title="HG_Peer_OffScreenWindow"]
+
 ### Workaround for waybar popup positioning
 for_window [app_id="waybar" floating] {
     #move position pointer

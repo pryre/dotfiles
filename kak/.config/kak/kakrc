@@ -30,3 +30,5 @@ map global normal '#' :comment-line<ret> -docstring 'comment line'
 map global normal '<a-#>' :comment-block<ret> -docstring 'comment block'
 # Latex spell checking
 source ~/.config/kak/rc/spell-tex.kak
+map global normal <=> :spell<ret>
+map global normal <+> ':spell-tex<ret>'
