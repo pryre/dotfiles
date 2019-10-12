@@ -2,6 +2,7 @@
 
 # Option
 default-timeout=5000
+font=Roboto Mono 11
 
 # Theme
 text-color=#CC8843
