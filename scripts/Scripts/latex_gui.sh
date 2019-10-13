@@ -4,14 +4,18 @@
 #for IFNAME in $@; do :; done
 #CREATE_NEW_FILE=false
 #if [ $# -ge 2 ] && [ "$1" = '-c' ]; then CREATE_NEW_FILE=true; fi
-IFNAME=$(realpath $1)
+
+IFNAME=$(realpath $1 2> /dev/null)
 
 # Make sure arguments are valid
-if [ "$(basename -s .tex $IFNAME | grep -F '.tex')" ]; then
-	#echo "Usage: latex_gui [-c] file.tex"
-	echo "Usage: latex_gui file.tex"
-	return 1
-fi
+case $IFNAME in
+	*.tex)
+		;;
+	*)
+		echo "Usage: latex_gui file.tex"
+		return 1
+		;;
+esac
 
 # Helper functions
 minimal_template() {
@@ -60,8 +64,16 @@ PNAME="$(basename -s .tex $FNAME).pdf"
 # Create the file if it does not exist
 if [ ! -f "$IFNAME" ]
 then
-	echo "Creating file: $IFNAME"
-	minimal_template > $IFNAME
+	RES=$(read -p"File not found, create new? [Y/N] " INPUT)
+
+	case $RES in
+		Y|y)
+			echo "Creating file: $IFNAME"
+			minimal_template > $IFNAME
+			;;
+		*)
+			return 1
+	esac
 fi
 
 #Perform a clean build first to create the environment
