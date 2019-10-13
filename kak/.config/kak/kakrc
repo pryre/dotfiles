@@ -10,6 +10,8 @@ set-option global indentwidth 0
 hook global BufWritePre .* %{try %{exec -draft '%s\h+$<ret>d'}}
 
 # Keybinds
+# Shortcuts for use
+map global normal <c-w> ': db<ret>'
 # Tab auto-completion
 hook global InsertCompletionShow .* %{ map window insert <tab> <c-n>; map window insert <s-tab> <c-p> }
 hook global InsertCompletionHide .* %{ unmap window insert <tab> <c-n>; unmap window insert <s-tab> <c-p> }
@@ -26,10 +28,10 @@ map global normal <backspace> <i><backspace>
 define-command softwarp-enable 'add-highlighter buffer/ wrap -word'
 define-command softwarp-disable 'remove-highlighter buffer/wrap_-word'
 # Commenting
-map global normal '#' :comment-line<ret> -docstring 'comment line'
-map global normal '<a-#>' :comment-block<ret> -docstring 'comment block'
+map global normal '#' ': comment-line<ret>' -docstring 'comment line'
+map global normal '<a-#>' ': comment-block<ret>' -docstring 'comment block'
 # Latex spell checking
 source ~/.config/kak/rc/spell-tex.kak
-map global normal <=> :spell<ret>
-map global normal <+> ':spell-tex<ret>'
+map global normal <=> ': spell<ret>'
+map global normal <+> ': spell-tex<ret>'
 define-command spell-next-replace %{ try %{ spell-next; spell-replace } }
