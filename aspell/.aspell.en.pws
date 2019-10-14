@@ -1,4 +1,5 @@
 personal_ws-1.1 en 11
+affine
 airframe
 airframes
 Christoffel
@@ -17,6 +18,7 @@ ESC
 ESCs
 extensibility
 GCS
+gimbal
 gimballing
 hexacopter
 hexarotor
@@ -24,6 +26,7 @@ holonomic
 HRTOS
 integrator
 integrators
+invertible
 Jacobian
 linearisation
 linearised
@@ -31,6 +34,8 @@ linearities
 Lyapunov
 manoeuvre
 manoeuvres
+microcontroller
+microcontrollers
 middleware
 modularity
 multirotor
@@ -65,6 +70,7 @@ ROS
 rotorcraft
 RTOS
 runtime
+scalability
 servoing
 sideslip
 signum

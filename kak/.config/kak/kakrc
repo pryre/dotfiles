@@ -35,3 +35,4 @@ source ~/.config/kak/rc/spell-tex.kak
 map global normal <=> ': spell<ret>'
 map global normal <+> ': spell-tex<ret>'
 define-command spell-next-replace %{ try %{ spell-next; spell-replace } }
+map global normal <minus> ': spell-next-replace<ret>'
