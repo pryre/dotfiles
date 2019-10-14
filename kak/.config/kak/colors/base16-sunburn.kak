@@ -54,9 +54,9 @@ evaluate-commands %sh{
         face global Default ${base05},${base00}
         face global PrimarySelection ${base06},${base02}+fg
         face global SecondarySelection ${base03},${base02}+fg
-        face global PrimaryCursor ${base00},${base05}+fg
+        face global PrimaryCursor ${base00},${base06}+fg
         face global SecondaryCursor ${base00},${base04}+fg
-        face global PrimaryCursorEol ${base00},${base04}+fg
+        face global PrimaryCursorEol ${base00},${base06}+fg
         face global SecondaryCursorEol ${base00},${base03}+fg
         face global LineNumbers ${base05},${base00}
         face global LineNumberCursor ${base05},${base01}+b

@@ -1,5 +1,8 @@
 # Themes
 colorscheme base16-sunburn
+# Cursor focus hinting, would be better to change shape, but hey
+hook global FocusIn .* %{ face global PrimaryCursor rgb:000000,rgb:FFFFFF+fg; face global PrimaryCursorEol PrimaryCursor}
+hook global FocusOut .* %{ face global PrimaryCursor rgb:000000,rgb:CC8843+fg; face global PrimaryCursorEol PrimaryCursor}
 
 # Display options
 set-option global tabstop 4
