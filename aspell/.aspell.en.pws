@@ -1,6 +1,5 @@
 personal_ws-1.1 en 11
-affine
-airframe
+affinairframe
 airframes
 Christoffel
 collinear
@@ -8,9 +7,11 @@ CoM
 compensator
 coplanar
 CTC
+denormalised
 differentially
 DoF
 ducted
+e
 effector
 effectors
 equalities
@@ -43,6 +44,7 @@ multirotors
 multivariable
 natured
 nonholonomic
+nonic
 nonlinearities
 nonlinearity
 NPID
@@ -57,10 +59,13 @@ orthogonalised
 parameterisation
 parameterisations
 PID
+piecewise
+precomputed
 precomputing
 quadrotor
 quaternion
 quaternions
+quintic
 reachability
 recoverability
 revolute
@@ -74,6 +79,7 @@ scalability
 servoing
 sideslip
 signum
+SLERP
 SOTA
 SRTOS
 topologies
@@ -85,3 +91,5 @@ UAS
 UAV
 UAVs
 unmodelled
+via
+vias
