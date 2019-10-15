@@ -1,5 +1,6 @@
 personal_ws-1.1 en 11
-affinairframe
+affine
+airframe
 airframes
 Christoffel
 collinear
@@ -11,7 +12,7 @@ denormalised
 differentially
 DoF
 ducted
-e
+durations
 effector
 effectors
 equalities
@@ -28,6 +29,7 @@ HRTOS
 integrator
 integrators
 invertible
+iteratively
 Jacobian
 linearisation
 linearised
