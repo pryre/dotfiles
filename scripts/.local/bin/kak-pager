@@ -1,0 +1,5 @@
+#!/bin/sh
+
+col -b -x |
+
+kak -e "map global normal q :quit<ret>; $@"

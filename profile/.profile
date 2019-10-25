@@ -6,8 +6,10 @@ esac
 
 ### User Setup For Interractive Shells
 #
-export EDITOR=kak
 export PATH=~/.local/bin:$PATH
+export EDITOR=kak
+export PAGER=kak-pager
+export MANPAGER=kak-man-pager
 
 stty -ctlecho
 
