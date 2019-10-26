@@ -4,6 +4,12 @@ case $- in
 	*) return;;
 esac
 
+### Session support
+#if [ -n "$DESKTOP_SESSION" ];then
+#    eval $(gnome-keyring-daemon --start)
+#    export SSH_AUTH_SOCK
+#fi
+
 ### User Setup For Interractive Shells
 #
 export PATH=~/.local/bin:$PATH

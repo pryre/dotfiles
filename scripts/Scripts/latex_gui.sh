@@ -64,7 +64,7 @@ PNAME="$(basename -s .tex $FNAME).pdf"
 # Create the file if it does not exist
 if [ ! -f "$IFNAME" ]
 then
-	RES=$(read -p"File not found, create new? [Y/N] " INPUT)
+	read -p "File not found, create new? [Y/N] " RES
 
 	case $RES in
 		Y|y)
