@@ -34,7 +34,7 @@ define-command softwarp-disable 'remove-highlighter buffer/wrap_-word'
 map global normal '#' ': comment-line<ret>' -docstring 'comment line'
 map global normal '<a-#>' ': comment-block<ret>' -docstring 'comment block'
 # Latex spell checking
-source ~/.config/kak/rc/spell-tex.kak
+# source ~/.config/kak/rc/spell-tex.kak
 map global normal <=> ': spell<ret>'
 map global normal <+> ': spell-tex<ret>'
 define-command spell-next-replace %{ try %{ spell-next; spell-replace } }
