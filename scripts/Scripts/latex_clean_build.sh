@@ -30,5 +30,13 @@ then
 	return 1
 else
 	echo "Output produced"
-	cp $BUILD_DIR/$BNAME.pdf .
+	cp "$BUILD_DIR/$BNAME.pdf" .
+
+	if [ -f "$BUILD_DIR/$BNAME.pdfpc" ]
+	then
+		cp "$BUILD_DIR/$BNAME.pdfpc" .
+		# Hack to clean-up poor handling of exported notes
+		sed -i 's/\\\\/\n/g' "$BNAME.pdfpc"
+		sed -i 's/\\par/\n\n/g' "$BNAME.pdfpc"
+	fi
 fi

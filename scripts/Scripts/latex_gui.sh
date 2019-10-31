@@ -7,6 +7,8 @@
 
 IFNAME=$(realpath $1 2> /dev/null)
 
+trap "" TSTP
+
 # Make sure arguments are valid
 case $IFNAME in
 	*.tex)
