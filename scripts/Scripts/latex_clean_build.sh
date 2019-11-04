@@ -39,4 +39,10 @@ else
 		sed -i 's/\\\\/\n/g' "$BNAME.pdfpc"
 		sed -i 's/\\par/\n\n/g' "$BNAME.pdfpc"
 	fi
+
+	# Hack to deal with .cpc not looking in correct directory
+	if [ -f "$BUILD_DIR/$BNAME.cpc" ]
+	then
+		cp "$BUILD_DIR/$BNAME.cpc" .
+	fi
 fi
