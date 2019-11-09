@@ -13,3 +13,5 @@ set $lock swaylock
 set $logout $HOME/Scripts/exit_user_session.py
 set $player-music deadbeef
 set $player-music-autostart deadbeef --play
+# set $screenshot FNAME=$HOME/Pictures/$(date +'%Y-%m-%d-%H-%M-%S_screenshot.png'); grim $FNAME; notify-send.sh $FNAME
+set $screenshot ~/Scripts/screenshot-notify.sh

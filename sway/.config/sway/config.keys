@@ -183,5 +183,6 @@ bindsym XF86AudioNext exec playerctl next
 bindsym XF86AudioPrev exec playerctl previous
 
 # Shortcut buttons
-bindsym Print exec grim $HOME/Pictures/$(date +'%Y-%m-%d-%H-%M-%S_screenshot.png')
+# bindsym Print exec grim $HOME/Pictures/$(date +'%Y-%m-%d-%H-%M-%S_screenshot.png')
+bindsym Print exec $screenshot
 bindsym XF86Calculator exec $calculator
