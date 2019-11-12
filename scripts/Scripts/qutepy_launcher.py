@@ -24,6 +24,19 @@ def vprint(message, is_verbose=False, is_error=False):
 
 		print(str(time.time()) + ":\t" + str(message), file=f)
 
+def textdiff(full, partial):
+	pos = 0
+	for i in range(len(partial)):
+		try:
+			if pos < len(full):
+				pos = full[pos:].index(partial[i]) + pos + 1
+			else:
+				raise ValueError("Index invalid")
+		except ValueError:
+			return False
+
+	return True
+
 class AppWidget():
 	def __init__(self, app_path, use_symbolic):
 		self.is_valid = False
@@ -225,7 +238,15 @@ class ExitUserSession(WindowWidget):
 
 		if ft:
 			#shortlist = [x for x in self.app_list if all(a in x.app_name for a in ft)]
-			self.shortlist = [x for x in self.app_list if (ft in x.appName().lower()) or (ft in x.appExec().lower())]
+			# self.shortlist = [x for x in self.app_list if (ft in x.appName().lower()) or (ft in x.appExec().lower())]
+			if ft[0] == '?':
+				if len(ft) > 1:
+					ft = ft[1:]
+					self.shortlist = [x for x in self.app_list if textdiff(x.appName().lower(),ft) or textdiff(x.appExec().lower(),ft)]
+				else:
+					self.shortlist=self.app_list
+			else:
+				self.shortlist = [x for x in self.app_list if textdiff(x.appName().lower(),ft)]
 		else:
 			self.shortlist=self.app_list
 
