@@ -26,16 +26,19 @@ def vprint(message, is_verbose=False, is_error=False):
 
 def textdiff(full, partial):
 	pos = 0
+	delta = 0
 	for i in range(len(partial)):
 		try:
 			if pos < len(full):
-				pos = full[pos:].index(partial[i]) + pos + 1
+				sd = full[pos:].index(partial[i])
+				pos += sd + 1
+				delta += sd
 			else:
 				raise ValueError("Index invalid")
 		except ValueError:
-			return False
+			return -1
 
-	return True
+	return delta
 
 class AppWidget():
 	def __init__(self, app_path, use_symbolic):
@@ -237,20 +240,30 @@ class ExitUserSession(WindowWidget):
 		ft = self.app_search.text().lower()
 
 		if ft:
-			#shortlist = [x for x in self.app_list if all(a in x.app_name for a in ft)]
-			# self.shortlist = [x for x in self.app_list if (ft in x.appName().lower()) or (ft in x.appExec().lower())]
+			# If the user wants to do an in-depth search
 			if ft[0] == '?':
+				# and we have some search input
 				if len(ft) > 1:
 					ft = ft[1:]
+					# then do a straight search for partial match and sort
 					self.shortlist = [x for x in self.app_list if textdiff(x.appName().lower(),ft) or textdiff(x.appExec().lower(),ft)]
+					self.shortlist.sort(key=lambda x: x.app_name.lower())
 				else:
+					# otherwise show the entire sorted list
 					self.shortlist=self.app_list
+					self.shortlist.sort(key=lambda x: x.app_name.lower())
 			else:
-				self.shortlist = [x for x in self.app_list if textdiff(x.appName().lower(),ft)]
+				# Else we want to do a direct filter
+				# Rank matches using textdiff, sort based on match quality
+				rank = [textdiff(x.appName().lower(),ft) for x in self.app_list]
+				rank_list = [(rank[i], self.app_list[i]) for i in range(len(rank))]
+				rank_shortlist = [x for x in rank_list if x[0]>=0]
+				rank_shortlist.sort(key=lambda tup: tup[0])
+				self.shortlist = [rank_shortlist[i][1] for i in range(len(rank_shortlist))]
 		else:
+			# No input, so display full search list
 			self.shortlist=self.app_list
-
-		self.shortlist.sort(key=lambda x: x.app_name.lower())
+			self.shortlist.sort(key=lambda x: x.app_name.lower())
 
 		self.update_list_layout(self.shortlist)
 

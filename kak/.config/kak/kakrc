@@ -12,6 +12,11 @@ set-option global indentwidth 0
 # Remove trailing whitespace on save
 hook global BufWritePre .* %{try %{exec -draft '%s\h+$<ret>d'}}
 
+# Yank to clipboard
+hook global NormalKey y|d|c %{ nop %sh{
+	  printf %s "$kak_main_reg_dquote" | wl-copy > /dev/null 2>&1 &
+}}
+
 # Keybinds
 # Shortcuts for use
 map global normal <c-w> ': db<ret>'
