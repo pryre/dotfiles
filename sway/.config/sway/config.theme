@@ -26,3 +26,9 @@ client.urgent           $base08 $base08 $base00 $base08 $base08
 client.placeholder      $base00 $base00 $base05 $base00 $base00
 client.background       $base07
 
+# Theming rules for GTK
+exec gsettings set org.gnome.desktop.interface cursor-theme capitaine-cursors
+exec gsettings set org.gnome.desktop.interface icon-theme la-capitaine-icon-theme
+exec gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark
+
+# Theming rules for Qt (Handled by qt5pc)
