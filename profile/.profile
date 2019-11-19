@@ -1,30 +1,23 @@
-# If not running interactively, don't do anything
+### If not running interactively, don't do anything
 case $- in
 	*i*) ;;
 	*) return;;
 esac
 
-### Session support
-#if [ -n "$DESKTOP_SESSION" ];then
-#    eval $(gnome-keyring-daemon --start)
-#    export SSH_AUTH_SOCK
-#fi
-
 ### User Setup For Interractive Shells
-#
 export PATH=~/.local/bin:$PATH
+
 export EDITOR=kak
 export PAGER=kak-pager
 export MANPAGER=kak-man-pager
 
-stty -ctlecho
+#stty -ctlecho
 
-alias ed="$EDITOR"
-alias ls='ls --color=auto'
-alias la='ls -a'
+# alias ed="$EDITOR"
+# alias ls='ls --color=auto'
+# alias la='ls -a'
 
 ### Sway auto-start
-#
 if [ -z $DISPLAY ] && [ -f /usr/bin/sway ] && [ $(tty) = /dev/tty1 ]; then
 	export XDG_SESSION_TYPE=wayland
 	export XKB_DEFAULT_LAYOUT=us
