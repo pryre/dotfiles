@@ -2,6 +2,7 @@
 #
 
 set $menu dmenu_path | bemenu -i -w | xargs swaymsg exec
+set $shell fish
 set $term alacritty
 set $browser firefox
 set $filemanager pcmanfm-qt

@@ -12,7 +12,7 @@ input '*' xkb_numlock enabled
 #set $right l
 
 # start apps
-bindsym $mod+t exec $term
+bindsym $mod+t exec $term -e $shell
 bindsym $mod+e exec $filemanager
 bindsym $mod+w exec $browser
 bindsym Control+Shift+Escape exec $taskmanager
