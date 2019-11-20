@@ -7,5 +7,10 @@ set -gx MANPAGER kak-man-pager
 alias ed $EDITOR
 
 # Theme
-source $XDG_CONFIG_HOME/fish/config.theme
+if set -q XDG_CONFIG_HOME
+	set -g THEME_CONFIG $XDG_CONFIG_HOME/fish/config.theme
+else
+	set -g THEME_CONFIG $HOME/.config/fish/config.theme
+end
+source $THEME_CONFIG
 
