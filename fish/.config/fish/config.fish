@@ -6,3 +6,6 @@ set -gx MANPAGER kak-man-pager
 
 alias ed $EDITOR
 
+# Theme
+source $XDG_CONFIG_HOME/fish/config.theme
+

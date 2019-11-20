@@ -188,22 +188,22 @@ colors:
     black:   '0x151515'
     red:     '0xCC4343'
     green:   '0x669932'
-    yellow:  '0xF4Bf75'
+    yellow:  '0xF4BF75'
     blue:    '0x326699'
     magenta: '0xAB3872'
     cyan:    '0x329999'
     white:   '0xCCCCCC'
 
   # Bright colors
-  #bright:
-  #  black:   '0x505050'
-  #  red:     '0xd28445'
-  #  green:   '0x202020'
-  #  yellow:  '0x303030'
-  #  blue:    '0xb0b0b0'
-  #  magenta: '0xe0e0e0'
-  #  cyan:    '0x8f5536'
-  #  white:   '0xf5f5f5'
+  bright:
+    black:   '0x996632'
+    red:     '0xFF5454'
+    green:   '0x9ACD65'
+    yellow:  '0xF7D3A1'
+    blue:    '0x659ACD'
+    magenta: '0xD379A6'
+    cyan:    '0x65CDCD'
+    white:   '0xffffff'
 
 # Visual Bell
 #
