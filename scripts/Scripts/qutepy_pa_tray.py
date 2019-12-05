@@ -2,7 +2,7 @@
 
 import sys, signal, os
 from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QSystemTrayIcon, QApplication, QMenu
+from PyQt5.QtWidgets import QSystemTrayIcon, QApplication, QMenu, QMessageBox #, QSlider, QWidgetAction
 from PyQt5.QtGui import QIcon
 
 import pydbus
@@ -34,7 +34,14 @@ class PATrayApp():
 		self.menu.addSeparator()
 		self.action_quit = self.menu.addAction("Quit")
 		self.action_quit.triggered.connect(self.do_action_quit)
+        # self.slider = QSlider(QtCore.Qt.Horizontal)
+        # self.slider_act = QWidgetAction(self.slider)
+        # self.menu.addAction(self.slider_act)
 		self.tray.setContextMenu(self.menu)
+
+		self.dialog = QMessageBox()
+		self.dialog.show()
+
 
 		self.tray.activated.connect(self.do_action_clicked)
 
