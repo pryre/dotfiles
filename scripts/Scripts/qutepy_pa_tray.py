@@ -1,19 +1,27 @@
 #!/usr/bin/env python3
 
-import sys, signal, os
+import sys, signal, os, typing
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QSystemTrayIcon, QApplication, QMenu
 from PyQt5.QtGui import QIcon
 
-import pydbus
+def run_detached_process(cmd: str, args: typing.List[str], pwd: str = ""):
+	p = QtCore.QProcess()
+	p.setStandardInputFile(p.nullDevice())
+	p.setStandardOutputFile(p.nullDevice())
+	p.setStandardErrorFile(p.nullDevice())
+	p.startDetached(cmd, args, pwd)
+
+def expand_list_vars(str_list: typing.List[str]):
+	return list(map(os.path.expandvars, str_list))
 
 class PATrayApp():
 	def __init__(self, app):
 		self.commands = dict()
-		self.commands["mixer"] = "swaymsg exec 'pavucontrol-qt'"
-		self.commands["raise"] = "$HOME/Scripts/control_volume.sh raise"
-		self.commands["lower"] = "$HOME/Scripts/control_volume.sh lower"
-		self.commands["toggle-mute"] = "$HOME/Scripts/control_volume.sh toggle_mute"
+		self.commands["mixer"] = expand_list_vars(["pavucontrol-qt"])
+		self.commands["raise"] = expand_list_vars(["$HOME/Scripts/control_volume.sh", "raise"])
+		self.commands["lower"] = expand_list_vars(["$HOME/Scripts/control_volume.sh", "lower"])
+		self.commands["toggle-mute"] = expand_list_vars(["$HOME/Scripts/control_volume.sh", "toggle_mute"])
 
 		self.tray_icon_high = QIcon.fromTheme("audio-volume-high-symbolic")
 		self.tray_icon_mute = QIcon.fromTheme("audio-volume-low-symbolic")
@@ -60,10 +68,8 @@ class PATrayApp():
 			pass
 
 	def do_action_open_mixer(self):
-		os.system("swaymsg exec '" + self.commands["mixer"] + "'")
-
-	def do_action_quit(self):
-		QApplication.quit()
+		# os.system("swaymsg exec '" + self.commands["mixer"] + "'")
+		self.do_action_run("mixer")
 
 	def do_action_toggle_muted(self):
 		self.tray_icon_is_mute = not self.tray_icon_is_mute
@@ -78,7 +84,10 @@ class PATrayApp():
 		self.do_action_run("lower")
 
 	def do_action_run(self, cmd):
-		os.system(self.commands[cmd])
+		run_detached_process(self.commands[cmd][0], self.commands[cmd][1:])
+
+	def do_action_quit(self):
+		QApplication.quit()
 
 def sigint_handler(signum,stack):
 	"""handler for the SIGINT signal."""
