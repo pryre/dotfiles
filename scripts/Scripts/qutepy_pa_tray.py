@@ -16,42 +16,25 @@ def expand_list_vars(str_list: typing.List[str]):
 	return list(map(os.path.expandvars, str_list))
 
 class CustomTray(QSystemTrayIcon):
+	scrolled = QtCore.pyqtSignal(int)
+
 	def __init__(self, icon, parent=None):
 		super().__init__(icon, parent)
 
-		print(dir(self))
-		# self.connect(self, QtCore,SIGNAL,"activated(QSystemTrayIcon::ActivationReason)", self._activateRoutine)
-
 		self.installEventFilter(self)
 
-		self.callback_scroll_up = None
-		self.callback_scroll_down = None
-
-
-	def _activateRoutine(self, reason):
-		print("activate")
+		#Create a signal to emit on scroll, argument is scroll direction (-1 or 1) amd amount
 
 	def eventFilter(self, obj, event):
-		print("ev:")
-		print(event)
-		print("obj:")
-		print(obj)
-
-		return False
-
-		# if event.type() == QtCore.QEvent.Wheel:
-			# print("Scrolled!")
-			# return True
-		#See if we have been resized
-		#elif event.type() == QtCore.QEvent.GraphicsSceneResize:
-		#	self.do_rearrange()
-		#	return True
+		if event.type() == QtCore.QEvent.Wheel:
+			print("Scrolled!")
+			#TODO: Should have a timer here to not catch all scrolls
+			#TODO: Should use an enum
+			self.scrolled.emit(event.angleDelta())
+			return True
 
 		#Event was not handled here
-
-		# return False
-
-
+		return False
 
 class PATrayApp():
 	def __init__(self, app):
@@ -83,7 +66,8 @@ class PATrayApp():
 		self.action_quit.triggered.connect(self.do_action_quit)
 		self.tray.setContextMenu(self.menu)
 
-		# self.tray.activated.connect(self.do_action_clicked)
+		self.tray.activated.connect(self.do_action_clicked)
+		self.tray.scrolled.connect(self.do_action_scrolled)
 
 	def show(self):
 		self.tray.show()
@@ -105,6 +89,14 @@ class PATrayApp():
 			self.do_action_toggle_muted()
 		else:
 			pass
+
+	def do_action_scrolled(self,direction):
+		if direction > 0:
+			self.do_action_volume_raise()
+		elif direction < 0:
+			self.do_action_volume_lower()
+		else:
+			print("Weird scroll detected")
 
 	def do_action_open_mixer(self):
 		# os.system("swaymsg exec '" + self.commands["mixer"] + "'")
