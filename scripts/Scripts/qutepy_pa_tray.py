@@ -15,6 +15,44 @@ def run_detached_process(cmd: str, args: typing.List[str], pwd: str = ""):
 def expand_list_vars(str_list: typing.List[str]):
 	return list(map(os.path.expandvars, str_list))
 
+class CustomTray(QSystemTrayIcon):
+	def __init__(self, icon, parent=None):
+		super().__init__(icon, parent)
+
+		print(dir(self))
+		# self.connect(self, QtCore,SIGNAL,"activated(QSystemTrayIcon::ActivationReason)", self._activateRoutine)
+
+        self.installEventFilter(self)
+
+		self.callback_scroll_up = None
+		self.callback_scroll_down = None
+
+
+	def _activateRoutine(self, reason):
+		print("activate")
+
+	def eventFilter(self, obj, event):
+		print("ev:")
+		print(event)
+		print("obj:")
+		print(obj)
+
+		return False
+
+		# if event.type() == QtCore.QEvent.Wheel:
+			# print("Scrolled!")
+			# return True
+		#See if we have been resized
+		#elif event.type() == QtCore.QEvent.GraphicsSceneResize:
+		#	self.do_rearrange()
+		#	return True
+
+		#Event was not handled here
+
+		# return False
+
+
+
 class PATrayApp():
 	def __init__(self, app):
 		self.commands = dict()
@@ -26,7 +64,8 @@ class PATrayApp():
 		self.tray_icon_high = QIcon.fromTheme("audio-volume-high-symbolic")
 		self.tray_icon_mute = QIcon.fromTheme("audio-volume-low-symbolic")
 
-		self.tray = QSystemTrayIcon(self.tray_icon_mute, app)
+		# self.tray = QSystemTrayIcon(self.tray_icon_mute, app)
+		self.tray = CustomTray(self.tray_icon_mute, app)
 		self.tray_icon_is_mute = True
 
 		self.menu = QMenu()
@@ -44,7 +83,7 @@ class PATrayApp():
 		self.action_quit.triggered.connect(self.do_action_quit)
 		self.tray.setContextMenu(self.menu)
 
-		self.tray.activated.connect(self.do_action_clicked)
+		# self.tray.activated.connect(self.do_action_clicked)
 
 	def show(self):
 		self.tray.show()
