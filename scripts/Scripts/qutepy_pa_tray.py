@@ -22,7 +22,7 @@ class CustomTray(QSystemTrayIcon):
 		print(dir(self))
 		# self.connect(self, QtCore,SIGNAL,"activated(QSystemTrayIcon::ActivationReason)", self._activateRoutine)
 
-        self.installEventFilter(self)
+		self.installEventFilter(self)
 
 		self.callback_scroll_up = None
 		self.callback_scroll_down = None
