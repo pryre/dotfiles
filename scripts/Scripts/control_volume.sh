@@ -65,11 +65,36 @@ do_get_volume_many() {
 
 send_notify() {
 	SINKS=$@
-	VOLUMES=$(do_get_volume_many $SINKS)
-	#echo "$VOLUMES"
-	notify-send.sh -t 2000 -a "control_volume" -u low -i audio-volume-high -R "$MSG_ID_FILE" "$VOLUMES"
-#	notify-send -t 2000 -a "control_volume" -u low -i audio-volume-high "$VOLUMES"
-#	notify-send -t 2000 -a "control_volume" -u low -i audio-volume-low "Volume: ---"
+	echo
+	if [ $# -gt 1 ]; then
+		VOLUMES=$(do_get_volume_many $SINKS)
+
+		notify-send.sh  "$VOLUMES" \
+						-t 2000 \
+						-a "control_volume" \
+						-u low \
+						-i audio-volume-high \
+						-R "$MSG_ID_FILE"
+	else
+		# Only expect 1 answer
+		VOLUMES=$(do_get_volume_many $SINKS)
+		SVOL=$(echo $VOLUMES | cut -d':' -f2 | cut -d'%' -f1)
+		case $SVOL in
+			*"---"*)
+				SSVOL="0"
+				;;
+		esac
+
+		echo $(printf "%.0f\n" $SVOL)
+
+		notify-send.sh  "$VOLUMES" \
+						-t 2000 \
+						-a "control_volume" \
+						-u low \
+						-i audio-volume-high \
+						-h int:value:$(printf "%.0f\n" $SVOL) \
+						-R "$MSG_ID_FILE"
+	fi
 }
 
 case $COMMAND in
