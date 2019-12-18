@@ -35,6 +35,9 @@ map global normal <backspace> <i><backspace>
 #Soft Wrapping
 define-command softwarp-enable 'add-highlighter buffer/ wrap -word'
 define-command softwarp-disable 'remove-highlighter buffer/wrap_-word'
+#Soft Wrapping
+define-command line-numbers-enable 'add-highlighter buffer/ number-lines'
+define-command line-numbers-disable 'remove-highlighter buffer/number-lines'
 # Commenting
 map global normal '#' ': comment-line<ret>' -docstring 'comment line'
 map global normal '<a-#>' ': comment-block<ret>' -docstring 'comment block'

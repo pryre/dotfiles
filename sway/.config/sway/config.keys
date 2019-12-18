@@ -20,6 +20,8 @@ bindsym Control+Shift+Escape exec $taskmanager
 # kill focused window
 bindsym $mod+q kill
 bindsym Alt+F4 kill
+# kill if middle clicking title bar
+bindsym button2 kill
 
 # start your launcher
 bindsym $mod+Return exec $menu
