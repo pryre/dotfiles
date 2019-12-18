@@ -172,8 +172,8 @@ bindsym XF86AudioLowerVolume exec $HOME/Scripts/control_volume.sh lower
 bindsym XF86AudioMute exec $HOME/Scripts/control_volume.sh toggle_mute
 
 # Sreen brightness controls
-bindsym XF86MonBrightnessDown exec $HOME/Scripts/control_brightness.sh step_percent -10
-bindsym XF86MonBrightnessUp exec $HOME/Scripts/control_brightness.sh step_percent 10
+bindsym XF86MonBrightnessDown exec $HOME/Scripts/control_brightness.sh multiply_percent 0.75
+bindsym XF86MonBrightnessUp exec $HOME/Scripts/control_brightness.sh multiply_percent 1.25
 
 # Touchpad toggles
 #bindsym XF86TouchpadToggle exec $HOME/.config/sway/scripts/toggletouchpad.sh # toggle touchpad
