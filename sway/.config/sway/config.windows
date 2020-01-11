@@ -16,9 +16,9 @@ for_window [title="HG_Peer_OffScreenWindow"] opacity set 0
 no_focus [title="HG_Peer_OffScreenWindow"]
 
 ### Workaround for waybar popup positioning
-for_window [app_id="waybar" floating] {
-    #move position pointer
-    #move right 120px # Guess adjustment to make sure windows sort of stay on screen
-	move position 0 850
-}
+# for_window [app_id="waybar" floating] {
+#     #move position pointer
+#     #move right 120px # Guess adjustment to make sure windows sort of stay on screen
+# 	move position 0 850
+# }
 
