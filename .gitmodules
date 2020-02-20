@@ -7,3 +7,6 @@ url = http://github.com/scopatz/nanorc.git
 [submodule "themes/.local/share/icons/capitaine-cursors-git"]
 	path = themes/.local/share/icons/capitaine-cursors-git
 	url = https://github.com/keeferrourke/capitaine-cursors
+[submodule "kak/.config/kak/autoload/kak-ansi"]
+	path = kak/.config/kak/autoload/kak-ansi
+	url = https://github.com/eraserhd/kak-ansi

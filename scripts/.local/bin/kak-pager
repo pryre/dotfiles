@@ -1,5 +1,3 @@
 #!/bin/sh
 
-col -b -x |
-
-kak -e "map global normal q :quit<ret>; $@"
+kak -e "map global normal q :quit<ret>; map global normal <esc> :quit<ret>; $@"
