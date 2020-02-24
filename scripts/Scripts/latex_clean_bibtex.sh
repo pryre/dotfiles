@@ -16,5 +16,8 @@ fi
 #mkdir -p $BUILD_DIR
 rm $BUILD_DIR/references 2> /dev/null
 ln -s $(realpath references) $BUILD_DIR/references
+
+cp ./*.bst "$BUILD_DIR" 2> /dev/null
+
 cd $BUILD_DIR
 bibtex $BNAME.aux
