@@ -12,11 +12,11 @@ set -gx MANPAGER kak-man-pager
 alias ed $EDITOR
 
 # Theme
-source $FISH_CONFIG_DIR/config.theme
+source $FISH_CONFIG_DIR/theme.fish
 
-# Machine-Specific 
+# Machine-Specific
 
-if test -e $FISH_CONFIG_DIR/config.machine.(hostname)
-    source $FISH_CONFIG_DIR/config.machine.(hostname)
+if test -e $FISH_CONFIG_DIR/host.(hostname).fish
+    source $FISH_CONFIG_DIR/host.(hostname).fish
 end
 

@@ -1,71 +1,50 @@
-#!/usr/bin/env bash
+#!/bin/bash -e
+# Automatic Image file resizer
+# Written by SirLagz
+# https://github.com/SirLagz/RaspberryPi-ImgAutoSizer
+strImgFile=$1
+extraSpaceMB=$2
 
-if [[ -z "$1" ]]; then
-  echo -e "usage: sudo $0 <file.img>\n"
-  exit
+if [[ ! $(whoami) =~ "root" ]]; then
+echo ""
+echo "**********************************"
+echo "*** This should be run as root ***"
+echo "**********************************"
+echo ""
+exit
 fi
 
-if [[ $(whoami) != "root" ]]; then
-  echo -e "error: this must be run as root: sudo $0 <file.img>"
-  exit
+if [[ -z $1 ]]; then
+echo "Usage: ./autosizer.sh <Image File> [<extra space in MB>]"
+exit
 fi
 
-
-if [[ ! -e "$1" ]]; then
-  echo -e "error: no such file\n"
-  exit
+if [[ -z $2 ]]; then
+extraSpaceMB=4
 fi
 
-orig_img_size=$(stat --printf="%s" "$1")
-
-part_info=$(parted -m "$1" unit B print)
-echo -e "\n[+] partition info"
-echo "----------------------------------------------"
-echo -e "$part_info\n"
-
-part_num=$(echo "$part_info" | grep ext4 | cut -d':' -f1)
-part_start=$(echo "$part_info" | grep ext4 | cut -d':' -f2 | sed 's/B//g')
-part_size=$(echo "$part_info" | grep ext4 | cut -d':' -f4 | sed 's/B//g')
-
-echo -e "[+] setting up loopback\n"
-loopback=$(losetup -f --show -o "$part_start" "$1")
-
-echo "[+] checking loopback file system"
-echo "----------------------------------------------"
-e2fsck -f "$loopback"
-
-echo -e "\n[+] determining minimum partition size"
-min_size=$(resize2fs -P "$loopback" | cut -d':' -f2)
-
-# next line is optional: comment out to remove 1% overhead to fs size
-min_size=$(($min_size + $min_size / 100))
-
-if [[ $part_size -lt $(($min_size * 4096 + 1048576)) ]]; then
-  echo -e "\n[!] halt: image already as small as possible.\n"
-  losetup -d "$loopback"
-  exit
+if [[ ! -e $1 || ! $(file $1) =~ "x86" ]]; then
+echo "Error : Not an image file, or file doesn't exist"
+exit
 fi
 
-echo -e "\n[+] resizing loopback fs (may take a while)"
-echo "----------------------------------------------"
-resize2fs -p "$loopback" "$min_size"
+partinfo=`parted -s -m $1 unit B print`
+partnumber=`echo "$partinfo" | grep ext4 | awk -F: ' { print $1 } '`
+partstart=`echo "$partinfo" | grep ext4 | awk -F: ' { print substr($2,0,length($2)-1) } '`
+loopback=`losetup -f --show -o $partstart $1`
+e2fsck -f $loopback
+minsize=`resize2fs -P $loopback | awk -F': ' ' { print $2 } '`
+blocksize=$(dumpe2fs -h $loopback | grep 'Block size' | awk -F': ' ' { print $2 }')
+blocksize=${blocksize// /}
+
+let minsize=$minsize+$extraSpaceMB*1048576/$blocksize
+resize2fs -p $loopback $minsize
 sleep 1
+losetup -d $loopback
+let partnewsize=$minsize*$blocksize
+let newpartend=$partstart+$partnewsize
+part1=`parted -s $1 rm 2`
+part2=`parted -s $1 unit B mkpart primary $partstart $newpartend`
+endresult=`parted -s -m $1 unit B print free | tail -1 | awk -F: ' { print substr($2,0,length($2)-1) } '`
+truncate -s $endresult $1
 
-echo -e "[+] detaching loopback\n"
-losetup -d "$loopback"
-
-part_new_size=$(($min_size * 4096))
-part_new_end=$(($part_start + $part_new_size))
-
-echo -e "[+] adjusting partitions\n"
-parted "$1" rm "$part_num"
-parted "$1" unit B mkpart primary $part_start $part_new_end
-
-free_space_start=$(parted -m "$1" unit B print free | tail -1 | cut -d':' -f2 | sed 's/B//g')
-
-echo -e "[+] truncating image\n"
-truncate -s $free_space_start "$1"
-
-new_img_size=$(stat --printf="%s" "$1")
-bytes_saved=$(($orig_img_size - $new_img_size))
-echo -e "DONE: reduced "$1" by $(($bytes_saved/1024))KiB ($((bytes_saved/1024/1024))MB)\n"
