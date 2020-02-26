@@ -10,7 +10,11 @@ case $- in
 esac
 
 ### User Setup For Interractive Shells
-export PATH=~/.local/bin:$PATH
+#export PATH=~/.local/bin:$PATH
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/.local/bin" ] ; then
+   export PATH="$HOME/.local/bin:$PATH"
+fi
 
 export EDITOR=kak
 export PAGER=kak-pager
