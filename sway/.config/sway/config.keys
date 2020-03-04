@@ -186,5 +186,7 @@ bindsym XF86AudioPrev exec playerctl previous
 
 # Shortcut buttons
 # bindsym Print exec grim $HOME/Pictures/$(date +'%Y-%m-%d-%H-%M-%S_screenshot.png')
-bindsym Print exec $screenshot
+bindsym Print exec $screenshot active
+bindsym Shift+Print exec $screenshot select
+bindsym Control+Print exec $screenshot full
 bindsym XF86Calculator exec $calculator
