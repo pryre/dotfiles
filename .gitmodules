@@ -8,5 +8,5 @@ url = http://github.com/scopatz/nanorc.git
 	path = themes/.local/share/icons/capitaine-cursors-git
 	url = https://github.com/keeferrourke/capitaine-cursors
 [submodule "kak/.config/kak/autoload/kak-ansi"]
-	path = kak/.config/kak/autoload/kak-ansi
+	path = kak/.config/kak/rc/kak-ansi
 	url = https://github.com/eraserhd/kak-ansi
