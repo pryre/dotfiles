@@ -244,9 +244,9 @@ class ExitUserSession(WindowWidget):
 			if ft[0] == '?':
 				# and we have some search input
 				if len(ft) > 1:
-					ft = ft[1:]
+					sft = ft[1:]
 					# then do a straight search for partial match and sort
-					self.shortlist = [x for x in self.app_list if textdiff(x.appName().lower(),ft) or textdiff(x.appExec().lower(),ft)]
+					self.shortlist = [x for x in self.app_list if textdiff(x.appName().lower(),sft) or textdiff(x.appExec().lower(),sft)]
 					self.shortlist.sort(key=lambda x: x.app_name.lower())
 				else:
 					# otherwise show the entire sorted list
