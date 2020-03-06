@@ -223,6 +223,9 @@ class ExitUserSession(WindowWidget):
 
 		self.resized.connect(lambda text=self.shortlist: self.update_list_layout(text, reason="Resized"))
 
+		# Run update filter with empty text to order app list
+		self.update_filter()
+
 	def eventFilter(self, obj, event):
 		# See if we lose focus
 		if event.type() == QtCore.QEvent.WindowDeactivate:
@@ -238,28 +241,26 @@ class ExitUserSession(WindowWidget):
 
 	def update_filter(self):
 		ft = self.app_search.text().lower()
+		deep_search = False
 
 		if ft:
-			# If the user wants to do an in-depth search
 			if ft[0] == '?':
-				# and we have some search input
-				if len(ft) > 1:
-					sft = ft[1:]
-					# then do a straight search for partial match and sort
-					self.shortlist = [x for x in self.app_list if textdiff(x.appName().lower(),sft) or textdiff(x.appExec().lower(),sft)]
-					self.shortlist.sort(key=lambda x: x.app_name.lower())
-				else:
-					# otherwise show the entire sorted list
-					self.shortlist=self.app_list
-					self.shortlist.sort(key=lambda x: x.app_name.lower())
+				deep_search = True
+				ft = ft[1:]
+
+		if ft:
+			# Rank matches using textdiff, sort based on match quality
+			if deep_search:
+				# Combine name and comment for deep search
+				rank = [textdiff(x.appName().lower() + " " + x.appComment().lower(),ft) for x in self.app_list]
 			else:
 				# Else we want to do a direct filter
-				# Rank matches using textdiff, sort based on match quality
 				rank = [textdiff(x.appName().lower(),ft) for x in self.app_list]
-				rank_list = [(rank[i], self.app_list[i]) for i in range(len(rank))]
-				rank_shortlist = [x for x in rank_list if x[0]>=0]
-				rank_shortlist.sort(key=lambda tup: tup[0])
-				self.shortlist = [rank_shortlist[i][1] for i in range(len(rank_shortlist))]
+
+			rank_list = [(rank[i], self.app_list[i]) for i in range(len(rank))]
+			rank_shortlist = [x for x in rank_list if x[0]>=0]
+			rank_shortlist.sort(key=lambda tup: tup[0])
+			self.shortlist = [rank_shortlist[i][1] for i in range(len(rank_shortlist))]
 		else:
 			# No input, so display full search list
 			self.shortlist=self.app_list
@@ -280,6 +281,7 @@ class ExitUserSession(WindowWidget):
 				app_layout = QVBoxLayout()
 				app_layout.setSpacing(self.app_args.button_spacing)
 				app_layout.setAlignment(QtCore.Qt.AlignLeft)
+
 				usable_space -= 2*self.app_args.button_spacing #leave a little bit of extra space for either-side of the buttons
 
 				for ind, app in enumerate(app_list):
@@ -311,13 +313,12 @@ class ExitUserSession(WindowWidget):
 					w.setFixedSize(self.app_args.button_size, self.app_args.button_size)
 					if self.app_args.use_names:
 						w.setText(app.appName())
-					w.setToolTip(app.appName())
+					w.setToolTip(app.appName() + "\n" + app.appComment())
 					w.setIcon(app.appIcon())
 					w.setIconSize(QtCore.QSize(icon_size, icon_size))
 					w.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
 					w.setStyleSheet('QToolButton{border: 1px solid; border-color: transparent;} QToolButton:focus{border: 1px solid; border-color: ' + self.app_args.focus_color + ';}')
 					app_layout.addWidget(w, row, ind % cols)
-
 			if app_layout is not None:
 				app_list_widget = QWidget()
 				app_list_widget.setLayout(app_layout)
