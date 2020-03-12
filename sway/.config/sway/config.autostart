@@ -18,3 +18,10 @@ exec $HOME/Scripts/qutepy_launcher.py -k && $HOME/Scripts/list_desktop_applicati
 #exec thunar --daemon
 exec pcmanfm-qt -d
 
+# Idle watcher
+exec swayidle -w \
+		timeout 300 	'swaylock -f' \
+		timeout 360 	'swaymsg "output * dpms off"' \
+		resume			'swaymsg "output * dpms on"' \
+		before-sleep 	'swaylock -f'
+
