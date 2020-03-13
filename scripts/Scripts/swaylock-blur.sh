@@ -9,10 +9,10 @@ NBG="$HOME/.background"
 BBG="$XDG_CACHE_HOME/swaylock/blur_background.png"
 
 RECALC=
-if [ ! -e "$BBG" ] || [ ! -d $(dirname $BBG) ]
+if [ ! -e "$BBG" ]
 then
 	RECALC=1
-	mkdir -p $(dirname $BBG)
+	mkdir -p $(dirname $BBG) # Make sure the directory exists
 else
 	# Does exist, but we need a newer copy
 	if [ "$(($(date -r "$NBG" +%s)-$(date -r "$BBG" +%s)))" -gt 0 ]
