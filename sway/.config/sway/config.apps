@@ -10,7 +10,7 @@ set $filemanager pcmanfm-qt
 set $taskmanager xfce4-taskmanager
 set $calculator speedcrunch
 set $guimenu $HOME/Scripts/qutepy_launcher.py -c
-set $lock $HOME/Scripts/swaylock_blur.sh
+set $lock $HOME/Scripts/swaylock-blur.sh
 set $logout $HOME/Scripts/exit_user_session.py
 set $player-music deadbeef
 set $player-music-autostart deadbeef --play
