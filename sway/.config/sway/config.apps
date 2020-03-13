@@ -9,10 +9,10 @@ set $filemanager pcmanfm-qt
 #set $filemanager thunar
 set $taskmanager xfce4-taskmanager
 set $calculator speedcrunch
-set $guimenu ~/Scripts/qutepy_launcher.py -c
-set $lock swaylock
+set $guimenu $HOME/Scripts/qutepy_launcher.py -c
+set $lock $HOME/Scripts/swaylock_blur.sh
 set $logout $HOME/Scripts/exit_user_session.py
 set $player-music deadbeef
 set $player-music-autostart deadbeef --play
 # set $screenshot FNAME=$HOME/Pictures/$(date +'%Y-%m-%d-%H-%M-%S_screenshot.png'); grim $FNAME; notify-send.sh $FNAME
-set $screenshot ~/Scripts/screenshot-notify.sh
+set $screenshot $HOME/Scripts/screenshot-notify.sh
