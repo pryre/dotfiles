@@ -6,7 +6,9 @@ hook global FocusOut .* %{ face global PrimaryCursor rgb:000000,rgb:CC8843+fg; f
 
 # Display options
 set-option global tabstop 4
+# Tabs by default for everything
 set-option global indentwidth 0
+set-option global aligntab true
 
 # Hooks
 # Remove trailing whitespace on save
