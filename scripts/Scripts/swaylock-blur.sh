@@ -42,7 +42,7 @@ then
 		LIR="$XDG_CACHE_HOME/swaylock/lock_icon.png"
 		case "$LIO" in
 			*.svg)
-				convert -background none -density 1200 -resize "$LIO_SIZE" "$LIO" "$LIR"
+				convert -background none -density 1200 -scale "$LIO_SIZE" "$LIO" "$LIR"
 				;;
 			*)
 				convert -background none -resize "$LIO_SIZE" "$LIO" "$LIR"
