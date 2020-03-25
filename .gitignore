@@ -4,3 +4,6 @@ fish/.config/fish/config.fish.backup
 fish/.config/fish/fish_history
 fish/.config/fish/fish_variables
 fish/.config/fish/fundle/*
+
+# XFCE4 Configs
+xfce4/.config/xfce4/xfconf/
