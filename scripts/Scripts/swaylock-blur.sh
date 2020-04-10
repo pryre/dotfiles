@@ -16,8 +16,12 @@ then
 	RECALC=1
 	mkdir -p $(dirname $BBG) # Make sure the directory exists
 else
-	# Does exist, but we need a newer copy
-	if [ "$(($(date -r "$NBG" +%s)-$(date -r "$BBG" +%s)))" -gt 0 ]
+	# Get modification times for real and linked files
+	TMODL=$(stat -c %Y "$NBG")
+	TMODR=$(stat -L -c %Y "$NBG")
+	TMODB=$(stat -L -c %Y "$BBG")
+	# See if either the link or the file are newer than the cache
+	if [ "$(($TMODL-$TMODB))" -gt 0 ] || [ "$(($TMODR-$TMODB))" -gt 0 ]
 	then
 		RECALC=1
 	fi
