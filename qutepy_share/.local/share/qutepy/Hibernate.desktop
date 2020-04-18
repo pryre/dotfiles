@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Hibernate
+Comment=Hibernate the system
+Path=
+Exec=systemctl hibernate
+Icon=system-hibernate
+Terminal=false
+Categories=

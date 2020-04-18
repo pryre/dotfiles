@@ -150,7 +150,7 @@ class ExitUserSession(WindowWidget):
 		return apps
 
 	def init_ui(self):
-		self.setWindowTitle( 'Qutepy Launcher' )
+		self.setWindowTitle( self.app_args.window_title )
 
 		self.frame_margin = 2
 
@@ -443,6 +443,9 @@ def parse_args():
 						help='Display names under icons in grid mode',
 						action='store_true', default=False)
 
+	parser.add_argument('--title',				dest="window_title",
+						help='Sets the window title',
+						action='store', type=str, default='Qutepy Launcher')
 	parser.add_argument('--button-size',		dest="button_size",
 						help='Size of the button to use (px)',
 						action='store', type=int, default=90)

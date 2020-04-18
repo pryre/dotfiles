@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Logout
+Comment=Exit Sway (and Logout)
+Path=
+Exec=swaymsg exit
+Icon=system-log-out
+Terminal=false
+Categories=
