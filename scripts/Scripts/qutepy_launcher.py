@@ -107,6 +107,9 @@ class CustomToolButton(QToolButton):
 	def keyPressEvent(self, event):
 		if (event.key() == QtCore.Qt.Key_Return) or (event.key() == QtCore.Qt.Key_Enter):
 			self.click()
+			return
+
+		super().keyPressEvent(event)
 
 class WindowWidget(QWidget):
 	resized = QtCore.pyqtSignal()
@@ -333,8 +336,12 @@ class ExitUserSession(WindowWidget):
 	def keyPressEvent(self, event):
 		if event.key() == QtCore.Qt.Key_Escape:
 			self.do_cancel()
+			return
 		#elif event.key() == QtCore.Qt.Key_Enter:
 		#	self.do_run()
+		#	return
+
+		super().keyPressEvent(event)
 
 	def do_run(self,ind):
 		if len(self.shortlist) and (ind < len(self.shortlist)):
