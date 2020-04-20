@@ -22,6 +22,8 @@ bindsym $mod+q kill
 bindsym Alt+F4 kill
 # kill if middle clicking title bar
 bindsym button2 kill
+# screen off-on in case video messes up
+bindsym $mod+Shift+F7 output * dpms off; output * dpms on
 
 # start your launcher
 bindsym $mod+Return exec $menu
