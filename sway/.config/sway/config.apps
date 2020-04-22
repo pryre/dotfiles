@@ -12,7 +12,7 @@ set $calculator speedcrunch
 set $guimenu $HOME/Scripts/qutepy_launcher.py -c
 set $lock $HOME/Scripts/swaylock-blur.sh
 # set $logout $HOME/Scripts/exit_user_session.py
-set $logout ls $HOME/.local/share/qutepy/*.desktop | $HOME/Scripts/qutepy_launcher.py -n -s --frame-size-x 600 --frame-size-y 160 --title 'Qutepy Logout'
+set $logout ls $HOME/.local/share/qutepy/*.desktop | $HOME/Scripts/qutepy_launcher.py -n --frame-size-x 600 --frame-size-y 160 --title 'Qutepy Logout'
 set $player-music deadbeef
 set $player-music-autostart deadbeef --play
 # set $screenshot FNAME=$HOME/Pictures/$(date +'%Y-%m-%d-%H-%M-%S_screenshot.png'); grim $FNAME; notify-send.sh $FNAME
