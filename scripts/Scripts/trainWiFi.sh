@@ -25,6 +25,8 @@ do
 	sleep 0.5
 done
 
+xdg-open "https://www.queenslandrail.com.au/wi-fi/"
+
 #echo "Network connected!"
 #echo "Waiting for internet access..."
 #sleep 6
