@@ -7,7 +7,7 @@ then
 fi
 
 PDF_F=$1
-mupdf "$PDF_F" &
+qpdfview "$PDF_F" &
 PID=$!
 while inotifywait -e close "$PDF_F"
 do

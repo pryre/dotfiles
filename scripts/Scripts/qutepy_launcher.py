@@ -121,13 +121,14 @@ class WindowWidget(QWidget):
 		self.resized.emit()
 		return QWidget.resizeEvent(self,event)
 
-class ExitUserSession(WindowWidget):
+class QutepyLauncher(WindowWidget):
 	def __init__(self, app_names, app_args):
 		super().__init__()
 
 		self.app_args = app_args
 		self.stay_alive = False
 		self.rendering_done = False
+		self.is_showing = False
 
 		self.app_names = app_names
 		QIcon.setFallbackSearchPaths(["/usr/share/pixmaps"])
@@ -349,6 +350,7 @@ class ExitUserSession(WindowWidget):
 			self.do_cancel()
 
 	def bring_forward(self):
+		self.is_showing = True
 		#Move the window to where it should be on the screen
 		self.move(self.app_args.frame_position_x, self.app_args.frame_position_y)
 
@@ -375,12 +377,16 @@ class ExitUserSession(WindowWidget):
 
 	def sigusr_handler(self, signum, stack):
 		vprint("Received user signal", is_verbose=self.app_args.verbose)
-		self.bring_forward()
+		if self.is_showing:
+			self.do_cancel()
+		else:
+			self.bring_forward()
 
 	def do_cancel(self):
 		self.rendering_done = False
 
 		if self.app_args.daemonize:
+			self.is_showing = False
 			self.hide()
 		else:
 			self.close()
@@ -522,7 +528,7 @@ if __name__ == '__main__':
 
 		app = QApplication(qt_args)
 
-		window = ExitUserSession(sorted(app_names), parsed_args)
+		window = QutepyLauncher(sorted(app_names), parsed_args)
 
 		if parsed_args.daemonize:
 			# Make sure there isn't a daemon running already

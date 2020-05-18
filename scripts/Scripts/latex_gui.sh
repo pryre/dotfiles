@@ -33,7 +33,9 @@ open_gui() {
 	HOMERC=". $HOME/.bashrc"
 	BIBCMD="~/Scripts/latex_clean_bibtex.sh \"$FNAME\""
 	AUTCMD="~/Scripts/latex_autobuild.sh \"$FNAME\""
-	PDFCMD="~/Scripts/pdf_open_refresh.sh \"$PNAME\""
+	# PDFCMD="~/Scripts/pdf_open_refresh.sh \"$PNAME\"" #MuPDF
+	PDFCMD="qpdfview \"$PNAME\""
+
 
 	BASH_PRE="/bin/bash --init-file <(echo run\(\){ "
 	BASH_LAT=" \; }\;run)"
