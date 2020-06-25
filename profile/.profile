@@ -28,7 +28,7 @@ export MANPAGER=kak-man-pager
 
 
 if [ "$BASH" ] ; then
-	source ~/.bashrc
+	source $HOME/.bashrc
 fi
 
 ### Sway auto-start
