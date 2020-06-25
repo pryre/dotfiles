@@ -26,6 +26,11 @@ export MANPAGER=kak-man-pager
 # alias ls='ls --color=auto'
 # alias la='ls -a'
 
+
+if [ "$BASH" ] ; then
+	source ~/.bashrc
+fi
+
 ### Sway auto-start
 if [ -z $DISPLAY ] && [ -f /usr/bin/sway ] && [ $(tty) = /dev/tty1 ]; then
 	export XDG_SESSION_TYPE=wayland
