@@ -77,3 +77,6 @@ if [ -z $DISPLAY ] && [ -f /usr/bin/sway ] && [ $(tty) = /dev/tty1 ]; then
 	exec dbus-run-session sway > $SWAYCACHE/sway.log 2>&1
 fi
 
+if [ -z $DISPLAY ] && [ -f /usr/bin/startxfce4 ] && [ $(tty) = /dev/tty2 ]; then
+	exec startxfce4
+fi
