@@ -74,6 +74,6 @@ if [ -z $DISPLAY ] && [ -f /usr/bin/sway ] && [ $(tty) = /dev/tty1 ]; then
 	SWAYCACHE=$HOME/.cache/sway
 	mkdir -p $SWAYCACHE
 	mv $SWAYCACHE/sway.log $SWAYCACHE/sway.log.old
-	exec sway > $SWAYCACHE/sway.log 2>&1
+	exec dbus-run-session sway > $SWAYCACHE/sway.log 2>&1
 fi
 

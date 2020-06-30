@@ -19,7 +19,5 @@ then
 	gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=${F_OUT} ${F_IN}
 else
 	echo "Usage: combinePDF.sh /output/File.pdf [ /input/file.pdf ... ]"
-	echo "Or: combinePDF.sh /output/File.pdf /input/files"
-	echo "Second option will match all files with the * wildcard"
 fi
 
