@@ -25,3 +25,5 @@ exec swayidle -w \
 		resume			'swaymsg "output * dpms on"' \
 		before-sleep 	'$HOME/Scripts/swaylock-blur.sh -f'
 
+# Network Notifications
+exec networkd-notify
