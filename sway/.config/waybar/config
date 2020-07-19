@@ -121,7 +121,7 @@
     //    "on-click": "systemctl restart netctl-auto@wlan0.service"
     //},
     "network#bond": {
-        "interface": "bond0", // (Optional) To force the use of this interface
+        //"interface": "bond0", // (Optional) To force the use of this interface
         "format-wifi": "",
         "format-ethernet": "",
         "tooltip-format": "{ifname}: {ipaddr}/{cidr}",
