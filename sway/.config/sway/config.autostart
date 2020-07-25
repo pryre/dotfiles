@@ -27,3 +27,4 @@ exec swayidle -w \
 
 # Network Notifications
 exec networkd-notify
+# exec $HOME/Scripts/qutepy_networkd_tray.py eth0 wlan0

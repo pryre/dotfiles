@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys, signal, os, typing, subprocess
+import sys, signal, os, typing, subprocess, time
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QSystemTrayIcon, QApplication, QMenu #, QMessageBox, QSlider, QWidgetAction
 from PyQt5.QtGui import QIcon
@@ -44,13 +44,11 @@ class NetworkStatus():
 		self.setup = setup
 
 class NetworkdTrayApp():
-	def __init__(self, app, argv):
-		self.devices = []
-		if len(argv) >= 2:
-			self.devices = argv[1:]
+	def __init__(self, app, devices):
+		if isinstance(devices, list):
+			self.devices = devices
 		else:
-			print("Error: No device specified")
-			self.do_action_quit()
+			self.devices = [devices]
 
 		self.timer = QtCore.QTimer()
 		self.timer.timeout.connect(self.update_state)
@@ -186,8 +184,21 @@ def sigint_handler(signum,stack):
 	QApplication.quit()
 
 if __name__ == '__main__':
+	devices = []
+	if len(sys.argv) >= 2:
+		devices = sys.argv[1:]
+	else:
+		print("Error: No device specified")
+		sys.exit(1)
+
 	app = QApplication(sys.argv)
-	pata = NetworkdTrayApp(app, sys.argv)
+	print("Testing for system tray")
+	print(QSystemTrayIcon.isSystemTrayAvailable())
+	while not QSystemTrayIcon.isSystemTrayAvailable():
+		print("Waiting for system tray")
+		time.sleep(1)
+
+	ndtp = NetworkdTrayApp(app, devices)
 
 	# SIGINT handling for smooth exit
 	signal.signal(signal.SIGINT, sigint_handler)
@@ -196,5 +207,5 @@ if __name__ == '__main__':
 	timer.timeout.connect(lambda: None)
 	timer.start(100)
 
-	pata.show()
+	ndtp.show()
 	sys.exit(app.exec_())
