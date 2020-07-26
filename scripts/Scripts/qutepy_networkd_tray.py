@@ -113,7 +113,8 @@ class NetworkdTrayApp():
 		last_index = len(devices_sorted) - 1
 
 		for i, dev in enumerate(devices_sorted):
-			if ((dev.operational == 'enslaved') or (dev.operational == 'carrier')) and (dev.setup == 'configured'):
+			op_ok = ['enslaved', 'carrier', 'routable']
+			if (dev.operational in op_ok) and (dev.setup == 'configured'):
 				# print("connected!")
 				# Detect the device type and show icon
 				if dev.type == 'ether':
@@ -127,7 +128,7 @@ class NetworkdTrayApp():
 
 			if i == last_index:
 				# No connection was detected at all, so show as disconnected
-				print("disconnected")
+				# print("disconnected")
 				self.tray.setIcon(self.tray_icon_none)
 
 	def do_restart_specific_services(self, service_names):
