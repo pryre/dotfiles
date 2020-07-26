@@ -8,7 +8,7 @@
     "modules-left": ["custom/launcher","sway/workspaces"],
     "modules-center": ["sway/mode"],
     //"modules-right": ["idle_inhibitor", "pulseaudio", "network", "cpu", "memory", "temperature", "backlight", "battery", "battery#bat2", "clock", "tray"],
-    "modules-right": ["tray", "network#bond", "pulseaudio", "idle_inhibitor","custom/backlight", "battery", "clock", "custom/exit"],
+    "modules-right": ["tray", "pulseaudio", "idle_inhibitor","custom/backlight", "battery", "clock", "custom/exit"],
     //"modules-right": ["tray", "network#usb", "network#ether", "network#wifi", "pulseaudio", "idle_inhibitor","custom/backlight", "battery", "clock", "custom/exit"],
     // Modules configuration
     // "sway/workspaces": {
