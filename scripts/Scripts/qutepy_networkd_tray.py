@@ -94,21 +94,21 @@ class NetworkdTrayApp():
 		self.update_state()
 
 	def update_state(self):
-		status = []
+		statuses = []
 		result = subprocess.run(['networkctl', '--no-pager', '--no-legend', 'list'], stdout=subprocess.PIPE)
 		for l in result.stdout.splitlines():
 			r = l.split()
 			if r[1].decode('ASCII') in self.devices:
-				status.append(NetworkStatus(r[1].decode('ASCII'), r[2].decode('ASCII'), r[3].decode('ASCII'), r[4].decode('ASCII')))
+				statuses.append(NetworkStatus(r[1].decode('ASCII'), r[2].decode('ASCII'), r[3].decode('ASCII'), r[4].decode('ASCII')))
 
-		self.update_icon(status)
+		self.update_icon(statuses)
 
-	def update_icon(self, status):
-		if not isinstance(status, list):
-			status = [status]
+	def update_icon(self, statuses):
+		if not isinstance(statuses, list):
+			status = [statuses]
 
 		# Get the list of devices in order or priority
-		devices_sorted = sorted(status, key=lambda x: self.devices.index(x.device))
+		devices_sorted = sorted(statuses, key=lambda x: self.devices.index(x.device))
 
 		last_index = len(devices_sorted) - 1
 
@@ -130,6 +130,17 @@ class NetworkdTrayApp():
 				# No connection was detected at all, so show as disconnected
 				# print("disconnected")
 				self.tray.setIcon(self.tray_icon_none)
+
+	def do_get_info_string(self, status):
+		if dev.type == 'ether':
+			pass
+			# self.tray.setIcon(self.tray_icon_wired)
+		elif dev.type == 'wlan':
+			pass
+			# self.tray.setIcon(self.tray_icon_wireless)
+		else:
+			pass
+			# self.tray.setIcon(self.tray_icon_unknown)
 
 	def do_restart_specific_services(self, service_names):
 		if not isinstance(service_names, list):
