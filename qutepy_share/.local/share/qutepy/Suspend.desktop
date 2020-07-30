@@ -2,9 +2,9 @@
 Type=Application
 Version=1.0
 Name=Suspend
-Comment=Suspend the system
+Comment=Suspend the system (and hibernate after a long period)
 Path=
-Exec=systemctl suspend
+Exec=systemctl suspend-then-hibernate
 Icon=system-suspend
 Terminal=false
 Categories=
