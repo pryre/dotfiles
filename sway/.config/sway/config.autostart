@@ -4,6 +4,9 @@
 ### Auto-Start
 #
 
+# Tiling manager
+exec autotiling
+
 # Policy Kit
 exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 
