@@ -6,6 +6,7 @@
 #for_window [title="Qutepy Launcher"] floating enable
 for_window [title="Exit User Session"] floating enable
 for_window [title="Orage"] floating enable
+for_window [title="Osmo"] floating enable
 for_window [title="SpeedCrunch"] floating enable
 for_window [title="Steam Guard - Computer Authorization Required"] floating enable
 for_window [title="Qutepy Logout"] floating enable
