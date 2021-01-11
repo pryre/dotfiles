@@ -15,8 +15,11 @@ alias ed $EDITOR
 source $FISH_CONFIG_DIR/theme.fish
 
 # Machine-Specific
-
 if test -e $FISH_CONFIG_DIR/host.(hostname).fish
     source $FISH_CONFIG_DIR/host.(hostname).fish
 end
 
+# Plugins
+fundle plugin 'edc/bass'
+
+fundle init
