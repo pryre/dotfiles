@@ -14,8 +14,16 @@ then
 		SINKS="$@"
 	fi
 else
-	# Use default sink if none provided
-	SINKS=$(pacmd list-sinks | grep '*' | tr \* ' ' | awk '/index:/{print $2}')
+	# Grab first running sink if we have one
+	RUNSINK=$(pacmd list-sinks | grep -e index -e state | sed -n '/RUNNING/{x;p;d;}; x' | head -n 1 | cut -d':' -f2)
+	if [ -z "$RUNSINK" ]
+	then
+		# No match, use default sink if none provided
+		SINKS=$(pacmd list-sinks | grep '*' | tr \* ' ' | awk '/index:/{print $2}')
+	else
+		# There was a match, so use that
+		SINKS=$RUNSINK
+	fi
 fi
 
 #MSG_ID=$(echo "control_volume" | md5sum | head -c4 | awk '{print "obase=10; ibase=16; " toupper($1)}' | bc)
