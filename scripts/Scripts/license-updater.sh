@@ -1,11 +1,12 @@
 #!/bin/sh
 
 TMPD="${XDG_RUNTIME_DIR}/license-updater"
+DLIC="MPLv2"
 mkdir -p "$TMPD"
 
 show_help() {
-	echo "Usage: license-updater.sh [TYPE [FOLDER ...]]"
-	echo "       TYPE: license name (default: MPLv2)"
+	echo "Usage: license-updater.sh TYPE [FOLDER ...] [FILE ...]"
+	echo "       TYPE: license name (default: $DLIC)"
 	echo "       FOLDER: working directory, can specify multiple (default: .)"
 	echo "       "
 	echo "       Pass the parameter FINDARGS='...' to control search pattern (e.g. -maxdepth 1)"
@@ -21,8 +22,12 @@ fi
 LIC=$1
 if [ -z $LIC ]
 then
-	LIC="MPLv2"
+	#LIC="$DLIC"
+	show_help()
+	return
 fi
+
+echo "Using: $LIC"
 
 case $1 in
 	#Room for other options: eg. gplv3
