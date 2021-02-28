@@ -26,6 +26,20 @@ export MANPAGER=kak-man-pager
 # alias ls='ls --color=auto'
 # alias la='ls -a'
 
+# # Temporary Folder
+# TMP_HOME_NAME="$HOME/Tmp"
+# # If we have a temp dir, and
+# if [ -d "$XDG_RUNTIME_DIR" ]; then
+# 	# Get rid of the old copy if it exists
+# 	if [ -L "$TMP_HOME_NAME" ] && [ -e "$TMP_HOME_NAME" ]; then
+# 		rm "$TMP_HOME_NAME"
+# 	fi
+
+# 	TMP_RUN_NAME="$XDG_RUNTIME_DIR/user_tmp"
+# 	mkdir -p "$TMP_RUN_NAME"
+# 	ln -s "$TMP_RUN_NAME" "$TMP_HOME_NAME"
+# fi
+
 ### Sway auto-start
 if [ -z $DISPLAY ] && [ -f /usr/bin/sway ] && [ $(tty) = /dev/tty1 ]; then
 	export XDG_SESSION_TYPE=wayland
