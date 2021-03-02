@@ -101,9 +101,9 @@ class NetworkdTrayApp():
 			if r[1].decode('ASCII') in self.devices:
 				statuses.append(NetworkStatus(r[1].decode('ASCII'), r[2].decode('ASCII'), r[3].decode('ASCII'), r[4].decode('ASCII')))
 
-		self.update_icon(statuses)
+		self.update_tray_info(statuses)
 
-	def update_icon(self, statuses):
+	def update_tray_info(self, statuses):
 		if not isinstance(statuses, list):
 			status = [statuses]
 
@@ -119,28 +119,44 @@ class NetworkdTrayApp():
 				# Detect the device type and show icon
 				if dev.type == 'ether':
 					self.tray.setIcon(self.tray_icon_wired)
+					self.tray.setToolTip("Ether (%s): %s" % (dev.device, ""))
 				elif dev.type == 'wlan':
+					result = subprocess.run(['iw', dev.device, 'info'], stdout=subprocess.PIPE)
+					ssid = ""
+					channel = ""
+					for l in result.stdout.splitlines():
+						r = l.split()
+						try:
+							if r[0] == "ssid":
+								ssid = r[1]
+							elif r[0] == "channel":
+								channel = l.split("channel")[1].split(',')[0]
+						except IndexError:
+							pass
+
 					self.tray.setIcon(self.tray_icon_wireless)
+					self.tray.setToolTip("Wireless (%s): %s - %s" % (dev.device, ssid, channel))
 				else:
 					self.tray.setIcon(self.tray_icon_unknown)
-
-				break
+					self.tray.setToolTip("Unknown (%s): %s" % (dev.device, "Connected"))
+			break
 
 			if i == last_index:
 				# No connection was detected at all, so show as disconnected
 				# print("disconnected")
 				self.tray.setIcon(self.tray_icon_none)
+				self.tray.setToolTip("Disconnected")
 
-	def do_get_info_string(self, status):
-		if dev.type == 'ether':
-			pass
-			# self.tray.setIcon(self.tray_icon_wired)
-		elif dev.type == 'wlan':
-			pass
-			# self.tray.setIcon(self.tray_icon_wireless)
-		else:
-			pass
-			# self.tray.setIcon(self.tray_icon_unknown)
+	# def do_get_info_string(self, status):
+	# 	if dev.type == 'ether':
+	# 		pass
+	# 		# self.tray.setIcon(self.tray_icon_wired)
+	# 	elif dev.type == 'wlan':
+	# 		pass
+	# 		# self.tray.setIcon(self.tray_icon_wireless)
+	# 	else:
+	# 		pass
+	# 		# self.tray.setIcon(self.tray_icon_unknown)
 
 	def do_restart_specific_services(self, service_names):
 		if not isinstance(service_names, list):
