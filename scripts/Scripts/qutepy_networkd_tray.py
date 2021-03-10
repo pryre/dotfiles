@@ -70,6 +70,7 @@ class NetworkdTrayApp():
 		# self.tray_icon_is_mute = True
 
 		self.menu = QMenu()
+		self.top_menu = self.menu.addSection("Disconnected")
 		self.action_restart_services = QAction(self.tray_icon_wired, "Restart Services")
 		self.action_restart_services.triggered.connect(self.do_action_restart_servies)
 		self.menu.addAction(self.action_restart_services)
@@ -127,10 +128,10 @@ class NetworkdTrayApp():
 					for l in result.stdout.splitlines():
 						r = l.split()
 						try:
-							if r[0] == "ssid":
-								ssid = r[1]
-							elif r[0] == "channel":
-								channel = l.split("channel")[1].split(',')[0]
+							if r[0].decode() == "ssid":
+								ssid = r[1].decode().strip()
+							elif r[0].decode() == "channel":
+								channel = l.decode().split("channel")[1].split(",")[0].strip()
 						except IndexError:
 							pass
 
@@ -150,16 +151,11 @@ class NetworkdTrayApp():
 			self.tray.setIcon(self.tray_icon_none)
 			self.tray.setToolTip("Disconnected")
 
-	# def do_get_info_string(self, status):
-	# 	if dev.type == 'ether':
-	# 		pass
-	# 		# self.tray.setIcon(self.tray_icon_wired)
-	# 	elif dev.type == 'wlan':
-	# 		pass
-	# 		# self.tray.setIcon(self.tray_icon_wireless)
-	# 	else:
-	# 		pass
-	# 		# self.tray.setIcon(self.tray_icon_unknown)
+		self.update_top_menu(self.tray.toolTip())
+
+	def update_top_menu(self, text="Disconnected"):
+		# self.menu.actions()[0].setText(text)
+		self.top_menu.setText(text)
 
 	def do_restart_specific_services(self, service_names):
 		if not isinstance(service_names, list):
