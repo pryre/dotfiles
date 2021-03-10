@@ -110,10 +110,10 @@ class NetworkdTrayApp():
 		# Get the list of devices in order or priority
 		devices_sorted = sorted(statuses, key=lambda x: self.devices.index(x.device))
 
-		last_index = len(devices_sorted) - 1
-
+		is_connected = False
+		op_ok = ['enslaved', 'carrier', 'routable']
 		for i, dev in enumerate(devices_sorted):
-			op_ok = ['enslaved', 'carrier', 'routable']
+			# print(dev)
 			if (dev.operational in op_ok) and (dev.setup == 'configured'):
 				# print("connected!")
 				# Detect the device type and show icon
@@ -139,13 +139,16 @@ class NetworkdTrayApp():
 				else:
 					self.tray.setIcon(self.tray_icon_unknown)
 					self.tray.setToolTip("Unknown (%s): %s" % (dev.device, "Connected"))
-			break
 
-			if i == last_index:
-				# No connection was detected at all, so show as disconnected
-				# print("disconnected")
-				self.tray.setIcon(self.tray_icon_none)
-				self.tray.setToolTip("Disconnected")
+				# We have a good device at least
+				is_connected = True
+				break
+
+		if not is_connected:
+			# No connection was detected at all, so show as disconnected
+			# print("disconnected")
+			self.tray.setIcon(self.tray_icon_none)
+			self.tray.setToolTip("Disconnected")
 
 	# def do_get_info_string(self, status):
 	# 	if dev.type == 'ether':
