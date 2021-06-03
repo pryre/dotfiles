@@ -79,7 +79,8 @@ if [ -z $DISPLAY ] && [ -f /usr/bin/sway ] && [ $(tty) = /dev/tty1 ]; then
 	#export WLR_RDP_TLS_CERT_PATH=$HOME/.ssh/rdp/tls.crt
 	#export WLR_RDP_TLS_KEY_PATH=$HOME/.ssh/rdp/tls.key
 	#export WLR_BACKENDS=rdp
-	export XDG_CURRENT_DESKTOP=sway
+	# export XDG_CURRENT_DESKTOP=sway
+	export XDG_CURRENT_DESKTOP=Unity
 
 	SWAYCACHE=$HOME/.cache/sway
 	mkdir -p $SWAYCACHE

@@ -10,3 +10,6 @@ url = http://github.com/scopatz/nanorc.git
 [submodule "kak/.config/kak/autoload/kak-ansi"]
 	path = kak/.config/kak/rc/kak-ansi
 	url = https://github.com/eraserhd/kak-ansi
+[submodule "kak/.config/kak/rc/kak-rainbow"]
+	path = kak/.config/kak/rc/kak-rainbow
+	url = https://github.com/Bodhizafa/kak-rainbow

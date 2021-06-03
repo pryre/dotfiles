@@ -11,7 +11,7 @@ extract_pages() {
 case "$#" in
 	1)
 		#Extract all pages
-		PG_NUM=$(gs -q -dNODISPLAY -c \
+		PG_NUM=$(gs -q -dNODISPLAY -dNOSAFER -c \
 				 "($1) (r) file runpdfbegin pdfpagecount = quit")
 
 		for i in $(seq -w $PG_NUM); do
