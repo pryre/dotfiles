@@ -4,6 +4,9 @@ function foxy_ros
 	set -g -x ROS_PYTHON_VERSION 3
 	set -g -x ROS_DISTRO foxy
 
+	bass source /opt/ros2/foxy/setup.bash
+	echo "Sourced ros2 foxy"
+
 	if set -q argv[1]
 		if test -e ~/Workspace/ros2_{$argv[1]}_ws/install/local_setup.bash
 			bass source ~/Workspace/ros2_{$argv[1]}_ws/install/local_setup.bash
@@ -11,9 +14,6 @@ function foxy_ros
 		else
 			echo "Could not find workspace: $argv[1]"
 		end
-	else
-		bass source /opt/ros2/foxy/setup.bash
-		echo "Sourced ros2 foxy"
 	end
 
 	# Autocompletion
