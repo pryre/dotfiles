@@ -15,6 +15,7 @@ esac
 if [ -d "$HOME/.local/bin" ] ; then
    export PATH="$HOME/.local/bin:$PATH"
 fi
+export npm_config_prefix="$HOME/.local"
 
 export EDITOR=kak
 export PAGER=kak-pager
