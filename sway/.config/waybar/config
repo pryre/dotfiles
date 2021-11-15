@@ -7,9 +7,7 @@
     //"modules-left": ["sway/workspaces", "sway/mode"],
     "modules-left": ["custom/launcher","sway/workspaces"],
     "modules-center": ["sway/mode"],
-    //"modules-right": ["idle_inhibitor", "pulseaudio", "network", "cpu", "memory", "temperature", "backlight", "battery", "battery#bat2", "clock", "tray"],
     "modules-right": ["tray", "pulseaudio", "idle_inhibitor","custom/backlight", "battery", "clock", "custom/exit"],
-    //"modules-right": ["tray", "network#usb", "network#ether", "network#wifi", "pulseaudio", "idle_inhibitor","custom/backlight", "battery", "clock", "custom/exit"],
     // Modules configuration
     // "sway/workspaces": {
     //     "disable-scroll": true,
@@ -88,8 +86,18 @@
         "format": "{icon}",
         // "format-good": "", // An empty format will hide the module
         // "format-full": "",
-        "format-icons": ["", "", "", "", ""]
+        "format-icons": ["", "", "", "", ""],
+        "on-click": "swaymsg exec 'tlpui'"
     },
+	//"bluetooth": {
+	//	"format": "{icon}",
+	//	"format-alt": "bluetooth: {status}",
+	//	"format-icons": {
+	//		"enabled": "",
+	//		"disabled": ""
+	//	},
+	//	"tooltip-format": "{}"
+	//},
     //"network#usb": {
     //    "interface": "usb0", // (Optional) To force the use of this interface
     //    "format-wifi": "",

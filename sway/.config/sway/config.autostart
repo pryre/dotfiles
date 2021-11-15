@@ -4,7 +4,10 @@
 ### Auto-Start
 #
 
-# Tiling manager
+# Display Manager
+exec kanshi
+
+# Tiling Manager
 exec autotiling
 
 # Policy Kit
