@@ -8,11 +8,16 @@ function foxy_ros
 	echo "Sourced ros2 foxy"
 
 	if set -q argv[1]
-		if test -e ~/Workspace/ros2_{$argv[1]}_ws/install/local_setup.bash
-			bass source ~/Workspace/ros2_{$argv[1]}_ws/install/local_setup.bash
+		set workspace_dir ~/Workspace/ros2_$argv[1]_ws
+		if test -e $workspace_dir/install/local_setup.bash
+			bass source $workspace_dir/install/local_setup.bash
 			echo "Sourced '$argv[1]' workspace"
+			if test -e $workspace_dir/venv/bin/activate.fish
+				source $workspace_dir/venv/bin/activate.fish
+				echo "Enabled virtual environment"
+			end
 		else
-			echo "Could not find workspace: $argv[1]"
+			echo "Could not find workspace: $argv[1] ($workspace_dir)"
 		end
 	end
 
