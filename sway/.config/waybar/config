@@ -91,12 +91,13 @@
     },
 	//"bluetooth": {
 	//	"format": "{icon}",
-	//	"format-alt": "bluetooth: {status}",
+	//	//"format-alt": "bluetooth: {status}",
 	//	"format-icons": {
 	//		"enabled": "",
 	//		"disabled": ""
 	//	},
-	//	"tooltip-format": "{}"
+	//	"tooltip-format": "{}",
+	//	"on-click": "blueman-manager"
 	//},
     //"network#usb": {
     //    "interface": "usb0", // (Optional) To force the use of this interface

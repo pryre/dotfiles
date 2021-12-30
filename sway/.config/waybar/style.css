@@ -86,6 +86,11 @@ window > box {
     animation-direction: alternate;
 }
 
+/*
+#bluetooth.disabled {
+    color: gray;
+}
+*/
 #network.disconnected {
 	color: gray;
 }
