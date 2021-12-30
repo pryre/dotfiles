@@ -43,26 +43,26 @@ export MANPAGER=kak-man-pager
 
 ### Sway auto-start
 if [ -z $DISPLAY ] && [ -f /usr/bin/sway ] && [ $(tty) = /dev/tty1 ]; then
-	export XDG_SESSION_TYPE=wayland
-	export XKB_DEFAULT_LAYOUT=us
+	# export XDG_SESSION_TYPE=wayland
+	# export XKB_DEFAULT_LAYOUT=us
 
 	###Backends
 	#
 	#This may cause crashes
 
 	#GTK
-	export GDK_BACKEND=wayland
+	# export GDK_BACKEND=wayland
 	#export CLUTTER_BACKEND=wayland
 
 	#Qt (should use wayland by default)
 	#export QT_QPA_PLATFORM=xcb
-	export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+	# export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
 
 	#SDL
 	#export SDL_VIDEODRIVER=wayland
 
 	#Java
-	export _JAVA_AWT_WM_NONREPARENTING=1
+	# export _JAVA_AWT_WM_NONREPARENTING=1
 
 	### Theming
 	#
@@ -71,22 +71,29 @@ if [ -z $DISPLAY ] && [ -f /usr/bin/sway ] && [ $(tty) = /dev/tty1 ]; then
 	#GTK_THEME is more of a debug override, can't set cursors, etc.
 	#export GTK_THEME=Adwaita:dark
 
-	gsettings set org.gnome.desktop.interface cursor-theme capitaine-cursors
-	gsettings set org.gnome.desktop.interface icon-theme la-capitaine-icon-theme
-	gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark
+	# gsettings set org.gnome.desktop.interface cursor-theme capitaine-cursors
+	# gsettings set org.gnome.desktop.interface icon-theme la-capitaine-icon-theme
+	# gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark
 
 	### Run Sway
 	#
 	#export WLR_RDP_TLS_CERT_PATH=$HOME/.ssh/rdp/tls.crt
 	#export WLR_RDP_TLS_KEY_PATH=$HOME/.ssh/rdp/tls.key
 	#export WLR_BACKENDS=rdp
-	# export XDG_CURRENT_DESKTOP=sway
-	export XDG_CURRENT_DESKTOP=Unity
 
-	SWAYCACHE=$HOME/.cache/sway
-	mkdir -p $SWAYCACHE
-	mv $SWAYCACHE/sway.log $SWAYCACHE/sway.log.old
-	exec dbus-run-session sway > $SWAYCACHE/sway.log 2>&1
+	# export XDG_CURRENT_DESKTOP=sway
+	# export XDG_SESSION_TYPE=wayland
+
+	# export XDG_CURRENT_DESKTOP=Unity
+	#export XDG_CURRENT_DESKTOP=sway
+	#export XDG_SESSION_TYPE=wayland
+	#export XKB_DEFAULT_LAYOUT=us
+
+	# SWAYCACHE=$HOME/.cache/sway
+	# mkdir -p $SWAYCACHE
+	# mv $SWAYCACHE/sway.log $SWAYCACHE/sway.log.old
+	# dbus-run-session sway > $SWAYCACHE/sway.log 2>&1
+	exec sway-run.sh
 fi
 
 if [ -z $DISPLAY ] && [ -f /usr/bin/startxfce4 ] && [ $(tty) = /dev/tty2 ]; then
