@@ -88,7 +88,7 @@ class NetworkdTrayApp():
 		self.action_quit.triggered.connect(self.do_action_quit)
 		self.tray.setContextMenu(self.menu)
 
-		# self.tray.activated.connect(self.do_action_clicked)
+		self.tray.activated.connect(self.do_action_clicked)
 		# self.tray.scrolled.connect(self.do_action_scrolled)
 
 		# Perform one update imidiately
@@ -191,6 +191,7 @@ class NetworkdTrayApp():
 		self.do_restart_specific_services(['systemd-networkd.service', 'systemd-resolved.service', 'iwd.service'])
 
 	def do_action_rescan_wifi(self):
+		subprocess.run(['notify-send.sh', 'Scanning WiFi...'])
 		result = subprocess.run(['networkctl', '--no-pager', '--no-legend', 'list'], stdout=subprocess.PIPE)
 		for l in result.stdout.splitlines():
 			r = l.split()
@@ -205,7 +206,8 @@ class NetworkdTrayApp():
  #        else:
 	# 		self.tray.setIcon(self.tray_icon_high)
 
-	# def do_action_clicked(self,reason):
+	def do_action_clicked(self,reason):
+		self.do_action_rescan_wifi()
 	# 	if reason == QSystemTrayIcon.Trigger:
 	# 		print("clicked")
 	# 	# double clicking doesn't seem to work

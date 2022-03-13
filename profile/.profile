@@ -21,6 +21,8 @@ export EDITOR=kak
 export PAGER=kak-pager
 export MANPAGER=kak-man-pager
 
+export CALIBRE_USE_DARK_PALETTE=1
+
 #stty -ctlecho
 
 # alias ed="$EDITOR"
