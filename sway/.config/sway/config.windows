@@ -10,6 +10,8 @@ for_window [title="Osmo"] floating enable
 for_window [title="SpeedCrunch"] floating enable
 for_window [title="Steam Guard - Computer Authorization Required"] floating enable
 for_window [title="Qutepy Logout"] floating enable
+for_window [title="Qutepy Launcher"] move to workspace current
+for_window [title="Qutepy Launcher"] fullscreen enable
 
 ### MATLAB Specific
 #for_window [title="Figure *"] floating enable
