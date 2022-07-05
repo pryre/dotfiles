@@ -50,7 +50,7 @@ include	$HOME/.config/sway/config.keys
 bar	{
 	swaybar_command	waybar
 
-	# position left
+	# position top
 
 	# When the status_command prints a new line	to stdout, swaybar updates.
 	# The default just shows the current date and time.

@@ -2,7 +2,7 @@
     "layer": "bottom", // Waybar below floating layer
     "position": "left", // Waybar position (top|bottom|left|right)
     // "height": 30, // Waybar height
-     "width": 64, // Waybar width (need to give a bit extra for clock)
+    // "width": 64, // Waybar width (need to give a bit extra for clock)
     // Choose the order of the modules
     //"modules-left": ["sway/workspaces", "sway/mode"],
     "modules-left": ["custom/launcher","sway/workspaces"],
