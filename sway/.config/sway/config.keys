@@ -1,7 +1,11 @@
 ### Key Setup
 #
-input '*' xkb_numlock enabled
-
+#XXX: This causes firefox to crash on reload
+#     Use "swaymsg -t get_inputs" to list inputs to apply manually to
+#input '*' xkb_numlock enabled
+input "1241:345:USB-HID_Keyboard" {
+  xkb_numlock enabled
+}
 
 ### Bindings:
 #
