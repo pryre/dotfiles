@@ -4,14 +4,20 @@ check_git_status() {
 	START_DIR="$(pwd)"
 	cd $1
 
-	if [ -z $(git log origin/master..master) ] && [ -z "$(git status --porcelain)" ]
+	if [ -d './.git' ]
 	then
-		#echo "clean"
-		true
-	else
-		echo "$(tput bold)$(basename $(pwd))$(tput sgr0)"
-		git status
-		echo "---"
+		if [ -z $(git log origin/master..master) ] && [ -z "$(git status --porcelain)" ]
+		then
+			#echo "clean"
+			true
+		else
+			echo "$(tput bold)$(basename $(pwd))$(tput sgr0)"
+			git status
+			echo "---"
+		fi
+	# else
+	# 	echo "$(tput bold)$(basename $(pwd))$(tput sgr0)"
+	# 	echo "Not a git directory. Skipped..."
 	fi
 
 	cd $START_DIR

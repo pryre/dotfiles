@@ -4,15 +4,18 @@ check_git_update() {
 	START_DIR="$(pwd)"
 	cd $1
 
-	REPO_STATUS="$(git fetch 2>&1)"
-
-	if [ "$REPO_STATUS" ]
+	if [ -d "./.git" ]
 	then
-		MERGE_STATUS="$(git merge --ff-only 2>&1)"
-		SUBMODULE_STATUS="$(git submodule update --init 2>&1)"
+		REPO_STATUS="$(git fetch 2>&1)"
 
-		TITLE="$(tput bold)$(basename $(pwd))$(tput sgr0)"
-		printf "$TITLE\n$REPO_STATUS\n$MERGE_STATUS\n$SUBMODULE_STATUS\n---\n"
+		if [ "$REPO_STATUS" ]
+		then
+			MERGE_STATUS="$(git merge --ff-only 2>&1)"
+			SUBMODULE_STATUS="$(git submodule update --init 2>&1)"
+
+			TITLE="$(tput bold)$(basename $(pwd))$(tput sgr0)"
+			printf "$TITLE\n$REPO_STATUS\n$MERGE_STATUS\n$SUBMODULE_STATUS\n---\n"
+		fi
 	fi
 
 	cd "$START_DIR"
