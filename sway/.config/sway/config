@@ -71,6 +71,9 @@ bar	{
 gaps inner 10
 gaps outer 0
 
+
+#font monospace 0
+#titlebar_padding 3
 titlebar_padding 5 2
 default_orientation	horizontal
 
@@ -84,3 +87,4 @@ include	$HOME/.config/sway/config.windows
 ###	Application	Autostart
 #
 include	$HOME/.config/sway/config.autostart
+

@@ -15,7 +15,7 @@ exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 
 # Notifications
 exec mkdir -p "$XDG_RUNTIME_DIR/notifications"
-exec mako
+# exec mako
 
 # Launcher Daemon
 exec $HOME/Scripts/qutepy_launcher.py -k && $HOME/Scripts/list_desktop_applications.sh | $HOME/Scripts/qutepy_launcher.py -d -l -n
@@ -33,7 +33,8 @@ exec swayidle -w \
 
 # Network Notifications
 exec networkd-notify
-exec $HOME/Scripts/qutepy_networkd_tray.py eth0 wlan0
+exec $HOME/Scripts/qutepy_networkd_tray.py wlan0
+exec $HOME/Scripts/qutepy_networkd_tray.py eth0
 
 # Bluetooth Manager (if present)
 exec blueman-applet

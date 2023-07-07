@@ -23,11 +23,6 @@ if [[ -z $2 ]]; then
 extraSpaceMB=4
 fi
 
-if [[ ! -e $1 || ! $(file $1) =~ "x86" ]]; then
-echo "Error : Not an image file, or file doesn't exist"
-exit
-fi
-
 partinfo=`parted -s -m $1 unit B print`
 partnumber=`echo "$partinfo" | grep ext4 | awk -F: ' { print $1 } '`
 partstart=`echo "$partinfo" | grep ext4 | awk -F: ' { print substr($2,0,length($2)-1) } '`

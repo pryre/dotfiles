@@ -10,7 +10,15 @@ set $laptop_output eDP-1
 set $secondary_output HDMI-A-1
 
 output $laptop_output mode 1920x1080@60.049000Hz position 0,0
-output $secondary_output position 1920,0
+# output $secondary_output position 1920,0
+output $secondary_output mode 1920x1080@60Hz position 1920,0
+
+set $work_left_output DP-4
+set $work_right_output DP-3
+output $work_left_output mode 1920x1080@60Hz position 1920,0
+output $work_right_output mode 1920x1080@60Hz position 3840,0
+
+
 
 ### Input configuration
 #

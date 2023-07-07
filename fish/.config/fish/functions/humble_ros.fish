@@ -7,16 +7,17 @@ function humble_ros
 	# XXX: Many GUI systems do not support wayland yet!
 	#      Probably something to look into in the future
 	set -x QT_QPA_PLATFORM xcb
-	set -e GAZEBO_MODEL_PATH
-	set -e GAZEBO_PLUGIN_PATH
-	set -e GAZEBO_RESOURCE_PATH
 
-	bass source /usr/share/gazebo/setup.bash
+	#set -e GAZEBO_MODEL_PATH
+	#set -e GAZEBO_PLUGIN_PATH
+	#set -e GAZEBO_RESOURCE_PATH
+
+	#bass source /usr/share/gazebo/setup.bash
 	bass source /opt/ros/humble/setup.bash
 
-	set -x GAZEBO_MODEL_PATH $GAZEBO_MODEL_PATH:/usr/local/share/gazebo-11/models
-	set -x GAZEBO_PLUGIN_PATH $GAZEBO_PLUGIN_PATH:/usr/local/lib/gazebo-11/plugins
-	set -x GAZEBO_RESOURCE_PATH $GAZEBO_RESOURCE_PATH:/usr/local/share/gazebo-11
+	#set -x GAZEBO_MODEL_PATH $GAZEBO_MODEL_PATH:/usr/local/share/gazebo-11/models
+	#set -x GAZEBO_PLUGIN_PATH $GAZEBO_PLUGIN_PATH:/usr/local/lib/gazebo-11/plugins
+	#set -x GAZEBO_RESOURCE_PATH $GAZEBO_RESOURCE_PATH:/usr/local/share/gazebo-11
 
 	echo "Sourced ros2 humble"
 
