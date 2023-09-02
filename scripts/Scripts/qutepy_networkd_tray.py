@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
-import sys, signal, os, typing, subprocess, time
+import sys, signal, os, typing, subprocess, time, random
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QSystemTrayIcon, QApplication, QMenu, QAction #, QMessageBox, QSlider, QWidgetAction
 from PyQt5.QtGui import QIcon
+import dbus
 
 # def run_detached_process(cmd: str, args: typing.List[str], pwd: str = ""):
 # 	p = QtCore.QProcess()
@@ -54,16 +55,29 @@ class NetworkdTrayApp():
 		self.timer.timeout.connect(self.update_state)
 		self.timer.start(2000)
 
+		self.dbus_notification_path = "org.freedesktop.Notifications"
+
+		self.notify_title_last = ""
+		self.notify_desc_last = ""
+		self.notify_icon_name_last = ""
+		self.notify_id = random.random()
+		self.notify_bus = None
+
 		self.commands = dict()
 		# self.commands["mixer"] = expand_list_vars(["pavucontrol-qt"])
 		# self.commands["raise"] = expand_list_vars(["$HOME/Scripts/control_volume.sh", "raise"])
 		# self.commands["lower"] = expand_list_vars(["$HOME/Scripts/control_volume.sh", "lower"])
 		# self.commands["toggle-mute"] = expand_list_vars(["$HOME/Scripts/control_volume.sh", "toggle_mute"])
 
-		self.tray_icon_none = QIcon.fromTheme("network-error-symbolic")
-		self.tray_icon_wired = QIcon.fromTheme("network-wired-symbolic")
-		self.tray_icon_wireless = QIcon.fromTheme("network-wireless-symbolic")
-		self.tray_icon_unknown = QIcon.fromTheme("dialog-question-symbolic")
+		self.tray_icon_none_name = "network-error-symbolic"
+		self.tray_icon_wired_name = "network-wired-symbolic"
+		self.tray_icon_wireless_name = "network-wireless-symbolic"
+		self.tray_icon_unknown_name = "dialog-question-symbolic"
+
+		self.tray_icon_none = QIcon.fromTheme(self.tray_icon_none_name)
+		self.tray_icon_wired = QIcon.fromTheme(self.tray_icon_wired_name)
+		self.tray_icon_wireless = QIcon.fromTheme(self.tray_icon_wireless_name)
+		self.tray_icon_unknown = QIcon.fromTheme(self.tray_icon_unknown_name)
 
 		self.tray = QSystemTrayIcon(self.tray_icon_none, app)
 		# self.tray = CustomTray(self.tray_icon_mute, app)
@@ -91,8 +105,20 @@ class NetworkdTrayApp():
 		self.tray.activated.connect(self.do_action_clicked)
 		# self.tray.scrolled.connect(self.do_action_scrolled)
 
-		# Perform one update imidiately
+		# Perform one update immediately
 		self.update_state()
+
+	def create_notifier(self):
+		try:
+			self.notify_bus = dbus.Interface(
+				dbus.SessionBus().get_object(
+					self.dbus_notification_path,
+					"/" + self.dbus_notification_path.replace(".", "/")
+				),
+				self.dbus_notification_path
+			)
+		except e:
+			self.notify_bus = None
 
 	def update_state(self):
 		statuses = []
@@ -110,6 +136,7 @@ class NetworkdTrayApp():
 
 		# Get the list of devices in order or priority
 		devices_sorted = sorted(statuses, key=lambda x: self.devices.index(x.device))
+		notification_icon = self.tray_icon_none_name
 
 		is_connected = False
 		op_ok = ['enslaved', 'carrier', 'routable']
@@ -120,6 +147,7 @@ class NetworkdTrayApp():
 				# Detect the device type and show icon
 				if dev.type == 'ether':
 					self.tray.setIcon(self.tray_icon_wired)
+					notification_icon = self.tray_icon_wired_name
 					self.tray.setToolTip("Ether (%s): %s" % (dev.device, ""))
 				elif dev.type == 'wlan':
 					result = subprocess.run(['iw', dev.device, 'info'], stdout=subprocess.PIPE)
@@ -136,9 +164,11 @@ class NetworkdTrayApp():
 							pass
 
 					self.tray.setIcon(self.tray_icon_wireless)
+					notification_icon = self.tray_icon_wireless_name
 					self.tray.setToolTip("Wireless (%s): %s - %s" % (dev.device, ssid, channel))
 				else:
 					self.tray.setIcon(self.tray_icon_unknown)
+					notification_icon = self.tray_icon_unknown_name
 					self.tray.setToolTip("Unknown (%s): %s" % (dev.device, "Connected"))
 
 				# We have a good device at least
@@ -149,13 +179,44 @@ class NetworkdTrayApp():
 			# No connection was detected at all, so show as disconnected
 			# print("disconnected")
 			self.tray.setIcon(self.tray_icon_none)
+			notification_icon = self.tray_icon_none_name
 			self.tray.setToolTip("Disconnected")
 
 		self.update_top_menu(self.tray.toolTip())
+		self.update_notification(
+			"Connected" if is_connected else "Disconnected",
+			self.tray.toolTip(),
+			notification_icon
+		)
 
 	def update_top_menu(self, text="Disconnected"):
 		# self.menu.actions()[0].setText(text)
 		self.top_menu.setText(text)
+
+	def update_notification(self, title, desc, icon_name):
+		if (self.notify_title_last != title) or (self.notify_desc_last != desc) or (self.notify_icon_name_last != icon_name):
+			if self.notify_bus is None:
+				self.create_notifier()
+
+			try:
+				if self.notify_bus is not None:
+					self.notify_bus.Notify(
+						"qutepy_networkd_tray",
+						int(self.notify_id*0xFFFF),
+						icon_name,
+						title,
+						desc,
+						[],
+						{"urgency": 1},
+						3000
+					)
+			except:
+				self.notify_bus = None
+
+			self.notify_title_last = title
+			self.notify_desc_last = desc
+			self.notify_icon_name_last = icon_name
+
 
 	def do_restart_specific_services(self, service_names):
 		if not isinstance(service_names, list):

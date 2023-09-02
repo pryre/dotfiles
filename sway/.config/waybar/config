@@ -42,7 +42,8 @@
     "clock": {
         "tooltip-format": "{:%Y-%m-%d | %H:%M}",
         //"format-alt": "{:%Y-%m-%d}",
-		"on-click": "osmo --calendar"
+		"on-click": "thunderbird --calendar"
+		//"on-click": "osmo --calendar"
     },
     //"cpu": {
     //    "format": "{usage}% "

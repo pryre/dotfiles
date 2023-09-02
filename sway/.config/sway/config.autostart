@@ -22,7 +22,7 @@ exec $HOME/Scripts/qutepy_launcher.py -k && $HOME/Scripts/list_desktop_applicati
 
 # File Manager Daemon
 #exec thunar --daemon
-exec pcmanfm-qt -d
+exec pcmanfm -d
 
 # Idle watcher
 exec swayidle -w \
@@ -32,7 +32,7 @@ exec swayidle -w \
 		before-sleep 	'$HOME/Scripts/swaylock-blur.sh -f'
 
 # Network Notifications
-exec networkd-notify
+#exec networkd-notify
 exec $HOME/Scripts/qutepy_networkd_tray.py wlan0
 exec $HOME/Scripts/qutepy_networkd_tray.py eth0
 
