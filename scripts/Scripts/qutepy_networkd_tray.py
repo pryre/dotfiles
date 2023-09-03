@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-import sys, signal, os, typing, subprocess, time, random
-from PyQt5 import QtGui, QtCore
+import sys, signal, os, subprocess, time, random
+from types import FrameType
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import QSystemTrayIcon, QApplication, QMenu, QAction #, QMessageBox, QSlider, QWidgetAction
 from PyQt5.QtGui import QIcon
-import dbus
+import dbus #type: ignore
 
 # def run_detached_process(cmd: str, args: typing.List[str], pwd: str = ""):
 # 	p = QtCore.QProcess()
@@ -13,7 +14,7 @@ import dbus
 # 	p.setStandardErrorFile(p.nullDevice())
 # 	p.startDetached(cmd, args, pwd)
 
-def expand_list_vars(str_list: typing.List[str]):
+def expand_list_vars(str_list: list[str]):
 	return list(map(os.path.expandvars, str_list))
 
 # class CustomTray(QSystemTrayIcon):
@@ -38,14 +39,14 @@ def expand_list_vars(str_list: typing.List[str]):
 # 		return False
 #
 class NetworkStatus():
-	def __init__(self, device, type, operational, setup):
-		self.device = device
-		self.type = type
-		self.operational = operational
-		self.setup = setup
+	def __init__(self, device:str, type:str, operational:str, setup:str):
+		self.device:str = device
+		self.type:str = type
+		self.operational:str = operational
+		self.setup:str = setup
 
 class NetworkdTrayApp():
-	def __init__(self, app, devices):
+	def __init__(self, app:QApplication, devices:list[str]|str):
 		if isinstance(devices, list):
 			self.devices = devices
 		else:
@@ -61,10 +62,9 @@ class NetworkdTrayApp():
 		self.notify_desc_last = ""
 		self.notify_icon_name_last = ""
 		self.notify_id = random.random()
-		self.notify_bus = None
+		self.notify_bus:dbus.Interface|None = None
 
-		self.commands = dict()
-		# self.commands["mixer"] = expand_list_vars(["pavucontrol-qt"])
+		self.commands:dict[str,list[str]] = dict()
 		# self.commands["raise"] = expand_list_vars(["$HOME/Scripts/control_volume.sh", "raise"])
 		# self.commands["lower"] = expand_list_vars(["$HOME/Scripts/control_volume.sh", "lower"])
 		# self.commands["toggle-mute"] = expand_list_vars(["$HOME/Scripts/control_volume.sh", "toggle_mute"])
@@ -86,7 +86,7 @@ class NetworkdTrayApp():
 		self.menu = QMenu()
 		self.top_menu = self.menu.addSection("Disconnected")
 		self.action_restart_services = QAction(self.tray_icon_wired, "Restart Services")
-		self.action_restart_services.triggered.connect(self.do_action_restart_servies)
+		self.action_restart_services.triggered.connect(self.do_action_restart_services)
 		self.menu.addAction(self.action_restart_services)
 		self.menu.addSeparator()
 		self.action_rescan_wifi = QAction(self.tray_icon_wireless, "Rescan Wi-Fi")
@@ -110,18 +110,18 @@ class NetworkdTrayApp():
 
 	def create_notifier(self):
 		try:
-			self.notify_bus = dbus.Interface(
-				dbus.SessionBus().get_object(
-					self.dbus_notification_path,
-					"/" + self.dbus_notification_path.replace(".", "/")
-				),
-				self.dbus_notification_path
+			session = dbus.SessionBus()
+			path_obj = session.get_object( # type: ignore
+				self.dbus_notification_path,
+				"/" + self.dbus_notification_path.replace(".", "/")
 			)
-		except e:
+
+			self.notify_bus = dbus.Interface(path_obj, self.dbus_notification_path)
+		except dbus.DBusException:
 			self.notify_bus = None
 
 	def update_state(self):
-		statuses = []
+		statuses:list[NetworkStatus] = []
 		result = subprocess.run(['networkctl', '--no-pager', '--no-legend', 'list'], stdout=subprocess.PIPE)
 		for l in result.stdout.splitlines():
 			r = l.split()
@@ -130,9 +130,9 @@ class NetworkdTrayApp():
 
 		self.update_tray_info(statuses)
 
-	def update_tray_info(self, statuses):
+	def update_tray_info(self, statuses:list[NetworkStatus]|NetworkStatus):
 		if not isinstance(statuses, list):
-			status = [statuses]
+			statuses = [statuses]
 
 		# Get the list of devices in order or priority
 		devices_sorted = sorted(statuses, key=lambda x: self.devices.index(x.device))
@@ -140,7 +140,7 @@ class NetworkdTrayApp():
 
 		is_connected = False
 		op_ok = ['enslaved', 'carrier', 'routable']
-		for i, dev in enumerate(devices_sorted):
+		for _, dev in enumerate(devices_sorted):
 			# print(dev)
 			if (dev.operational in op_ok) and (dev.setup == 'configured'):
 				# print("connected!")
@@ -180,7 +180,7 @@ class NetworkdTrayApp():
 			# print("disconnected")
 			self.tray.setIcon(self.tray_icon_none)
 			notification_icon = self.tray_icon_none_name
-			self.tray.setToolTip("Disconnected")
+			self.tray.setToolTip(f"No connection for: {', '.join([d.device for d in devices_sorted])}")
 
 		self.update_top_menu(self.tray.toolTip())
 		self.update_notification(
@@ -189,18 +189,18 @@ class NetworkdTrayApp():
 			notification_icon
 		)
 
-	def update_top_menu(self, text="Disconnected"):
+	def update_top_menu(self, text:str="Disconnected"):
 		# self.menu.actions()[0].setText(text)
 		self.top_menu.setText(text)
 
-	def update_notification(self, title, desc, icon_name):
+	def update_notification(self, title:str, desc:str, icon_name:str):
 		if (self.notify_title_last != title) or (self.notify_desc_last != desc) or (self.notify_icon_name_last != icon_name):
 			if self.notify_bus is None:
 				self.create_notifier()
 
 			try:
 				if self.notify_bus is not None:
-					self.notify_bus.Notify(
+					self.notify_bus.Notify( # type: ignore
 						"qutepy_networkd_tray",
 						int(self.notify_id*0xFFFF),
 						icon_name,
@@ -218,24 +218,24 @@ class NetworkdTrayApp():
 			self.notify_icon_name_last = icon_name
 
 
-	def do_restart_specific_services(self, service_names):
+	def do_restart_specific_services(self, service_names:list[str]|str):
 		if not isinstance(service_names, list):
 			service_names = [service_names]
 
-		enabled_services = []
+		enabled_services:list[str] = []
 		for s in service_names:
 			try:
 				subprocess.run(['systemctl', 'is-enabled', '--quiet', s], check=True)
 				enabled_services.append(s)
-			except subprocess.CalledProcessError as ex:
-				print("Warning: '" + service_name + "' is not enabled, skipping")
+			except subprocess.CalledProcessError:
+				print(f"Warning: '{s}' is not enabled, skipping")
 
 		if len(enabled_services) > 0:
 			try:
 				cmd = ['systemctl', 'restart']
 				cmd.extend(enabled_services)
 				subprocess.run(cmd, check=True)
-			except subprocess.CalledProcessError as ex:
+			except subprocess.CalledProcessError:
 				services = ""
 				for s in enabled_services:
 					services += s
@@ -248,7 +248,7 @@ class NetworkdTrayApp():
 		# except subprocess.CalledProcessError as ex:
 		# 	print("Error: unable to restart system service '" + service_name + "'")
 
-	def do_action_restart_servies(self):
+	def do_action_restart_services(self):
 		self.do_restart_specific_services(['systemd-networkd.service', 'systemd-resolved.service', 'iwd.service'])
 
 	def do_action_rescan_wifi(self):
@@ -267,7 +267,7 @@ class NetworkdTrayApp():
  #        else:
 	# 		self.tray.setIcon(self.tray_icon_high)
 
-	def do_action_clicked(self,reason):
+	def do_action_clicked(self, reason:str):
 		self.do_action_rescan_wifi()
 	# 	if reason == QSystemTrayIcon.Trigger:
 	# 		print("clicked")
@@ -321,13 +321,13 @@ class NetworkdTrayApp():
 	def do_action_quit(self):
 		QApplication.quit()
 
-def sigint_handler(signum,stack):
+def sigint_handler(signum:int,stack:FrameType|None):
 	"""handler for the SIGINT signal."""
 	sys.stderr.write('\r')
 	QApplication.quit()
 
 if __name__ == '__main__':
-	devices = []
+	devices:list[str] = []
 	if len(sys.argv) >= 2:
 		devices = sys.argv[1:]
 	else:
@@ -346,7 +346,7 @@ if __name__ == '__main__':
 	# 	time.sleep(1)
 
 	print("Starting Quetpy Networkd Tray")
-	ndtp = NetworkdTrayApp(app, devices)
+	tray = NetworkdTrayApp(app, devices)
 
 	# SIGINT handling for smooth exit
 	signal.signal(signal.SIGINT, sigint_handler)
@@ -355,6 +355,6 @@ if __name__ == '__main__':
 	timer.timeout.connect(lambda: None)
 	timer.start(100)
 
-	ndtp.show_in_tray_when_available()
+	tray.show_in_tray_when_available()
 
 	sys.exit(app.exec())
