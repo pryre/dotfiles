@@ -22,7 +22,7 @@ exec $HOME/Scripts/qutepy_launcher.py -k && $HOME/Scripts/list_desktop_applicati
 
 # File Manager Daemon
 #exec thunar --daemon
-exec pcmanfm -d
+exec pcmanfm-qt -d
 
 # Idle watcher
 exec swayidle -w \

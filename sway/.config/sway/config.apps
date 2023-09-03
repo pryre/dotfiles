@@ -5,9 +5,10 @@ set $menu dmenu_path | bemenu -i -w | xargs swaymsg exec
 set $shell fish
 set $term alacritty
 set $browser firefox
-set $filemanager pcmanfm
+set $filemanager pcmanfm-qt
 #set $filemanager thunar
-set $taskmanager xfce4-taskmanager
+#set $taskmanager xfce4-taskmanager
+set $taskmanager gnome-system-monitor
 set $calculator speedcrunch
 set $guimenu $HOME/Scripts/qutepy_launcher.py -c
 set $lock $HOME/Scripts/swaylock-blur.sh
