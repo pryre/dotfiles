@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
-import sys, signal, os, subprocess, time, random
+import sys, signal, os, subprocess, random
 from types import FrameType
+from typing import Any, cast
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QSystemTrayIcon, QApplication, QMenu, QAction #, QMessageBox, QSlider, QWidgetAction
 from PyQt5.QtGui import QIcon
 import dbus #type: ignore
+import pyroute2 #type: ignore
 
 # def run_detached_process(cmd: str, args: typing.List[str], pwd: str = ""):
 # 	p = QtCore.QProcess()
@@ -39,11 +41,48 @@ def expand_list_vars(str_list: list[str]):
 # 		return False
 #
 class NetworkStatus():
-	def __init__(self, device:str, type:str, operational:str, setup:str):
+	def __init__(self, device:str, type:str, operational:str, setup:str, addresses:list[tuple[str,int]] = []):
 		self.device:str = device
 		self.type:str = type
 		self.operational:str = operational
 		self.setup:str = setup
+		self.addresses:list[tuple[str,int]] = sorted(addresses)
+
+	@staticmethod
+	def from_interface(data: dict[str|int, Any]):
+		device = data["ifname"] if "ifname" in data else ""
+		type = ""
+		if device.startswith("e"):
+			type = "ether"
+		elif device.startswith("w"):
+			type = "wlan"
+
+		op = data["operstate"] if "operstate" in data else "DOWN"
+		operational = "carrier"
+		if op == "UP":
+			operational = "routable"
+		elif op == "DOWN":
+			operational = "no-carrier"
+
+		setup = "unmanaged"
+		state = data["state"] if "state" in data else ""
+		if state == "up" and operational == "routable":
+			setup = "configured"
+		elif state == "up" and operational == "no-carrier":
+			setup = "configuring"
+
+		addresses:list[tuple[str,int]] = []
+		if "ipaddr" in data:
+			addresses = [x for x in data["ipaddr"]]
+
+		return NetworkStatus(device, type, operational, setup, addresses)
+
+	def __str__(self) -> str:
+		c = [f"{a}/{b}" for a,b in self.addresses]
+		return f"Status: [{self.device}, {self.type}, {self.operational}, {self.setup}] -- {c}"
+
+	def __repr__(self) -> str:
+		return str(self)
 
 class NetworkdTrayApp():
 	def __init__(self, app:QApplication, devices:list[str]|str):
@@ -52,9 +91,9 @@ class NetworkdTrayApp():
 		else:
 			self.devices = [devices]
 
-		self.timer = QtCore.QTimer()
-		self.timer.timeout.connect(self.update_state)
-		self.timer.start(2000)
+		# self.timer = QtCore.QTimer()
+		# self.timer.timeout.connect(self.update_state)
+		# self.timer.start(2000)
 
 		self.dbus_notification_path = "org.freedesktop.Notifications"
 
@@ -105,8 +144,12 @@ class NetworkdTrayApp():
 		self.tray.activated.connect(self.do_action_clicked)
 		# self.tray.scrolled.connect(self.do_action_scrolled)
 
-		# Perform one update immediately
-		self.update_state()
+		# Bind monitor
+		self.ipdb = pyroute2.IPDB()
+		self.ipdb.register_callback(self.network_changed) #type: ignore
+		for key, val in cast(dict[Any,Any], self.ipdb.interfaces).items():
+			if isinstance(key, str):
+				self.network_changed(self.ipdb, val, None)
 
 	def create_notifier(self):
 		try:
@@ -120,15 +163,27 @@ class NetworkdTrayApp():
 		except dbus.DBusException:
 			self.notify_bus = None
 
-	def update_state(self):
-		statuses:list[NetworkStatus] = []
-		result = subprocess.run(['networkctl', '--no-pager', '--no-legend', 'list'], stdout=subprocess.PIPE)
-		for l in result.stdout.splitlines():
-			r = l.split()
-			if r[1].decode('ASCII') in self.devices:
-				statuses.append(NetworkStatus(r[1].decode('ASCII'), r[2].decode('ASCII'), r[3].decode('ASCII'), r[4].decode('ASCII')))
+	def network_changed(self, ipdb:pyroute2.IPDB, msg:dict[str,Any], action:Any):
+		if 'index' in msg:
+			index = msg['index']
+			if index in ipdb.interfaces:
+				interface = ipdb.interfaces[index]
+				# print(interface['ifname'])
+				status = NetworkStatus.from_interface(interface)
 
-		self.update_tray_info(statuses)
+				if status.device in self.devices:
+					self.update_tray_info(status)
+
+
+	# def update_state(self):
+	# 	statuses:list[NetworkStatus] = []
+	# 	result = subprocess.run(['networkctl', '--no-pager', '--no-legend', 'list'], stdout=subprocess.PIPE)
+	# 	for l in result.stdout.splitlines():
+	# 		r = l.split()
+	# 		if r[1].decode('ASCII') in self.devices:
+	# 			statuses.append(NetworkStatus(r[1].decode('ASCII'), r[2].decode('ASCII'), r[3].decode('ASCII'), r[4].decode('ASCII')))
+
+	# 	self.update_tray_info(statuses)
 
 	def update_tray_info(self, statuses:list[NetworkStatus]|NetworkStatus):
 		if not isinstance(statuses, list):
@@ -137,6 +192,7 @@ class NetworkdTrayApp():
 		# Get the list of devices in order or priority
 		devices_sorted = sorted(statuses, key=lambda x: self.devices.index(x.device))
 		notification_icon = self.tray_icon_none_name
+		notification_text = ""
 
 		is_connected = False
 		op_ok = ['enslaved', 'carrier', 'routable']
@@ -145,10 +201,15 @@ class NetworkdTrayApp():
 			if (dev.operational in op_ok) and (dev.setup == 'configured'):
 				# print("connected!")
 				# Detect the device type and show icon
+				addresses_list = ""
+				for i, s in dev.addresses:
+					addresses_list += f"\n\t{i}/{s}"
+
 				if dev.type == 'ether':
 					self.tray.setIcon(self.tray_icon_wired)
 					notification_icon = self.tray_icon_wired_name
-					self.tray.setToolTip("Ether (%s): %s" % (dev.device, ""))
+					notification_text = f"Ether ({dev.device}): {dev.type}"
+					self.tray.setToolTip(f"{notification_text}\nConnections:{addresses_list}")
 				elif dev.type == 'wlan':
 					result = subprocess.run(['iw', dev.device, 'info'], stdout=subprocess.PIPE)
 					ssid = ""
@@ -165,11 +226,13 @@ class NetworkdTrayApp():
 
 					self.tray.setIcon(self.tray_icon_wireless)
 					notification_icon = self.tray_icon_wireless_name
-					self.tray.setToolTip("Wireless (%s): %s - %s" % (dev.device, ssid, channel))
+					notification_text = f"Wireless ({dev.device}): {ssid}"
+					self.tray.setToolTip(f"{notification_text}\nChannel: {channel}\nConnections:{addresses_list}")
 				else:
 					self.tray.setIcon(self.tray_icon_unknown)
 					notification_icon = self.tray_icon_unknown_name
-					self.tray.setToolTip("Unknown (%s): %s" % (dev.device, "Connected"))
+					notification_text = "Unknown (%s): %s" % (dev.device, "Connected")
+					self.tray.setToolTip(notification_text)
 
 				# We have a good device at least
 				is_connected = True
@@ -185,7 +248,7 @@ class NetworkdTrayApp():
 		self.update_top_menu(self.tray.toolTip())
 		self.update_notification(
 			"Connected" if is_connected else "Disconnected",
-			self.tray.toolTip(),
+			notification_text,
 			notification_icon
 		)
 
@@ -323,7 +386,8 @@ class NetworkdTrayApp():
 
 def sigint_handler(signum:int,stack:FrameType|None):
 	"""handler for the SIGINT signal."""
-	sys.stderr.write('\r')
+	print("Closing application")
+	sys.stderr.write('\n')
 	QApplication.quit()
 
 if __name__ == '__main__':
@@ -336,9 +400,10 @@ if __name__ == '__main__':
 
 	# Need to wait a moment in case the rest of the GUI is still starting
 	# (waybar seems to not register tray apps in the first few moments)
-	time.sleep(1)
-
-	app = QApplication(sys.argv)
+	try:
+		app = QApplication(sys.argv)
+	except KeyboardInterrupt:
+		exit(0)
 
 	# if not QSystemTrayIcon.isSystemTrayAvailable():
 	# 	print("Waiting for system tray")
@@ -350,10 +415,11 @@ if __name__ == '__main__':
 
 	# SIGINT handling for smooth exit
 	signal.signal(signal.SIGINT, sigint_handler)
+	signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-	timer = QtCore.QTimer()
-	timer.timeout.connect(lambda: None)
-	timer.start(100)
+	# timer = QtCore.QTimer()
+	# timer.timeout.connect(lambda: None)
+	# timer.start(100)
 
 	tray.show_in_tray_when_available()
 
