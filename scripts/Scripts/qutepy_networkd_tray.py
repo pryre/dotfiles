@@ -243,7 +243,8 @@ class NetworkdTrayApp():
 			# print("disconnected")
 			self.tray.setIcon(self.tray_icon_none)
 			notification_icon = self.tray_icon_none_name
-			self.tray.setToolTip(f"No connection for: {', '.join([d.device for d in devices_sorted])}")
+			notification_text = f"No connection for: {', '.join([d.device for d in devices_sorted])}"
+			self.tray.setToolTip(notification_text)
 
 		self.update_top_menu(self.tray.toolTip())
 		self.update_notification(
