@@ -1,6 +1,6 @@
-enable_experimental_conpty_backend = false
+#enable_experimental_conpty_backend = false
 live_config_reload = true
-"window.dynamic_title" = true
+#"window.dynamic_title" = true
 working_directory = "None"
 
 [bell]
@@ -47,11 +47,11 @@ unfocused_hollow = true
 log_level = "Warn"
 persistent_logging = false
 print_events = false
-ref_test = false
+#ref_test = false
 render_timer = false
 
 [font]
-AppleFontSmoothing = false
+#AppleFontSmoothing = false
 size = 11.0
 
 [font.glyph_offset]
@@ -593,14 +593,14 @@ hide_when_typing = false
 action = "PasteSelection"
 mouse = "Middle"
 
-[mouse.double_click]
-threshold = 300
+#[mouse.double_click]
+#threshold = 300
 
-[mouse.hints]
-modifiers = "None"
+#[mouse.hints]
+#modifiers = "None"
 
-[mouse.triple_click]
-threshold = 300
+#[mouse.triple_click]
+#threshold = 300
 
 [scrolling]
 history = 10000
