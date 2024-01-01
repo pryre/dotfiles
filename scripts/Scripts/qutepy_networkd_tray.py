@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys, signal, os, subprocess, random
+import sys, signal, os, subprocess, time, random
 from types import FrameType
 from typing import Any, cast
 from PyQt5 import QtCore
@@ -402,6 +402,7 @@ if __name__ == '__main__':
 	# Need to wait a moment in case the rest of the GUI is still starting
 	# (waybar seems to not register tray apps in the first few moments)
 	try:
+		time.sleep(1)
 		app = QApplication(sys.argv)
 	except KeyboardInterrupt:
 		exit(0)
